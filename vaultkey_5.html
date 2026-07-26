@@ -1,0 +1,2291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VaultKey — Digital Product Business Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f2f1f9; --bg2:#ffffff; --card:#ffffff; --card2:#f4f2fb;
+  --line:rgba(35,30,90,.09); --line2:rgba(35,30,90,.16);
+  --txt:#1d1b33; --mut:#6b7194; --dim:#9aa2c0;
+  --vio:#8b3dff; --cyan:#0097a0; --grad:linear-gradient(135deg,#8b3dff,#00c4cc);
+  --green:#0e9f6e; --red:#e02440; --amber:#c27803;
+  --ch-blue:#2a78d6; --ch-red:#e34948; --grid:#e7e5f0; --axis:#cfccde;
+  --r:16px; --sh:0 14px 34px rgba(80,60,180,.13);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{color-scheme:light}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(600px 400px at 15% -5%,rgba(139,61,255,.08),transparent 60%),
+    radial-gradient(700px 450px at 90% 0%,rgba(0,196,204,.07),transparent 60%),
+    radial-gradient(500px 500px at 50% 110%,rgba(139,61,255,.05),transparent 60%);
+}
+.wrap{position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:28px 24px 80px}
+/* ---------- header ---------- */
+header{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-ic{width:42px;height:42px;border-radius:13px;background:var(--grad);display:grid;place-items:center;
+  box-shadow:0 6px 20px rgba(139,61,255,.4);flex:none}
+.logo-ic svg{width:22px;height:22px}
+.logo h1{font-size:20px;font-weight:800;letter-spacing:-.02em}
+.logo h1 span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.logo small{display:block;font-size:11px;color:var(--dim);font-weight:500;letter-spacing:.04em;text-transform:uppercase}
+.hdr-sp{flex:1}
+.hdr-actions{display:flex;gap:10px;flex-wrap:wrap}
+/* ---------- tabs ---------- */
+.tabs{display:flex;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px;margin-bottom:18px;width:fit-content}
+.tab-btn{border:none;background:transparent;color:var(--mut);font:inherit;font-size:13.5px;font-weight:700;
+  padding:9px 20px;border-radius:11px;cursor:pointer;transition:.18s;display:flex;gap:8px;align-items:center}
+.tab-btn svg{width:15px;height:15px}
+.tab-btn:hover{color:var(--txt)}
+.tab-btn.on{background:var(--grad);color:#fff;box-shadow:0 4px 14px rgba(139,61,255,.3)}
+.view{display:none}.view.on{display:block}
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line2);background:var(--card);
+  color:var(--txt);font:inherit;font-size:13.5px;font-weight:600;padding:10px 16px;border-radius:12px;
+  cursor:pointer;transition:.18s;white-space:nowrap}
+.btn:hover{border-color:var(--vio);transform:translateY(-1px);background:var(--card2)}
+.btn svg{width:16px;height:16px;flex:none}
+.btn.primary{background:var(--grad);border:none;color:#fff;box-shadow:0 6px 18px rgba(139,61,255,.35)}
+.btn.primary:hover{filter:brightness(1.1)}
+.btn.ghost{background:transparent}
+.btn.danger:hover{border-color:var(--red);color:var(--red)}
+.btn.sm{padding:7px 12px;font-size:12.5px;border-radius:10px}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+/* ---------- search ---------- */
+.search-row{display:flex;gap:14px;align-items:center;margin-bottom:18px;flex-wrap:wrap}
+.search{position:relative;flex:1;min-width:260px}
+.search svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--dim)}
+.search input{width:100%;padding:15px 44px 15px 48px;background:var(--card);border:1px solid var(--line2);
+  border-radius:16px;color:var(--txt);font:inherit;font-size:15px;transition:.2s}
+.search input::placeholder{color:var(--dim)}
+.search input:focus{outline:none;border-color:var(--vio);box-shadow:0 0 0 4px rgba(139,61,255,.15)}
+.search .clr{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:var(--card2);
+  border:none;color:var(--mut);width:26px;height:26px;border-radius:8px;cursor:pointer;display:none;font-size:14px}
+select.sort{background:var(--card);border:1px solid var(--line2);color:var(--txt);font:inherit;font-size:13px;
+  font-weight:600;padding:12px 14px;border-radius:14px;cursor:pointer}
+select.sort:focus{outline:none;border-color:var(--vio)}
+/* ---------- stats ---------- */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;position:relative;overflow:hidden}
+.stat::after{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--sc,var(--vio))}
+.stat .n{font-size:26px;font-weight:800;letter-spacing:-.03em}
+.stat .l{font-size:11.5px;color:var(--mut);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+.stat .d{font-size:12px;font-weight:700;margin-top:4px}
+.d.up{color:var(--green)}.d.down{color:var(--red)}.d.flat{color:var(--dim)}
+/* ---------- chips ---------- */
+.chips{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.chips .lbl{font-size:11px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;margin-right:2px}
+.chip{padding:8px 16px;border-radius:99px;border:1px solid var(--line2);background:transparent;color:var(--mut);
+  font:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:.18s}
+.chip:hover{color:var(--txt);border-color:var(--vio)}
+.chip.on{background:var(--grad);border-color:transparent;color:#fff;box-shadow:0 4px 14px rgba(139,61,255,.3)}
+.chip.sm{padding:6px 13px;font-size:12px}
+.chip.cat.on{background:var(--card2);border-color:var(--cyan);color:var(--cyan);box-shadow:none}
+.chip b{opacity:.75;font-weight:700;margin-left:4px}
+/* ---------- sell radar ---------- */
+.radar{background:linear-gradient(135deg,rgba(139,61,255,.10),rgba(0,196,204,.06));border:1px solid rgba(139,61,255,.3);
+  border-radius:var(--r);padding:16px 18px;margin-bottom:18px}
+.radar-h{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:800;cursor:pointer;user-select:none}
+.radar-h .cnt{background:var(--grad);color:#fff;font-size:11.5px;font-weight:800;padding:2px 9px;border-radius:99px}
+.radar-h .arr{margin-left:auto;color:var(--mut);transition:.2s}
+.radar.closed .arr{transform:rotate(-90deg)}
+.radar.closed .radar-list{display:none}
+.radar-list{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.radar-item{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);
+  border-radius:12px;padding:10px 14px;font-size:13px;flex-wrap:wrap}
+.radar-item .ic{font-size:15px}
+.radar-item .t{flex:1;min-width:180px}
+.radar-item .t b{font-weight:700}
+.radar-item .t .why{color:var(--mut);font-size:12px;display:block;margin-top:1px}
+.radar-item .exp-tag{flex:none}
+/* ---------- grid & cards ---------- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;
+  transition:.2s;position:relative;display:flex;flex-direction:column;gap:12px;animation:pop .25s ease both}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.card:hover{border-color:var(--line2);transform:translateY(-2px);box-shadow:var(--sh)}
+.card.expired{border-color:rgba(224,36,64,.35)}
+.card.inactive{opacity:.62}
+.card-top{display:flex;align-items:flex-start;gap:10px}
+.pname{font-size:16.5px;font-weight:700;letter-spacing:-.01em;line-height:1.25;word-break:break-word}
+.price{font-size:12.5px;color:var(--cyan);font-weight:700;margin-top:2px}
+.price .cost{color:var(--dim);font-weight:600}
+.badge{margin-left:auto;flex:none;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+  padding:5px 11px;border-radius:99px;cursor:pointer;border:1px solid transparent;transition:.15s;user-select:none}
+.badge.stock{background:rgba(14,159,110,.12);color:var(--green);border-color:rgba(14,159,110,.3)}
+.badge.sold{background:rgba(224,36,64,.12);color:var(--red);border-color:rgba(224,36,64,.3)}
+.badge.inactive{background:rgba(139,145,181,.12);color:var(--mut);border-color:rgba(139,145,181,.3)}
+.badge:hover{filter:brightness(1.25)}
+.rows{display:flex;flex-direction:column;gap:7px}
+.row{display:flex;align-items:center;gap:9px;font-size:13px;min-height:24px}
+.row .k{color:var(--dim);width:74px;flex:none;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.row .v{color:var(--txt);word-break:break-all;flex:1;font-weight:500}
+.row .v.mono{font-family:'JetBrains Mono',monospace;font-size:12.5px}
+.row .v.dim{color:var(--mut)}
+.custlink{color:var(--cyan);cursor:pointer;font-weight:600;border-bottom:1px dashed rgba(0,196,204,.4)}
+.custlink:hover{filter:brightness(1.2)}
+.histnote{font-size:12px;color:var(--mut);background:var(--bg2);border:1px dashed var(--line2);border-radius:10px;padding:8px 11px;line-height:1.5}
+.mini{background:var(--card2);border:1px solid var(--line);color:var(--mut);width:26px;height:26px;flex:none;
+  border-radius:8px;cursor:pointer;display:grid;place-items:center;transition:.15s;padding:0}
+.mini:hover{color:var(--txt);border-color:var(--vio)}
+.mini svg{width:13px;height:13px}
+.totp{display:flex;align-items:center;gap:8px}
+.totp .code{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;letter-spacing:.12em;
+  background:linear-gradient(135deg,#7c3aed,#0891b2);-webkit-background-clip:text;background-clip:text;color:transparent}
+.totp .ring{width:18px;height:18px;flex:none;transform:rotate(-90deg)}
+.totp .ring circle{fill:none;stroke-width:3}
+.totp .ring .bgc{stroke:rgba(30,20,80,.12)}
+.totp .ring .fgc{stroke:var(--cyan);stroke-linecap:round;transition:stroke-dashoffset 1s linear}
+.exp-tag{font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px}
+.exp-ok{background:rgba(14,159,110,.1);color:var(--green)}
+.exp-soon{background:rgba(194,120,3,.12);color:var(--amber)}
+.exp-dead{background:rgba(224,36,64,.12);color:var(--red)}
+.card-foot{display:flex;gap:8px;margin-top:auto;padding-top:12px;border-top:1px solid var(--line);flex-wrap:wrap}
+.card-foot .sp{flex:1}
+mark{background:rgba(255,184,77,.3);color:inherit;border-radius:3px;padding:0 1px}
+/* ---------- customers ---------- */
+.src-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;background:rgba(139,61,255,.10);color:#7c3aed;border:1px solid rgba(139,61,255,.3)}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:11.5px;font-weight:700;padding:4px 11px;border-radius:99px;background:var(--card2);border:1px solid var(--line2);color:var(--mut)}
+.tag.instock{background:rgba(14,159,110,.12);color:var(--green);border-color:rgba(14,159,110,.35)}
+.net-box{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;margin-bottom:18px}
+.net-box h3{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin-bottom:12px;display:flex;gap:8px;align-items:center}
+.net-grp{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding:8px 0;border-top:1px solid var(--line);font-size:13px}
+.net-grp:first-of-type{border-top:none}
+.net-grp .gname{font-weight:800;color:var(--txt);min-width:110px}
+.net-grp .gname.head{color:var(--amber)}
+.net-grp .arrow{color:var(--dim)}
+.pill{font-size:12px;font-weight:600;padding:4px 12px;border-radius:99px;background:var(--card2);border:1px solid var(--line2);color:var(--txt);cursor:pointer;transition:.15s}
+.pill:hover{border-color:var(--cyan);color:var(--cyan)}
+/* ---------- analytics ---------- */
+.chart-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin-bottom:16px}
+.chart-hd{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.chart-hd h3{font-size:15px;font-weight:800;letter-spacing:-.01em}
+.chart-hd .sub{font-size:12px;color:var(--mut);font-weight:500}
+.ch-legend{display:flex;gap:16px;margin-left:auto;font-size:12px;font-weight:600;color:var(--mut);flex-wrap:wrap}
+.ch-legend span{display:inline-flex;align-items:center;gap:6px}
+.ch-legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.chart-svg{width:100%;display:block}
+.ch-tip{position:fixed;z-index:80;background:var(--bg2);border:1px solid var(--line2);border-radius:11px;
+  padding:10px 13px;font-size:12.5px;pointer-events:none;display:none;box-shadow:var(--sh);line-height:1.7;min-width:150px}
+.ch-tip b{font-weight:800}
+.ch-tip .tr{display:flex;justify-content:space-between;gap:16px}
+.ch-tip .tr i{width:9px;height:9px;border-radius:3px;display:inline-block;margin-right:6px}
+.ch-tip .tv{font-variant-numeric:tabular-nums;font-weight:700}
+table.cmp{width:100%;border-collapse:collapse;font-size:13px}
+table.cmp th{text-align:right;font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:.05em;padding:8px 10px;border-bottom:1px solid var(--line2)}
+table.cmp th:first-child,table.cmp td:first-child{text-align:left}
+table.cmp td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+table.cmp td.mo{font-weight:800}
+table.cmp td.neg{color:var(--ch-red)}
+table.cmp td.pos{color:var(--txt)}
+table.cmp tr:hover td{background:rgba(30,20,80,.02)}
+.remarks{margin-top:12px;font-size:12.5px;color:var(--mut);line-height:1.8}
+.remarks b{color:var(--txt)}
+.remarks .rline{display:flex;gap:8px;align-items:baseline}
+.remarks i{width:8px;height:8px;border-radius:3px;background:var(--ch-red);flex:none;display:inline-block;transform:translateY(-1px)}
+.tbl-scroll{overflow-x:auto}
+/* ---------- empty ---------- */
+.empty{grid-column:1/-1;text-align:center;padding:70px 20px;color:var(--dim)}
+.empty .big{font-size:44px;margin-bottom:12px}
+.empty p{font-size:14px;max-width:380px;margin:6px auto 18px;line-height:1.6}
+/* ---------- modal ---------- */
+.overlay{position:fixed;inset:0;background:rgba(30,25,60,.35);backdrop-filter:blur(6px);z-index:50;
+  display:none;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto}
+.overlay.show{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--line2);border-radius:20px;width:100%;max-width:560px;
+  padding:26px;box-shadow:var(--sh);animation:mod .22s ease}
+.modal.wide{max-width:680px}
+@keyframes mod{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+.modal h2{font-size:18px;font-weight:800;margin-bottom:4px;letter-spacing:-.01em}
+.modal .sub{font-size:13px;color:var(--mut);margin-bottom:18px;line-height:1.5}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.fg{display:flex;flex-direction:column;gap:6px}
+.fg.full{grid-column:1/-1}
+.fg label{font-size:11.5px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.05em}
+.fg input,.fg select,.fg textarea{background:var(--card);border:1px solid var(--line2);border-radius:11px;color:var(--txt);
+  font:inherit;font-size:14px;padding:11px 13px;transition:.15s;width:100%}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--vio);box-shadow:0 0 0 3px rgba(139,61,255,.14)}
+.fg input.mono{font-family:'JetBrains Mono',monospace;font-size:13px}
+.fg .help{font-size:11.5px;color:var(--dim);font-weight:500}
+.preset-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+.preset{font-size:12px;font-weight:700;padding:6px 13px;border-radius:99px;background:var(--card);border:1px solid var(--line2);color:var(--mut);cursor:pointer;transition:.15s}
+.preset:hover{border-color:var(--cyan);color:var(--cyan)}
+.check{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:600;color:var(--mut);cursor:pointer;user-select:none}
+.check input{width:16px;height:16px;accent-color:var(--vio)}
+.modal-foot{display:flex;gap:10px;justify-content:flex-end;margin-top:22px}
+/* profile */
+.prof-h{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.avatar{width:48px;height:48px;border-radius:14px;background:var(--grad);display:grid;place-items:center;font-weight:800;font-size:19px;color:#fff;flex:none}
+.prof-h .nm{font-size:18px;font-weight:800}
+.prof-h .ct{font-size:12.5px;color:var(--mut);font-family:'JetBrains Mono',monospace}
+.prof-sec{margin:14px 0}
+.prof-sec h4{font-size:11.5px;font-weight:800;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.hist-item{display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:9px 13px;font-size:13px;margin-bottom:7px;flex-wrap:wrap}
+.hist-item .t{flex:1;min-width:160px}
+.hist-item .amt{font-weight:800;font-variant-numeric:tabular-nums}
+.hist-item .amt.neg{color:var(--ch-red)}
+.hist-item .dt{font-size:11.5px;color:var(--dim)}
+.prof-stats{display:flex;gap:10px;flex-wrap:wrap}
+.prof-stats .ps{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:9px 15px;font-size:12px;color:var(--mut);font-weight:600}
+.prof-stats .ps b{display:block;font-size:16px;color:var(--txt);font-weight:800;font-variant-numeric:tabular-nums}
+/* drive & steps */
+.steps{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;font-size:13px;color:var(--mut);line-height:1.75;margin:14px 0}
+.steps b{color:var(--txt)}
+.steps a{color:var(--cyan);text-decoration:none}
+.steps a:hover{text-decoration:underline}
+.steps code{font-family:'JetBrains Mono',monospace;font-size:11.5px;background:var(--bg);padding:2px 7px;border-radius:6px;color:var(--cyan);word-break:break-all}
+.drive-status{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:600;margin:12px 0;color:var(--mut)}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--dim);flex:none}
+.dot.on{background:var(--green);box-shadow:0 0 10px rgba(14,159,110,.6)}
+.drive-btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+details.guide summary{cursor:pointer;font-size:13px;font-weight:700;color:var(--cyan);margin:6px 0;list-style:none}
+details.guide summary::before{content:'▸ '}
+details.guide[open] summary::before{content:'▾ '}
+/* ---------- drawer (3-bar menu) ---------- */
+.burger{width:44px;height:44px;border-radius:13px;background:var(--card);border:1px solid var(--line2);
+  display:grid;place-items:center;cursor:pointer;transition:.18s;padding:0}
+.burger:hover{border-color:var(--vio)}
+.burger svg{width:20px;height:20px;color:var(--txt)}
+.drawer-ov{position:fixed;inset:0;background:rgba(30,25,60,.30);backdrop-filter:blur(4px);z-index:60;display:none}
+.drawer-ov.show{display:block}
+.drawer{position:fixed;top:0;right:-320px;width:300px;max-width:85vw;height:100%;background:var(--bg2);
+  border-left:1px solid var(--line2);z-index:61;transition:right .25s ease;padding:22px 18px;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
+.drawer.show{right:0}
+.drawer h3{font-size:11.5px;font-weight:800;color:var(--dim);text-transform:uppercase;letter-spacing:.07em;margin:14px 6px 6px}
+.d-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:transparent;
+  border:none;color:var(--txt);font:inherit;font-size:14px;font-weight:600;cursor:pointer;text-align:left;width:100%;transition:.15s}
+.d-item:hover{background:var(--card2)}
+.d-item svg{width:17px;height:17px;color:var(--mut);flex:none}
+.d-item.on{background:rgba(139,61,255,.10);color:#7c3aed}
+.d-item.on svg{color:#7c3aed}
+.d-close{margin-left:auto;background:var(--card);border:1px solid var(--line2);color:var(--mut);width:32px;height:32px;border-radius:10px;cursor:pointer;font-size:15px}
+/* ---------- dashboard ---------- */
+.goal-card{background:linear-gradient(135deg,rgba(139,61,255,.16),rgba(0,196,204,.08));border:1px solid rgba(139,61,255,.35);
+  border-radius:18px;padding:20px;margin-bottom:16px;position:relative;overflow:hidden}
+.goal-card::before{content:'';position:absolute;right:-40px;top:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(0,196,204,.14),transparent 70%)}
+.goal-top{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.goal-top .t{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--mut)}
+.goal-top .amt{font-size:30px;font-weight:800;letter-spacing:-.03em}
+.goal-top .amt small{font-size:15px;color:var(--mut);font-weight:700}
+.goal-top .pct{font-size:15px;font-weight:800;color:var(--cyan);margin-left:auto}
+.goal-bar{height:14px;border-radius:99px;background:rgba(30,20,80,.08);margin:14px 0 8px;overflow:hidden;position:relative}
+.goal-fill{height:100%;border-radius:99px;background:var(--grad);box-shadow:0 0 16px rgba(139,61,255,.5);transition:width .6s ease;min-width:0}
+.goal-fill.done{background:linear-gradient(135deg,#0e9f6e,#00c4cc)}
+.goal-foot{display:flex;justify-content:space-between;font-size:12.5px;color:var(--mut);font-weight:600;flex-wrap:wrap;gap:6px}
+.goal-foot b{color:var(--txt)}
+.goal-edit{position:absolute;top:14px;right:14px;background:rgba(30,20,80,.05);border:1px solid var(--line2);color:var(--mut);
+  width:30px;height:30px;border-radius:9px;cursor:pointer;display:grid;place-items:center}
+.goal-edit:hover{color:var(--txt);border-color:var(--vio)}
+.goal-edit svg{width:14px;height:14px}
+.dash-2col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+@media(max-width:820px){.dash-2col{grid-template-columns:1fr}}
+.dash-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.dash-card h3{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.dash-card h3 .cnt{background:var(--card2);border:1px solid var(--line2);color:var(--txt);font-size:11px;padding:2px 9px;border-radius:99px}
+.sell-today-total{font-size:26px;font-weight:800;letter-spacing:-.02em;margin-bottom:8px}
+.sell-today-total small{font-size:13px;color:var(--mut);font-weight:700}
+.sline{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:13.5px}
+.sline:first-of-type{border-top:none}
+.sline .p{font-weight:700}
+.sline .n{margin-left:auto;color:var(--mut);font-weight:600;font-variant-numeric:tabular-nums}
+.sline .amt{font-weight:800;font-variant-numeric:tabular-nums}
+.tiny-note{font-size:11.5px;color:var(--dim);margin-top:10px;font-weight:500}
+.stock-list{display:flex;flex-direction:column}
+.stock-row{display:flex;align-items:center;gap:12px;padding:11px 4px;border-top:1px solid var(--line);cursor:pointer;transition:.15s;border-radius:8px}
+.stock-row:first-of-type{border-top:none}
+.stock-row:hover{background:rgba(30,20,80,.03)}
+.stock-row .pn{font-weight:700;font-size:14.5px}
+.stock-row .plans{font-size:11.5px;color:var(--dim)}
+.stock-row .acc{margin-left:auto;font-weight:800;font-size:14px;font-variant-numeric:tabular-nums}
+.stock-row .acc small{color:var(--mut);font-weight:600;font-size:11px}
+.stock-row .warn{font-size:11px;color:var(--amber);font-weight:700}
+.req-add{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.req-add input{flex:1;min-width:130px;background:var(--card2);border:1px solid var(--line2);border-radius:11px;color:var(--txt);font:inherit;font-size:13.5px;padding:10px 13px}
+.req-add input:focus{outline:none;border-color:var(--vio)}
+.req-grp{display:flex;align-items:center;gap:10px;padding:10px 4px;border-top:1px solid var(--line);flex-wrap:wrap}
+.req-grp:first-of-type{border-top:none}
+.req-grp .pn{font-weight:800;font-size:14px}
+.req-grp .oc{font-size:11.5px;font-weight:800;background:rgba(194,120,3,.10);color:var(--amber);border:1px solid rgba(194,120,3,.3);padding:3px 10px;border-radius:99px}
+.req-cust{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;background:var(--card2);border:1px solid var(--line2);border-radius:99px;padding:4px 6px 4px 12px}
+.req-cust .x{background:transparent;border:none;color:var(--dim);cursor:pointer;font-size:12px;padding:2px 6px;border-radius:99px}
+.req-cust .x:hover{color:var(--red)}
+/* ---------- data table ---------- */
+.fbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.fbar select,.fbar input[type=date]{background:var(--card);border:1px solid var(--line2);color:var(--txt);font:inherit;font-size:13px;font-weight:600;padding:10px 12px;border-radius:12px;cursor:pointer}
+.fbar select:focus,.fbar input:focus{outline:none;border-color:var(--vio)}
+.rangechips{display:flex;gap:6px;flex-wrap:wrap}
+.tbl-wrap{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:auto;max-height:70vh}
+table.data{width:100%;border-collapse:collapse;font-size:12.8px;min-width:1080px}
+table.data th{position:sticky;top:0;background:var(--card2);z-index:2;text-align:left;font-size:10.5px;color:var(--mut);
+  text-transform:uppercase;letter-spacing:.05em;padding:11px 12px;border-bottom:1px solid var(--line2);white-space:nowrap}
+table.data td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:middle;white-space:nowrap}
+table.data tr:hover td{background:rgba(30,20,80,.025)}
+td.mono{font-family:'JetBrains Mono',monospace;font-size:12px}
+td.copyable{cursor:pointer}
+td.copyable:hover{color:var(--cyan)}
+td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
+.tblact{display:flex;gap:5px}
+.codechip{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;background:rgba(139,61,255,.10);color:#7c3aed;border:1px solid rgba(139,61,255,.22);padding:2px 7px;border-radius:6px;margin-right:7px;vertical-align:middle}
+.tbl-foot{display:flex;gap:18px;padding:11px 16px;font-size:12.5px;color:var(--mut);font-weight:600;flex-wrap:wrap}
+.tbl-foot b{color:var(--txt)}
+.dimsm{font-size:11px;color:var(--dim)}
+/* toast */
+.toasts{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:99;display:flex;flex-direction:column;gap:8px;align-items:center}
+.toast{background:var(--card2);border:1px solid var(--line2);color:var(--txt);font-size:13.5px;font-weight:600;
+  padding:12px 20px;border-radius:12px;box-shadow:var(--sh);animation:tin .25s ease;display:flex;gap:9px;align-items:center;max-width:90vw}
+.toast.ok{border-color:rgba(14,159,110,.4)}
+.toast.err{border-color:rgba(224,36,64,.4)}
+@keyframes tin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@media(max-width:640px){
+  .wrap{padding:18px 14px 60px}
+  .fgrid{grid-template-columns:1fr}
+  .hdr-actions{width:100%}
+  .hdr-actions .btn{flex:1;justify-content:center}
+  .tabs{width:100%}
+  .tab-btn{flex:1;justify-content:center;padding:9px 8px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">
+      <div class="logo-ic">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="10" rx="2.5"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1.6" fill="#fff"/>
+        </svg>
+      </div>
+      <h1>Vault<span>Key</span><small>Digital Product Business</small></h1>
+    </div>
+    <div class="hdr-sp"></div>
+    <div class="hdr-actions">
+      <button class="btn primary" id="btnAdd">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span id="btnAddLbl">Add Account</span>
+      </button>
+      <button class="burger" id="btnMenu" title="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button class="tab-btn on" data-tab="dash">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+      Dashboard</button>
+    <button class="tab-btn" data-tab="accounts">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2.5"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Acc Data</button>
+    <button class="tab-btn" data-tab="customers">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Customers</button>
+    <button class="tab-btn" data-tab="analytics">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+      Analytics</button>
+  </nav>
+
+  <div class="search-row" id="searchRow">
+    <div class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+      <input id="q" type="text" placeholder="Search everything…" autocomplete="off">
+      <button class="clr" id="qClr">✕</button>
+    </div>
+    <select class="sort" id="sort">
+      <option value="new">Newest first</option>
+      <option value="expire">Expiring soonest</option>
+      <option value="name">Product A→Z</option>
+      <option value="price">Price high→low</option>
+    </select>
+  </div>
+
+  <!-- ============ DASHBOARD VIEW ============ -->
+  <section class="view on" id="view-dash">
+    <div class="goal-card">
+      <button class="goal-edit" id="btnGoalEdit" title="Set today's goal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg>
+      </button>
+      <div class="goal-top">
+        <span class="t">🎯 Today Goal</span>
+        <span class="amt" id="goalSold">0 <small>/ <span id="goalAmt">0</span> Ks</small></span>
+        <span class="pct" id="goalPct">0%</span>
+      </div>
+      <div class="goal-bar"><div class="goal-fill" id="goalFill" style="width:0%"></div></div>
+      <div class="goal-foot"><span id="goalNeed"></span><span id="goalCount"></span></div>
+    </div>
+
+    <div class="dash-2col">
+      <div class="dash-card">
+        <h3>📦 Stock Left <span class="cnt" id="dsStockCnt">0</span></h3>
+        <div class="stock-list" id="stockList"></div>
+      </div>
+      <div class="dash-card">
+        <h3>💸 Today Selling <span class="cnt" id="dsSellCnt">0</span></h3>
+        <div class="sell-today-total" id="todayTotal">0 <small>MMK</small></div>
+        <div id="todayLines"></div>
+        <div class="tiny-note" id="todayCostNote"></div>
+      </div>
+    </div>
+
+    <div class="radar closed" id="radar" style="display:none;margin-bottom:16px">
+      <div class="radar-h" id="radarH">📡 Sell Radar <span class="cnt" id="radarCnt">0</span>
+        <span style="font-weight:500;color:var(--mut);font-size:12px">— renewals & matches</span>
+        <span class="arr">▾</span></div>
+      <div class="radar-list" id="radarList"></div>
+    </div>
+
+    <div class="dash-card">
+      <h3>📝 Requests · အမှာစာ <span class="cnt" id="reqCnt">0</span></h3>
+      <div class="req-add">
+        <input id="reqProd" placeholder="Product (e.g. Kling AI)" list="prodList2">
+        <input id="reqCust" placeholder="Customer name" list="custList2">
+        <button class="btn primary sm" id="btnReqAdd" style="padding:10px 18px">+ Add</button>
+      </div>
+      <datalist id="prodList2"></datalist><datalist id="custList2"></datalist>
+      <div id="reqList"></div>
+    </div>
+  </section>
+
+  <!-- ============ ACC DATA VIEW (excel-style) ============ -->
+  <section class="view" id="view-accounts">
+    <div class="fbar">
+      <select id="prodSel"></select>
+      <select id="statusSel">
+        <option value="all">All Status</option>
+        <option value="stock">In Stock</option>
+        <option value="sold">Sold</option>
+        <option value="inactive">Inactive</option>
+        <option value="soon">Expiring ≤7d</option>
+        <option value="expired">Expired</option>
+      </select>
+      <div class="rangechips">
+        <button class="chip sm on" data-r="all">All</button>
+        <button class="chip sm" data-r="today">Today</button>
+        <button class="chip sm" data-r="7d">1 Week</button>
+        <button class="chip sm" data-r="30d">1 Month</button>
+        <button class="chip sm" data-r="custom">Custom</button>
+      </div>
+      <input type="date" id="rFrom" style="display:none">
+      <input type="date" id="rTo" style="display:none">
+    </div>
+    <div class="tbl-wrap">
+      <table class="data">
+        <thead><tr>
+          <th>Product</th><th>Gmail</th><th>Password</th><th>2FA</th><th>Customer</th>
+          <th>Price</th><th>Date</th><th>Expire</th><th>Status</th><th></th>
+        </tr></thead>
+        <tbody id="tblBody"></tbody>
+      </table>
+      <div class="tbl-foot" id="tblFoot"></div>
+    </div>
+  </section>
+
+  <!-- ============ CUSTOMERS VIEW ============ -->
+  <section class="view" id="view-customers">
+    <div class="stats">
+      <div class="stat" style="--sc:var(--vio)"><div class="n" id="csTotal">0</div><div class="l">Customers</div></div>
+      <div class="stat" style="--sc:var(--cyan)"><div class="n" id="csReq">0</div><div class="l">Open Requests</div></div>
+      <div class="stat" style="--sc:var(--amber)"><div class="n" id="csRenew">0</div><div class="l">Renewals Due</div></div>
+      <div class="stat" style="--sc:var(--green)"><div class="n" id="csSpent">0</div><div class="l">Lifetime Sales (Ks)</div></div>
+    </div>
+    <div class="net-box" id="netBox" style="display:none">
+      <h3>🕸 Customer Network</h3>
+      <div id="netBody"></div>
+    </div>
+    <div class="grid" id="custGrid"></div>
+  </section>
+
+  <!-- ============ ANALYTICS VIEW ============ -->
+  <section class="view" id="view-analytics">
+    <div class="stats" id="anTiles"></div>
+    <div class="chart-card">
+      <div class="chart-hd">
+        <div><h3>Monthly Selling</h3><div class="sub">Last 12 months · selling amount (revenue) — profit &amp; refunds in the hover detail</div></div>
+      </div>
+      <div id="chartMonthly"></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-hd">
+        <div><h3>Day by Day</h3><div class="sub" id="dailySub"></div></div>
+        <select class="sort" id="dailyMonthSel" style="margin-left:auto"></select>
+      </div>
+      <div id="chartDaily"></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-hd"><div><h3>Month by Month Compare</h3><div class="sub">Revenue − cost = profit · refunds attributed to sale month</div></div></div>
+      <div class="tbl-scroll">
+      <table class="cmp"><thead><tr>
+        <th>Month</th><th>Sold</th><th>Revenue</th><th>Cost</th><th>Profit</th><th>Refunds</th><th>Net</th><th>vs Prev</th>
+      </tr></thead><tbody id="cmpBody"></tbody></table>
+      </div>
+      <div class="remarks" id="refundNotes"></div>
+    </div>
+  </section>
+</div>
+
+<!-- account form -->
+<div class="overlay" id="ovForm">
+  <div class="modal">
+    <h2 id="formTitle">Add Account</h2>
+    <div class="sub">Quick add: tap a preset to auto-fill from your last entry of that product.</div>
+    <div class="preset-row" id="presetRow"></div>
+    <form id="form" class="fgrid" autocomplete="off">
+      <div class="fg"><label>Product Name *</label><input id="fProduct" required placeholder="Netflix" list="prodList"></div>
+      <div class="fg"><label>Plan</label><input id="fPlan" placeholder="Premium · 1 Month"></div>
+      <div class="fg full"><label>Acc Code</label><input id="fCode" class="mono" placeholder="auto — e.g. G001"><div class="help" id="codeHelp">Product + Plan အသစ်ဆို ပထမတစ်ကြိမ်မှာ auto ဖန်တီးပေးမယ် (ပြင်လို့ရတယ်)</div></div>
+      <div class="fg"><label>Cost (from supplier) Ks</label><input id="fCost" inputmode="numeric" placeholder="8000"></div>
+      <div class="fg"><label>Selling Price Ks</label><input id="fPrice" inputmode="numeric" placeholder="12000"></div>
+      <div class="fg full"><label>Gmail / Email</label><input id="fEmail" class="mono" placeholder="account@gmail.com"></div>
+      <div class="fg"><label>Password</label><input id="fPass" class="mono" placeholder="••••••••"></div>
+      <div class="fg"><label>2FA Key (secret)</label><input id="f2fa" class="mono" placeholder="JBSWY3DPEHPK3PXP"></div>
+      <div class="fg"><label>Supplier</label><input id="fSupplier" placeholder="Where it came from" list="supList"></div>
+      <div class="fg"><label>Warranty Expired Date</label><input id="fRenew" type="date"><div class="help">Warranty ကုန်မယ့်ရက် — refund formula မှာသုံးမယ်</div></div>
+      <div class="fg"><label>Expire Date</label><input id="fExpire" type="date"></div>
+    </form>
+    <datalist id="prodList"></datalist><datalist id="supList"></datalist>
+    <div class="modal-foot">
+      <button class="btn ghost" data-close="ovForm">Cancel</button>
+      <button class="btn primary" id="btnSave">Save Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- sell modal -->
+<div class="overlay" id="ovSell">
+  <div class="modal">
+    <h2>Sell Account</h2>
+    <div class="sub" id="sellSub"></div>
+    <div class="fgrid">
+      <div class="fg full"><label>Customer</label>
+        <input id="sCustomer" placeholder="Start typing a name…" list="custList" autocomplete="off">
+        <datalist id="custList"></datalist>
+        <div class="help" id="sCustHint"></div>
+      </div>
+      <div class="fg full" id="sContactWrap" style="display:none"><label>Contact (new customer)</label>
+        <input id="sContact" placeholder="Phone / Telegram / FB"></div>
+      <div class="fg"><label>Sold Price (Ks)</label><input id="sPrice" inputmode="numeric"></div>
+      <div class="fg"><label>Date</label><input id="sDate" type="date"></div>
+      <div class="fg full"><label>Note</label><input id="sNote" placeholder="Optional"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost" data-close="ovSell">Cancel</button>
+      <button class="btn primary" id="btnSellSave">✓ Mark as Sold</button>
+    </div>
+  </div>
+</div>
+
+<!-- refund modal -->
+<div class="overlay" id="ovRefund">
+  <div class="modal">
+    <h2>Refund</h2>
+    <div class="sub" id="refundSub"></div>
+    <div class="steps" id="refCalc" style="display:none;margin-top:0"></div>
+    <div class="fgrid">
+      <div class="fg"><label>Refund Amount (Ks)</label><input id="rAmount" inputmode="numeric"></div>
+      <div class="fg"><label>Date</label><input id="rDate" type="date"></div>
+      <div class="fg full"><label>Reason / Note</label><input id="rNote" placeholder="e.g. account died"></div>
+      <div class="fg full"><label class="check"><input type="checkbox" id="rInactive" checked> Mark this account as Inactive (dead / no longer used)</label></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost" data-close="ovRefund">Cancel</button>
+      <button class="btn primary" id="btnRefundSave">Record Refund</button>
+    </div>
+  </div>
+</div>
+
+<!-- replace modal -->
+<div class="overlay" id="ovReplace">
+  <div class="modal">
+    <h2>Replacement</h2>
+    <div class="sub" id="replaceSub"></div>
+    <div class="fgrid">
+      <div class="fg full"><label>Replace with (in-stock account)</label>
+        <select id="pStock"></select>
+        <div class="help">Old account stays in history as Inactive — “sold to this customer before, no longer in use”.</div>
+      </div>
+      <div class="fg"><label>Extra charge (Ks)</label><input id="pPrice" inputmode="numeric" value="0"><div class="help">0 = free replacement</div></div>
+      <div class="fg"><label>Date</label><input id="pDate" type="date"></div>
+      <div class="fg full"><label>Note</label><input id="pNote" placeholder="e.g. old account locked"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost" data-close="ovReplace">Cancel</button>
+      <button class="btn primary" id="btnReplaceSave">↺ Replace</button>
+    </div>
+  </div>
+</div>
+
+<!-- customer form -->
+<div class="overlay" id="ovCust">
+  <div class="modal">
+    <h2 id="custFormTitle">Add Customer</h2>
+    <div class="sub">Profile + network: where did this customer come from?</div>
+    <div class="fgrid">
+      <div class="fg"><label>Name *</label><input id="cName" placeholder="Ko Zaw"></div>
+      <div class="fg"><label>Contact</label><input id="cContact" placeholder="Phone / Telegram / FB"></div>
+      <div class="fg"><label>Source Type</label>
+        <select id="cSourceType"><option value="">— none —</option><option value="friend">Friend referral</option><option value="head">Head source / group</option></select></div>
+      <div class="fg" id="cSrcFriendWrap" style="display:none"><label>Referred By</label><select id="cSourceCustomer"></select></div>
+      <div class="fg" id="cSrcHeadWrap" style="display:none"><label>Head Source</label><input id="cSourceHead" placeholder="e.g. English Class A" list="headList"><datalist id="headList"></datalist></div>
+      <div class="fg full"><label>Requested Products</label><input id="cRequests" placeholder="Netflix, Canva Pro (comma separated)"><div class="help">When stock arrives, matching requests show up in Sell Radar automatically.</div></div>
+      <div class="fg full"><label>Note</label><input id="cNote" placeholder="Optional"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost" data-close="ovCust">Cancel</button>
+      <button class="btn primary" id="btnCustSave">Save Customer</button>
+    </div>
+  </div>
+</div>
+
+<!-- customer profile -->
+<div class="overlay" id="ovProfile">
+  <div class="modal wide" id="profileBody"></div>
+</div>
+
+<!-- backup modal -->
+<div class="overlay" id="ovBackup">
+  <div class="modal">
+    <h2>Backup & Restore</h2>
+    <div class="sub">Everything — accounts, customers, refunds — in one file. Keep a copy in Google Drive.</div>
+    <div class="drive-btns">
+      <button class="btn primary" id="btnJsonOut">⬇ Download Backup (.json)</button>
+      <button class="btn" id="btnJsonIn">⬆ Restore from Backup</button>
+      <input type="file" id="fileIn" accept=".json" hidden>
+    </div>
+    <div class="modal-foot"><button class="btn ghost" data-close="ovBackup">Close</button></div>
+  </div>
+</div>
+
+<!-- drive modal -->
+<div class="overlay" id="ovDrive">
+  <div class="modal">
+    <h2>Google Drive Sync</h2>
+    <div class="sub">Sign in with Google and keep your vault backed up to your own Google Drive.</div>
+    <div class="drive-status"><span class="dot" id="driveDot2"></span><span id="driveStatusTxt">Not connected</span></div>
+    <div class="fg full" style="margin-bottom:4px">
+      <label>Google OAuth Client ID</label>
+      <input id="fClientId" class="mono" placeholder="xxxxxxxx.apps.googleusercontent.com">
+    </div>
+    <details class="guide">
+      <summary>How to get a Client ID (one-time setup, ~5 minutes)</summary>
+      <div class="steps">
+        1. Go to <a href="https://console.cloud.google.com" target="_blank" rel="noopener">console.cloud.google.com</a> → create a project (free).<br>
+        2. <b>APIs &amp; Services → Library</b> → enable <b>Google Drive API</b>.<br>
+        3. <b>OAuth consent screen</b> → External → add your Gmail as a <b>test user</b>.<br>
+        4. <b>Credentials → Create Credentials → OAuth Client ID → Web application</b>.<br>
+        5. Under <b>Authorized JavaScript origins</b>, add the URL where you open this app (e.g. <code>http://localhost:8000</code> or your hosted link).<br>
+        6. Paste the Client ID above. <i>Note: Google sign-in doesn’t work from a <code>file://</code> page — host the file first (Netlify Drop is free).</i>
+      </div>
+    </details>
+    <div class="drive-btns">
+      <button class="btn primary" id="btnDriveConnect">Connect Google</button>
+      <button class="btn" id="btnDriveUp" disabled>⬆ Save to Drive</button>
+      <button class="btn" id="btnDriveDown" disabled>⬇ Restore from Drive</button>
+    </div>
+    <div class="drive-status" style="margin-top:12px"><span id="lastSync" style="font-weight:500;color:var(--dim)"></span></div>
+    <div class="modal-foot"><button class="btn ghost" data-close="ovDrive">Close</button></div>
+  </div>
+</div>
+
+<!-- drawer -->
+<div class="drawer-ov" id="drawerOv"></div>
+<aside class="drawer" id="drawer">
+  <div style="display:flex;align-items:center;gap:10px">
+    <b style="font-size:15px">Menu</b>
+    <button class="d-close" id="drawerClose">✕</button>
+  </div>
+  <h3>Pages</h3>
+  <button class="d-item" data-goto="dash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>Stock Dashboard</button>
+  <button class="d-item" data-goto="accounts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2.5"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Account Data</button>
+  <button class="d-item" data-goto="customers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Customers</button>
+  <button class="d-item" data-goto="analytics"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>Analytics</button>
+  <h3>Data</h3>
+  <button class="d-item" id="mExport"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Export Acc CSV</button>
+  <button class="d-item" id="mImport"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>Import Data (CSV)</button>
+  <button class="d-item" id="mBackup"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Backup &amp; Restore</button>
+  <button class="d-item" id="mDrive"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m8 11 4 4 4-4"/><path d="M4 17a4 4 0 0 0 4 4h8a4 4 0 0 0 4-4"/></svg>Google Drive Sync <span id="driveDot" class="dot" style="margin-left:auto"></span></button>
+  <button class="d-item" id="mSb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>Supabase Cloud Sync <span id="sbDot" class="dot" style="margin-left:auto"></span></button>
+  <h3>Security</h3>
+  <button class="d-item" id="mLock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2.5"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span id="lockLbl">Login — Set Passcode</span></button>
+  <button class="d-item" id="mPin" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg>Change / Remove Passcode</button>
+</aside>
+
+<!-- lock screen -->
+<div id="lockScreen" style="display:none;position:fixed;inset:0;z-index:200;background:linear-gradient(135deg,#f2f1f9 0%,#ece6fb 50%,#e0f7f8 100%);align-items:center;justify-content:center">
+  <div style="text-align:center;max-width:340px;width:90%">
+    <div class="logo-ic" style="margin:0 auto 16px;width:64px;height:64px;border-radius:20px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:30px;height:30px"><rect x="3" y="11" width="18" height="10" rx="2.5"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1.6" fill="#fff"/></svg>
+    </div>
+    <h2 style="font-size:22px;font-weight:800;margin-bottom:4px">Vault<span style="background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent">Key</span></h2>
+    <p style="font-size:13px;color:var(--mut);margin-bottom:20px">Enter your passcode to login</p>
+    <input id="lockPin" type="password" inputmode="numeric" placeholder="••••" autocomplete="off"
+      style="width:100%;text-align:center;font-size:22px;letter-spacing:.3em;padding:14px;border-radius:14px;border:1px solid var(--line2);background:#fff;font-family:inherit">
+    <div id="lockErr" style="color:var(--red);font-size:12.5px;font-weight:600;height:20px;margin-top:8px"></div>
+    <button class="btn primary" id="btnUnlock" style="width:100%;justify-content:center;padding:13px">🔓 Login</button>
+  </div>
+</div>
+
+<!-- set pin modal -->
+<div class="overlay" id="ovPin">
+  <div class="modal" style="max-width:420px">
+    <h2>🔒 Passcode</h2>
+    <div class="sub" id="pinSub">Set a passcode — the app will ask for it every time it opens (Login), and you can lock it any time (Logout).</div>
+    <div class="fg"><label>New Passcode</label><input id="pinNew" type="password" inputmode="numeric" placeholder="e.g. 4–6 digits"></div>
+    <div class="modal-foot">
+      <button class="btn ghost" data-close="ovPin">Cancel</button>
+      <button class="btn danger" id="btnPinRemove" style="display:none">Remove</button>
+      <button class="btn primary" id="btnPinSave">Save Passcode</button>
+    </div>
+  </div>
+</div>
+
+<!-- supabase modal -->
+<div class="overlay" id="ovSb">
+  <div class="modal wide">
+    <h2>🗄 Supabase Cloud Sync</h2>
+    <div class="sub">Device တိုင်းက data တစ်ခုတည်းဖြစ်အောင် Supabase (အခမဲ့ database) နဲ့ချိတ်မယ်။ အဆင့်တွေက modal အောက်မှာပါ။</div>
+    <div class="drive-status"><span class="dot" id="sbDot2"></span><span id="sbStatusTxt">Not connected</span></div>
+    <div class="fgrid">
+      <div class="fg full"><label>Project URL</label><input id="sbUrl" class="mono" placeholder="https://xxxx.supabase.co"></div>
+      <div class="fg full"><label>anon public API Key</label><input id="sbKey" class="mono" placeholder="eyJhbGciOi…"></div>
+      <div class="fg full"><label class="check"><input type="checkbox" id="sbAuto"> Auto-sync — ပြင်တိုင်း cloud ကို အလိုအလျောက်တင်မယ်</label></div>
+    </div>
+    <details class="guide">
+      <summary>Setup SQL (Step 3 မှာသုံးရန်) — copy ပြီး Supabase SQL Editor မှာ Run</summary>
+      <div class="steps"><code id="sbSql">create table if not exists vault (
+  id text primary key,
+  data jsonb,
+  updated_at timestamptz default now()
+);
+alter table vault enable row level security;
+create policy "vault anon access" on vault
+  for all using (true) with check (true);</code><br>
+      <button class="btn sm" id="btnSbSqlCopy" style="margin-top:8px">📋 Copy SQL</button><br>
+      <span style="font-size:11.5px;color:var(--dim)">⚠ Security note: anon key ရှိသူတိုင်း ဒီ table ကိုဖတ်လို့ရလို့ URL/Key ကို ဘယ်သူ့မှမပေးပါနဲ့။</span></div>
+    </details>
+    <div class="drive-btns">
+      <button class="btn primary" id="btnSbSave">💾 Save Settings &amp; Test</button>
+      <button class="btn" id="btnSbPush">⬆ Save to Cloud</button>
+      <button class="btn" id="btnSbPull">⬇ Load from Cloud</button>
+    </div>
+    <div class="drive-status" style="margin-top:12px"><span id="sbLastSync" style="font-weight:500;color:var(--dim)"></span></div>
+    <div class="modal-foot"><button class="btn ghost" data-close="ovSb">Close</button></div>
+  </div>
+</div>
+
+<!-- import modal -->
+<div class="overlay" id="ovImport">
+  <div class="modal wide">
+    <h2>Import Data (CSV)</h2>
+    <div class="sub">CSV ဖိုင်တစ်ခုထည့်လိုက်ရုံနဲ့ data အကုန် web ထဲရောက်ပြီးသားဖြစ်မယ်။ Export လုပ်ထားတဲ့ CSV format အတိုင်း — or download the template below and fill it in Excel.</div>
+    <div class="drive-btns" style="margin:0 0 12px">
+      <button class="btn" id="btnCsvFile">📂 Choose CSV File</button>
+      <button class="btn ghost" id="btnTemplate">⬇ Download Template</button>
+      <input type="file" id="csvFileIn" accept=".csv,.txt" hidden>
+    </div>
+    <div class="fg full"><label>…or paste CSV text here</label>
+      <textarea id="csvPaste" rows="6" style="font-family:'JetBrains Mono',monospace;font-size:12px" placeholder="Product,Plan,Cost,Price,Gmail,Password,2FA Key,Supplier,Customer,Sold Price,Sold Date,Warranty End,Expire Date,Status&#10;Netflix,Premium · 1 Month,8000,12000,acc1@gmail.com,pass123,,MM Store,,,,,2026-09-01,In Stock"></textarea></div>
+    <div class="steps" id="importPreview" style="display:none"></div>
+    <div class="modal-foot">
+      <button class="btn ghost" data-close="ovImport">Cancel</button>
+      <button class="btn primary" id="btnImportGo">⬆ Import</button>
+    </div>
+  </div>
+</div>
+
+<!-- export modal -->
+<div class="overlay" id="ovExport">
+  <div class="modal">
+    <h2>Export Accounts CSV</h2>
+    <div class="sub">Pick a product and time range — daily, monthly or custom.</div>
+    <div class="fgrid">
+      <div class="fg"><label>Product</label><select id="xProd"></select></div>
+      <div class="fg"><label>Range</label>
+        <select id="xRange">
+          <option value="all">All data</option>
+          <option value="today">Today (1 day)</option>
+          <option value="7d">Last 7 days</option>
+          <option value="30d">Last 30 days</option>
+          <option value="month">This month</option>
+          <option value="custom">Custom…</option>
+        </select></div>
+      <div class="fg" id="xFromWrap" style="display:none"><label>From</label><input type="date" id="xFrom"></div>
+      <div class="fg" id="xToWrap" style="display:none"><label>To</label><input type="date" id="xTo"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn ghost" data-close="ovExport">Cancel</button>
+      <button class="btn primary" id="btnExportGo">⬇ Export CSV</button>
+    </div>
+  </div>
+</div>
+
+<!-- goal modal -->
+<div class="overlay" id="ovGoal">
+  <div class="modal" style="max-width:420px">
+    <h2>🎯 Today Goal</h2>
+    <div class="sub">Set your daily selling target — the bar on the dashboard tracks it live.</div>
+    <div class="fg"><label>Goal Amount (Ks)</label><input id="gAmount" inputmode="numeric" placeholder="200000"></div>
+    <div class="modal-foot">
+      <button class="btn ghost" data-close="ovGoal">Cancel</button>
+      <button class="btn primary" id="btnGoalSave">Save Goal</button>
+    </div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+<div class="ch-tip" id="chTip"></div>
+
+<script>
+'use strict';
+/* ================= storage ================= */
+const mem={};
+const store={
+  get(k){ try{return localStorage.getItem(k);}catch(e){return mem[k]??null;} },
+  set(k,v){ try{localStorage.setItem(k,v);}catch(e){mem[k]=v;} },
+};
+const KEY='vaultkey.v2', KEY_V1='vaultkey.items', KEY_CID='vaultkey.clientId', KEY_SYNC='vaultkey.lastSync';
+
+/* ================= state ================= */
+let db={accounts:[],customers:[],refunds:[],settings:{goal:200000}};
+let tab='dash', query='', filter='all', prodFilter='all', sortBy='new';
+let range='all', rangeFrom='', rangeTo='';
+let editId=null, editCustId=null, sellId=null, refundId=null, replaceId=null, pendingDelete=null;
+
+const $=s=>document.querySelector(s);
+const uid=()=>'a'+Math.random().toString(36).slice(2,10)+Date.now().toString(36);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num=v=>{const m=String(v??'').replace(/[,\s]/g,'').match(/-?\d+(\.\d+)?/);return m?parseFloat(m[0]):0;};
+const money=n=>(n||0).toLocaleString('en-US');
+const todayStr=()=>{const d=new Date();return d.toISOString().slice(0,10);};
+function hl(s){ const e=esc(s); if(!query) return e;
+  const q=query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  return e.replace(new RegExp('('+q+')','gi'),'<mark>$1</mark>'); }
+function daysLeft(ds){ if(!ds) return null; const t=new Date(); t.setHours(0,0,0,0);
+  return Math.round((new Date(ds+'T00:00:00')-t)/86400000); }
+function fmtDate(s){ if(!s) return ''; return new Date(s+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); }
+function monthKey(ds){ return (ds||'').slice(0,7); }
+function monthLabel(mk){ if(!mk) return ''; const[y,m]=mk.split('-');
+  return new Date(+y,+m-1,1).toLocaleDateString('en-GB',{month:'short',year:'numeric'}); }
+function toast(msg,cls){ const t=document.createElement('div'); t.className='toast '+(cls||'');
+  t.textContent=msg; $('#toasts').appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transition='.3s';setTimeout(()=>t.remove(),320);},2600); }
+function copyText(txt){
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(txt).then(()=>toast('Copied ✓','ok')).catch(()=>fbCopy(txt));}
+  else fbCopy(txt); }
+function fbCopy(txt){ const ta=document.createElement('textarea'); ta.value=txt; ta.style.cssText='position:fixed;opacity:0';
+  document.body.appendChild(ta); ta.select();
+  try{document.execCommand('copy');toast('Copied ✓','ok');}catch(e){toast('Copy failed','err');} ta.remove(); }
+const custById=id=>db.customers.find(c=>c.id===id);
+const accById=id=>db.accounts.find(a=>a.id===id);
+const custName=id=>custById(id)?.name||'';
+
+/* ================= acc codes ================= */
+function codePrefix(product){
+  const w=(product||'').trim().split(/\s+/)[0]||'X';
+  const caps=w.replace(/[^A-Za-z]/g,'').split('').filter(ch=>ch>='A'&&ch<='Z');
+  let p=caps.slice(0,2).join('');
+  if(!p) p=(w.replace(/[^A-Za-z]/g,'')[0]||'X').toUpperCase();
+  return p.toUpperCase();
+}
+function variantKey(product,plan){ return (product||'').trim().toLowerCase()+'|'+(plan||'').trim().toLowerCase(); }
+function nextCode(product){
+  const prefix=codePrefix(product);
+  let max=0;
+  for(const c of Object.values(db.codes||{})){
+    const m=String(c).toUpperCase().match(/^([A-Z]+)(\d+)$/);
+    if(m&&m[1]===prefix) max=Math.max(max,+m[2]);
+  }
+  return prefix+String(max+1).padStart(3,'0');
+}
+function codeFor(product,plan,create){
+  db.codes??={};
+  const k=variantKey(product,plan);
+  if(db.codes[k]) return db.codes[k];
+  if(!create||!(product||'').trim()) return '';
+  return db.codes[k]=nextCode(product);
+}
+function migrateCodes(){
+  db.codes??={};
+  [...db.accounts].sort((a,b)=>(a.created||0)-(b.created||0)).forEach(a=>{
+    if(!a.code) a.code=codeFor(a.product,a.plan,true);
+  });
+}
+/* customer-safe copy text — supplier & cost are NEVER included */
+function accCopyText(a){
+  const dl=daysLeft(a.expire);
+  return [
+    `${a.code?'['+a.code+'] ':''}${a.product}${a.plan?' · '+a.plan:''}`,
+    a.email?`Gmail: ${a.email}`:'',
+    a.pass?`Password: ${a.pass}`:'',
+    a.twofa?`2FA Key: ${a.twofa}`:'',
+    a.expire?`Expire: ${fmtDate(a.expire)}${dl!==null&&dl>=0?' ('+dl+' days left)':''}`:'',
+  ].filter(Boolean).join('\n');
+}
+
+/* ================= supabase sync ================= */
+const KEY_SB='vaultkey.sb', KEY_SBSYNC='vaultkey.sbsync';
+function sbCfg(){ try{ return JSON.parse(store.get(KEY_SB)||'{}'); }catch(e){ return {}; } }
+function sbStore(c){ store.set(KEY_SB,JSON.stringify(c)); }
+function sbHeaders(c){ return {apikey:c.key,Authorization:'Bearer '+c.key,'Content-Type':'application/json'}; }
+function sbUi(connected){
+  const c=sbCfg(); const on=connected??!!(c.url&&c.key&&c.ok);
+  document.querySelectorAll('#sbDot,#sbDot2').forEach(d=>d.classList.toggle('on',on));
+  $('#sbStatusTxt').textContent=on?'Connected to Supabase':'Not connected';
+  const ls=store.get(KEY_SBSYNC);
+  $('#sbLastSync').textContent=ls?('Last cloud sync: '+new Date(+ls).toLocaleString()):'';
+}
+async function sbTest(){
+  const c=sbCfg();
+  if(!c.url||!c.key) return false;
+  try{
+    const r=await fetch(c.url.replace(/\/$/,'')+'/rest/v1/vault?select=id&limit=1',{headers:sbHeaders(c)});
+    return r.ok;
+  }catch(e){ return false; }
+}
+async function sbSaveSettings(){
+  const c={url:$('#sbUrl').value.trim().replace(/\/$/,''),key:$('#sbKey').value.trim(),auto:$('#sbAuto').checked};
+  if(!c.url||!c.key){ toast('URL နဲ့ anon key နှစ်ခုလုံးထည့်ပါ','err'); return; }
+  sbStore(c);
+  toast('Testing connection…','ok');
+  const ok=await sbTest();
+  c.ok=ok; sbStore(c); sbUi(ok);
+  if(ok) toast('Supabase connected ✓','ok');
+  else toast('မချိတ်နိုင်ပါ — URL/Key မှန်လား၊ Setup SQL run ပြီးပြီလား စစ်ပါ','err');
+}
+async function sbPush(silent){
+  const c=sbCfg();
+  if(!c.url||!c.key){ if(!silent) toast('Supabase settings အရင် save လုပ်ပါ','err'); return; }
+  try{
+    const r=await fetch(c.url+'/rest/v1/vault',{
+      method:'POST',
+      headers:{...sbHeaders(c),Prefer:'resolution=merge-duplicates'},
+      body:JSON.stringify([{id:'main',data:db,updated_at:new Date().toISOString()}])});
+    if(!r.ok) throw new Error(r.status);
+    store.set(KEY_SBSYNC,String(Date.now())); sbUi(true);
+    if(!silent) toast('Saved to Supabase cloud ✓','ok');
+  }catch(e){ if(!silent) toast('Cloud save failed ('+e.message+') — Setup SQL run ပြီးပြီလား?','err'); }
+}
+async function sbPull(){
+  const c=sbCfg();
+  if(!c.url||!c.key){ toast('Supabase settings အရင် save လုပ်ပါ','err'); return; }
+  try{
+    const r=await fetch(c.url+'/rest/v1/vault?id=eq.main&select=data',{headers:sbHeaders(c)});
+    if(!r.ok) throw new Error(r.status);
+    const rows=await r.json();
+    if(!rows.length||!rows[0].data){ toast('Cloud မှာ data မရှိသေးပါ — Save to Cloud အရင်လုပ်ပါ','err'); return; }
+    db=rows[0].data;
+    db.accounts??=[]; db.customers??=[]; db.refunds??=[]; db.settings??={goal:200000}; db.codes??={};
+    migrateCodes(); save(); lockUi(); render();
+    store.set(KEY_SBSYNC,String(Date.now())); sbUi(true);
+    toast(`Cloud data ဆွဲပြီးပြီ ✓ — ${db.accounts.length} accounts`,'ok');
+  }catch(e){ toast('Cloud load failed ('+e.message+')','err'); }
+}
+let sbTimer=null;
+function sbAutoKick(){
+  const c=sbCfg();
+  if(c.auto&&c.url&&c.key){ clearTimeout(sbTimer); sbTimer=setTimeout(()=>sbPush(true),2500); }
+}
+
+/* ================= load / migrate / seed ================= */
+function save(){ store.set(KEY,JSON.stringify(db)); sbAutoKick(); }
+function load(){
+  const raw=store.get(KEY);
+  if(raw){ try{ db=JSON.parse(raw); db.accounts??=[]; db.customers??=[]; db.refunds??=[]; db.settings??={goal:200000}; migrateCodes(); return; }catch(e){} }
+  const v1=store.get(KEY_V1);
+  if(v1){ try{ migrateV1(JSON.parse(v1)); migrateCodes(); save(); toast('Upgraded your data ✓','ok'); return; }catch(e){} }
+  db=seed(); migrateCodes(); save();
+}
+function migrateV1(items){
+  db={accounts:[],customers:[],refunds:[]};
+  for(const it of (items||[])){
+    let customerId=null;
+    if(it.customer){
+      let c=db.customers.find(c=>c.name.toLowerCase()===it.customer.toLowerCase());
+      if(!c){ c={id:uid(),name:it.customer,contact:'',sourceType:'',sourceCustomerId:null,sourceHead:'',requests:[],note:'',created:Date.now()}; db.customers.push(c); }
+      customerId=c.id;
+    }
+    const sold=it.status==='sold';
+    db.accounts.push({ id:it.id||uid(), product:it.product||'', plan:it.plan||'',
+      cost:0, price:num(it.price), email:it.email||'', pass:it.pass||'', twofa:it.twofa||'',
+      supplier:it.supplier||'', renew:it.renew||'', expire:it.expire||'',
+      status:sold?'sold':'stock', customerId:sold?customerId:null,
+      soldDate:sold?new Date(it.created||Date.now()).toISOString().slice(0,10):'', soldPrice:sold?num(it.price):0, soldNote:'',
+      replacedById:null, replacesId:null, inactiveNote:'', created:it.created||Date.now() });
+  }
+}
+function seed(){
+  const d=n=>{const t=new Date();t.setDate(t.getDate()+n);return t.toISOString().slice(0,10);};
+  const C=(name,contact,st,sc,sh,req)=>({id:uid(),name,contact,sourceType:st,sourceCustomerId:sc,sourceHead:sh,requests:req,note:'',created:Date.now()});
+  const c1=C('Ko Zaw','09-777-111-222','head',null,'English Class A',[]);
+  const c2=C('Ma Thida','@thida_mm','friend',c1.id,'',['Canva Pro']);
+  const c3=C('Ko Aung','09-955-333-444','head',null,'English Class A',['ChatGPT Plus']);
+  const c4=C('Ma Su','@masu.dgt','friend',c2.id,'',['Netflix']);
+  const A=(o)=>({id:uid(),product:'',plan:'',cost:0,price:0,email:'',pass:'',twofa:'',supplier:'',renew:'',expire:'',
+    status:'stock',customerId:null,soldDate:'',soldPrice:0,soldNote:'',replacedById:null,replacesId:null,inactiveNote:'',created:Date.now(),...o});
+  const a1=A({product:'Netflix',plan:'Premium · 1 Month',cost:8000,price:12000,email:'nfx.stock01@gmail.com',pass:'Nfx@2026!aa',twofa:'JBSWY3DPEHPK3PXP',supplier:'MM Digital Store',renew:d(5),expire:d(5),status:'sold',customerId:c1.id,soldDate:d(-25),soldPrice:12000,created:Date.now()-86400000*40});
+  const a2=A({product:'ChatGPT',plan:'Plus · 1 Month',cost:30000,price:38000,email:'gpt.reseller7@gmail.com',pass:'Gpt#Pro7788',twofa:'GEZDGNBVGY3TQOJQ',supplier:'Global Keys',renew:'',expire:d(28),created:Date.now()-86400000*5});
+  const a3=A({product:'YouTube',plan:'Premium · 6 Months',cost:14000,price:22000,email:'ytp.family3@gmail.com',pass:'Ytb!663311',supplier:'MM Digital Store',renew:d(-10),expire:d(140),status:'sold',customerId:c2.id,soldDate:d(-40),soldPrice:22000,created:Date.now()-86400000*55});
+  const a4=A({product:'Canva',plan:'Pro · 1 Year',cost:9000,price:15000,email:'canva.pro.mm@gmail.com',pass:'Cnv@Pro2026',supplier:'Design Hub',renew:'',expire:d(362),created:Date.now()-86400000*3});
+  const a5=A({product:'Spotify',plan:'Family · 3 Months',cost:11000,price:18000,email:'spt.fam.09@gmail.com',pass:'Spt$Fam909',twofa:'MFRGGZDFMZTWQ2LK',supplier:'Global Keys',renew:d(-40),expire:d(20),status:'inactive',customerId:c3.id,soldDate:d(-70),soldPrice:18000,inactiveNote:'Replaced — account locked'});
+  const a6=A({product:'Spotify',plan:'Family · 3 Months',cost:11000,price:18000,email:'spt.fam.22@gmail.com',pass:'Spt$New221',supplier:'Global Keys',renew:d(15),expire:d(75),status:'sold',customerId:c3.id,soldDate:d(-15),soldPrice:0,soldNote:'Replacement for old Spotify',replacesId:a5.id,created:Date.now()-86400000*20});
+  a5.replacedById=a6.id;
+  const a7=A({product:'CapCut',plan:'Pro · 1 Month',cost:6000,price:10000,email:'capcut.stock2@gmail.com',pass:'Cc!20261010',supplier:'MM Digital Store',renew:'',expire:d(30),created:Date.now()-86400000});
+  const a8=A({product:'Netflix',plan:'Premium · 1 Month',cost:8000,price:12000,email:'nfx.stock02@gmail.com',pass:'Nfx@2026!bb',twofa:'JBSWY3DPEHPK3PXQ',supplier:'MM Digital Store',expire:d(33),created:Date.now()-86400000*2});
+  const a9=A({product:'Prime Video',plan:'1 Month',cost:4000,price:7000,email:'prime.mm.05@gmail.com',pass:'Prm!5500',supplier:'MM Digital Store',renew:d(-20),expire:d(-20),status:'sold',customerId:c4.id,soldDate:d(-50),soldPrice:7000,created:Date.now()-86400000*60});
+  const refunds=[{id:uid(),accountId:a9.id,amount:7000,date:d(-35),note:'Account died after 2 weeks'}];
+  c4.requests.push('Kling AI');
+  const a10=A({product:'Canva',plan:'Pro · 1 Year',cost:9000,price:15000,email:'canva.pro.mm2@gmail.com',pass:'Cnv@Pro2027',supplier:'Design Hub',expire:d(360),created:Date.now()-86400000*2});
+  const a11=A({product:'CapCut',plan:'Pro · 1 Month',cost:6000,price:10000,email:'capcut.stock5@gmail.com',pass:'Cc!20261012',supplier:'MM Digital Store',expire:d(29),created:Date.now()-3600000*5});
+  const a12=A({product:'ChatGPT',plan:'Plus · 1 Month',cost:30000,price:38000,email:'gpt.reseller8@gmail.com',pass:'Gpt#Pro8899',supplier:'Global Keys',expire:d(30),renew:d(30),status:'sold',customerId:c1.id,soldDate:d(0),soldPrice:38000,created:Date.now()-86400000*4});
+  const a13=A({product:'Netflix',plan:'Premium · 1 Month',cost:8000,price:12000,email:'nfx.stock05@gmail.com',pass:'Nfx@2026!ee',supplier:'MM Digital Store',expire:d(31),renew:d(31),status:'sold',customerId:c2.id,soldDate:d(0),soldPrice:12000,created:Date.now()-86400000*3});
+  return {accounts:[a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13],customers:[c1,c2,c3,c4],refunds,settings:{goal:200000}};
+}
+
+/* ================= TOTP ================= */
+function b32decode(s){ const A='ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  s=s.toUpperCase().replace(/[^A-Z2-7]/g,''); let bits='',out=[];
+  for(const c of s){const v=A.indexOf(c); if(v<0)continue; bits+=v.toString(2).padStart(5,'0');}
+  for(let i=0;i+8<=bits.length;i+=8) out.push(parseInt(bits.slice(i,i+8),2));
+  return new Uint8Array(out); }
+const totpCache={};
+async function totp(secret){
+  if(!window.crypto||!crypto.subtle) return null;
+  const counter=Math.floor(Date.now()/30000), ck=secret+':'+counter;
+  if(totpCache[ck]) return totpCache[ck];
+  try{
+    const kd=b32decode(secret); if(!kd.length) return null;
+    const key=await crypto.subtle.importKey('raw',kd,{name:'HMAC',hash:'SHA-1'},false,['sign']);
+    const buf=new ArrayBuffer(8); new DataView(buf).setUint32(4,counter);
+    const sig=new Uint8Array(await crypto.subtle.sign('HMAC',key,buf));
+    const off=sig[19]&0xf;
+    const code=((sig[off]&0x7f)<<24|sig[off+1]<<16|sig[off+2]<<8|sig[off+3])%1e6;
+    return totpCache[ck]=String(code).padStart(6,'0');
+  }catch(e){ return null; }
+}
+let lastPeriod=-1;
+async function updateTotps(force){
+  const els=document.querySelectorAll('[data-totp]'); if(!els.length) return;
+  const now=Date.now()/1000, period=Math.floor(now/30), remain=30-(now%30);
+  for(const el of els){
+    const ring=el.querySelector('.fgc');
+    if(ring) ring.style.strokeDashoffset=String(43.98*(1-remain/30));
+    if(force||period!==lastPeriod){
+      const code=await totp(el.dataset.totp);
+      const c=el.querySelector('.code');
+      if(c) c.textContent=code? code.slice(0,3)+' '+code.slice(3):'——————';
+    }
+  }
+  lastPeriod=period;
+}
+setInterval(()=>updateTotps(false),1000);
+
+/* ================= accounts: filter/sort/render ================= */
+function actDate(a){ return a.soldDate || new Date(a.created||Date.now()).toISOString().slice(0,10); }
+function inDateRange(ds,r,from,to){
+  if(r==='all') return true;
+  const today=todayStr();
+  if(r==='today') return ds===today;
+  if(r==='7d'||r==='30d'){ const n=r==='7d'?7:30;
+    const min=new Date(); min.setDate(min.getDate()-n);
+    return ds>=min.toISOString().slice(0,10)&&ds<=today; }
+  if(r==='month') return monthKey(ds)===monthKey(today);
+  if(r==='custom'){ if(from&&ds<from) return false; if(to&&ds>to) return false; return true; }
+  return true;
+}
+function accMatches(a){
+  if(query){
+    const hay=[a.product,a.plan,a.code,a.price,a.cost,a.email,a.pass,a.twofa,custName(a.customerId),a.supplier,a.renew,a.expire,a.soldNote,a.inactiveNote,
+      a.status==='stock'?'in stock':a.status].join(' ').toLowerCase();
+    if(!hay.includes(query.toLowerCase())) return false;
+  }
+  if(prodFilter!=='all' && (a.product||'').toLowerCase()!==prodFilter.toLowerCase()) return false;
+  if(!inDateRange(actDate(a),range,rangeFrom,rangeTo)) return false;
+  const dl=daysLeft(a.expire);
+  switch(filter){
+    case 'stock': return a.status==='stock';
+    case 'sold': return a.status==='sold';
+    case 'inactive': return a.status==='inactive';
+    case 'soon': return a.status!=='inactive'&&dl!==null&&dl>=0&&dl<=7;
+    case 'expired': return a.status!=='inactive'&&dl!==null&&dl<0;
+    default: return true;
+  }
+}
+function accSorted(list){
+  const c=[...list];
+  if(sortBy==='expire') c.sort((a,b)=>((a.expire?daysLeft(a.expire):1e9))-((b.expire?daysLeft(b.expire):1e9)));
+  else if(sortBy==='name') c.sort((a,b)=>(a.product||'').localeCompare(b.product||''));
+  else if(sortBy==='price') c.sort((a,b)=>(b.price||0)-(a.price||0));
+  else c.sort((a,b)=>(b.created||0)-(a.created||0));
+  return c;
+}
+const ICONS={
+  copy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+  eye:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
+  edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg>',
+  trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
+  dup:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/><line x1="14" y1="11" x2="14" y2="17"/><line x1="11" y1="14" x2="17" y2="14"/></svg>',
+};
+function expTag(a){
+  const dl=daysLeft(a.expire); if(dl===null) return '';
+  if(dl<0) return `<span class="exp-tag exp-dead">Expired ${Math.abs(dl)}d ago</span>`;
+  if(dl===0) return `<span class="exp-tag exp-soon">Expires today</span>`;
+  if(dl<=7) return `<span class="exp-tag exp-soon">${dl}d left</span>`;
+  return `<span class="exp-tag exp-ok">${dl}d left</span>`;
+}
+function tblRow(a){
+  const dl=daysLeft(a.expire);
+  const badge=a.status==='stock'?'<span class="badge stock" data-sell title="Sell">In Stock</span>'
+    :a.status==='sold'?'<span class="badge sold" data-unsell title="Click twice → back to stock">Sold</span>'
+    :'<span class="badge inactive" title="'+esc(a.inactiveNote||'')+'">Inactive</span>';
+  const expCell=a.expire?`${fmtDate(a.expire)}<span class="subtxt" style="color:${dl<0?'var(--red)':dl<=7?'var(--amber)':'var(--dim)'}">${dl<0?'expired '+Math.abs(dl)+'d ago':dl+'d left'}</span>`:'—';
+  const priceCell=a.status==='stock'?`${money(a.price)}${a.cost?`<span class="subtxt">cost ${money(a.cost)}</span>`:''}`
+    :`${money(a.soldPrice)}${a.cost?`<span class="subtxt">cost ${money(a.cost)} · +${money((a.soldPrice||0)-a.cost)}</span>`:''}`;
+  const copyBtn=`<button class="mini" data-copyacc title="Copy acc for customer (gmail+pass+2FA — no supplier/cost)" style="color:var(--vio);border-color:rgba(139,61,255,.35)">${ICONS.copy}</button>`;
+  const acts=a.status==='stock'
+    ?`${copyBtn}<button class="mini" data-sell title="Sell">💰</button><button class="mini" data-dup title="Duplicate">${ICONS.dup}</button><button class="mini" data-edit title="Edit">${ICONS.edit}</button><button class="mini" data-del title="Delete">${ICONS.trash}</button>`
+    :a.status==='sold'
+    ?`${copyBtn}<button class="mini" data-refund title="Refund">↩</button><button class="mini" data-replace title="Replace">↺</button><button class="mini" data-edit title="Edit">${ICONS.edit}</button><button class="mini" data-del title="Delete">${ICONS.trash}</button>`
+    :`${copyBtn}<button class="mini" data-edit title="Edit">${ICONS.edit}</button><button class="mini" data-del title="Delete">${ICONS.trash}</button>`;
+  return `<tr data-id="${a.id}" ${a.status==='inactive'?'style="opacity:.55"':''}>
+    <td>${a.code?`<span class="codechip">${hl(a.code)}</span>`:''}<b>${hl(a.product)}</b>${a.plan?`<span class="subtxt">${hl(a.plan)}</span>`:''}</td>
+    <td class="mono copyable" data-copy="${esc(a.email)}" title="Click to copy">${hl(a.email)||'—'}</td>
+    <td class="mono copyable" data-copy="${esc(a.pass)}" title="Click to copy">${hl(a.pass)||'—'}</td>
+    <td class="mono copyable" ${a.twofa?`data-copy="${esc(a.twofa)}" title="Click to copy secret"`:''}>${a.twofa?`<span class="totp" data-totp="${esc(a.twofa)}"><span class="code" style="font-size:13px">------</span></span>`:'—'}</td>
+    <td>${a.customerId?`<span class="custlink" data-cust="${a.customerId}">${hl(custName(a.customerId))}</span>`:'—'}</td>
+    <td style="font-variant-numeric:tabular-nums">${priceCell}</td>
+    <td class="dimsm" style="font-size:12px;color:var(--mut)">${fmtDate(actDate(a))}${a.renew?`<span class="subtxt">W: ${fmtDate(a.renew)}</span>`:''}</td>
+    <td>${expCell}</td>
+    <td>${badge}</td>
+    <td><div class="tblact">${acts}</div></td>
+  </tr>`;
+}
+function fillProdSel(){
+  const cats=categories();
+  const cur=prodFilter;
+  $('#prodSel').innerHTML=`<option value="all">All Products</option>`+cats.map(c=>`<option value="${esc(c.name)}">${esc(c.name)} (${c.n})</option>`).join('');
+  $('#prodSel').value=cats.some(c=>c.name.toLowerCase()===cur.toLowerCase())?cur:'all';
+  prodFilter=$('#prodSel').value;
+}
+function renderAccounts(){
+  fillProdSel();
+  const list=accSorted(db.accounts.filter(accMatches));
+  $('#tblBody').innerHTML=list.length?list.map(tblRow).join('')
+    :'<tr><td colspan="10" style="text-align:center;padding:40px;color:var(--dim)">No accounts match — change product, status or range</td></tr>';
+  const stockV=list.filter(a=>a.status==='stock').reduce((s,a)=>s+(a.price||0),0);
+  const soldV=list.filter(a=>a.soldDate).reduce((s,a)=>s+(a.soldPrice||0),0);
+  $('#tblFoot').innerHTML=`<span><b>${list.length}</b> account${list.length!==1?'s':''}</span>
+    <span>In stock value: <b>${money(stockV)} Ks</b></span>
+    <span>Sold amount: <b>${money(soldV)} Ks</b></span>`;
+  updateTotps(true);
+}
+
+/* ================= dashboard ================= */
+function todaySales(){ return db.accounts.filter(a=>a.soldDate===todayStr()); }
+function allRequests(){
+  const out=[];
+  for(const c of db.customers) for(const r of (c.requests||[])) out.push({cust:c,req:r});
+  return out;
+}
+function renderDash(){
+  // goal
+  const goal=db.settings?.goal||0;
+  const ts=todaySales();
+  const sold=ts.reduce((s,a)=>s+(a.soldPrice||0),0);
+  const pct=goal?Math.min(100,Math.round(sold/goal*100)):0;
+  $('#goalSold').innerHTML=`${money(sold)} <small>/ <span id="goalAmt">${money(goal)}</span> Ks</small>`;
+  $('#goalPct').textContent=pct+'%';
+  const fill=$('#goalFill');
+  fill.style.width=(goal?Math.min(100,sold/goal*100):0)+'%';
+  fill.classList.toggle('done',sold>=goal&&goal>0);
+  $('#goalNeed').innerHTML=sold>=goal&&goal>0?'🎉 <b>Goal reached!</b> Keep going':`Need <b>${money(Math.max(0,goal-sold))} Ks</b> more`;
+  $('#goalCount').innerHTML=`<b>${ts.length}</b> sale${ts.length!==1?'s':''} today`;
+  // stock left
+  const stock=db.accounts.filter(a=>a.status==='stock');
+  const grp={};
+  for(const a of stock){ const k=(a.product||'—').trim();
+    (grp[k]??={n:0,plans:{},soon:0}); grp[k].n++;
+    if(a.plan) grp[k].plans[a.plan]=(grp[k].plans[a.plan]||0)+1;
+    const dl=daysLeft(a.expire); if(dl!==null&&dl<=7) grp[k].soon++; }
+  const keys=Object.keys(grp).sort((a,b)=>grp[b].n-grp[a].n);
+  $('#dsStockCnt').textContent=stock.length+' Acc';
+  $('#stockList').innerHTML=keys.length?keys.map(k=>`
+    <div class="stock-row" data-stockgo="${esc(k)}">
+      <div><div class="pn">${esc(k)}</div><div class="plans">${Object.entries(grp[k].plans).map(([p,n])=>esc(p)+(n>1?' ×'+n:'')).join(' · ')||''}</div></div>
+      ${grp[k].soon?`<span class="warn">⚠ ${grp[k].soon} expiring</span>`:''}
+      <span class="acc">${grp[k].n} <small>Acc</small></span>
+      <span class="badge stock" style="cursor:default">In Stock</span>
+    </div>`).join('')
+    :'<div style="color:var(--dim);font-size:13px;padding:10px 0">No stock — tap + Add Account to restock</div>';
+  // today selling
+  $('#dsSellCnt').textContent=ts.length+' Acc';
+  $('#todayTotal').innerHTML=money(sold)+' <small>MMK</small>';
+  const sgrp={};
+  for(const a of ts){ const k=(a.product||'—').trim(); (sgrp[k]??={n:0,amt:0}); sgrp[k].n++; sgrp[k].amt+=(a.soldPrice||0); }
+  $('#todayLines').innerHTML=Object.keys(sgrp).map(k=>
+    `<div class="sline"><span class="p">${esc(k)}</span><span class="n">${sgrp[k].n} Acc</span><span class="amt">${money(sgrp[k].amt)}</span></div>`).join('')
+    ||'<div style="color:var(--dim);font-size:13px">No sales yet today</div>';
+  const costToday=ts.reduce((s,a)=>s+(a.cost||0),0);
+  const refToday=db.refunds.filter(r=>r.date===todayStr()).reduce((s,r)=>s+r.amount,0);
+  $('#todayCostNote').textContent=(costToday||refToday)?`ထွက်ငွေ — cost ${money(costToday)} Ks${refToday?' · refund '+money(refToday)+' Ks':''} · profit ${money(sold-costToday-refToday)} Ks`:'';
+  // requests
+  const reqs=allRequests();
+  $('#reqCnt').textContent=reqs.length;
+  const rgrp={};
+  for(const r of reqs){ const k=r.req.trim(); (rgrp[k.toLowerCase()]??={name:k,items:[]}).items.push(r); }
+  $('#reqList').innerHTML=Object.values(rgrp).map(g=>{
+    const st=db.accounts.find(a=>a.status==='stock'&&((a.product||'')+' '+(a.plan||'')).toLowerCase().includes(g.name.toLowerCase()));
+    return `<div class="req-grp">
+      <span class="pn">${esc(g.name)}</span>
+      <span class="oc">အမှာစာ (${g.items.length})</span>
+      ${g.items.map(it=>`<span class="req-cust"><span class="custlink" data-cust="${it.cust.id}">${esc(it.cust.name)}</span><button class="x" data-reqdel="${it.cust.id}|${esc(it.req)}" title="Remove request">✕</button></span>`).join('')}
+      ${st?`<button class="btn sm primary" data-radar-sell="${st.id}" data-radar-cust="${g.items[0].cust.id}" style="margin-left:auto">✓ In stock — Sell</button>`:'<span class="dimsm" style="margin-left:auto">no stock yet</span>'}
+    </div>`;
+  }).join('')||'<div style="color:var(--dim);font-size:13px;padding:6px 0">No requests — add customer orders here so you never forget them</div>';
+  $('#prodList2').innerHTML=[...new Set([...categories().map(c=>c.name),'Kling AI'])].map(n=>`<option value="${esc(n)}">`).join('');
+  $('#custList2').innerHTML=db.customers.map(c=>`<option value="${esc(c.name)}">`).join('');
+  renderRadar();
+  updateTotps(true);
+}
+function addRequest(){
+  const prod=$('#reqProd').value.trim(), name=$('#reqCust').value.trim();
+  if(!prod||!name){ toast('Product and customer name are both required','err'); return; }
+  let c=db.customers.find(x=>x.name.toLowerCase()===name.toLowerCase());
+  if(!c){ c={id:uid(),name,contact:'',sourceType:'',sourceCustomerId:null,sourceHead:'',requests:[],note:'',created:Date.now()}; db.customers.push(c); }
+  c.requests??=[];
+  if(!c.requests.some(r=>r.toLowerCase()===prod.toLowerCase())) c.requests.push(prod);
+  $('#reqProd').value=''; $('#reqCust').value='';
+  save(); render(); toast(`Request saved — ${prod} for ${c.name} ✓`,'ok');
+}
+function OLD_accCard(a){
+  const dl=daysLeft(a.expire);
+  const badge=a.status==='stock'?'<span class="badge stock" data-sell title="Sell this account">In Stock</span>'
+    :a.status==='sold'?'<span class="badge sold" data-unsell title="Click twice to return to stock">Sold</span>'
+    :'<span class="badge inactive">Inactive</span>';
+  const passRow=a.pass?`<div class="row"><span class="k">Password</span>
+    <span class="v mono sec" data-sec="${esc(a.pass)}">••••••••</span>
+    <button class="mini" data-reveal title="Show/Hide">${ICONS.eye}</button>
+    <button class="mini" data-copy="${esc(a.pass)}" title="Copy">${ICONS.copy}</button></div>`:'';
+  const faRow=a.twofa?`<div class="row"><span class="k">2FA</span>
+    <span class="v totp" data-totp="${esc(a.twofa)}"><span class="code">------</span>
+      <svg class="ring" viewBox="0 0 18 18"><circle class="bgc" cx="9" cy="9" r="7"/><circle class="fgc" cx="9" cy="9" r="7" stroke-dasharray="43.98" stroke-dashoffset="0"/></svg></span>
+    <button class="mini" data-copy="${esc(a.twofa)}" title="Copy secret key">${ICONS.copy}</button></div>`:'';
+  const cust=a.customerId?`<div class="row"><span class="k">Customer</span><span class="v"><span class="custlink" data-cust="${a.customerId}">${hl(custName(a.customerId))}</span>${a.soldDate?` <span style="color:var(--dim);font-size:11.5px">· ${fmtDate(a.soldDate)}</span>`:''}</span></div>`:'';
+  const refs=db.refunds.filter(r=>r.accountId===a.id);
+  const refRow=refs.length?`<div class="row"><span class="k">Refund</span><span class="v" style="color:var(--ch-red);font-weight:700">− ${money(refs.reduce((s,r)=>s+r.amount,0))} Ks</span></div>`:'';
+  let hist='';
+  if(a.status==='inactive'){
+    const rep=a.replacedById?accById(a.replacedById):null;
+    hist=`<div class="histnote">⚠ ${esc(a.inactiveNote||'No longer in use')}${a.customerId?` — was sold to <b>${esc(custName(a.customerId))}</b>`:''}${rep?` · replaced by <b>${esc(rep.product)} (${esc(rep.email||'new')})</b>`:''}</div>`;
+  } else if(a.replacesId){
+    const old=accById(a.replacesId);
+    if(old) hist=`<div class="histnote">↺ Replacement for old ${esc(old.product)} (${esc(old.email||'')})</div>`;
+  }
+  const priceLine = a.status==='sold'
+    ? `Sold ${money(a.soldPrice)} Ks${a.cost?` <span class="cost">· cost ${money(a.cost)} · +${money(a.soldPrice-a.cost)}</span>`:''}`
+    : `${money(a.price)} Ks${a.cost?` <span class="cost">· cost ${money(a.cost)}</span>`:''}`;
+  const foot = a.status==='stock'
+    ? `<button class="btn sm primary" data-sell>💰 Sell</button><button class="btn sm ghost" data-dup title="Duplicate">${ICONS.dup} Dup</button><span class="sp"></span><button class="btn sm ghost" data-edit>${ICONS.edit}</button><button class="btn sm ghost danger" data-del>${ICONS.trash}</button>`
+    : a.status==='sold'
+    ? `<button class="btn sm" data-refund>↩ Refund</button><button class="btn sm" data-replace>↺ Replace</button><span class="sp"></span><button class="btn sm ghost" data-edit>${ICONS.edit}</button><button class="btn sm ghost danger" data-del>${ICONS.trash}</button>`
+    : `<span class="sp"></span><button class="btn sm ghost" data-edit>${ICONS.edit}</button><button class="btn sm ghost danger" data-del>${ICONS.trash}</button>`;
+  return `<div class="card ${a.status!=='inactive'&&dl!==null&&dl<0?'expired':''} ${a.status==='inactive'?'inactive':''}" data-id="${a.id}">
+    <div class="card-top"><div>
+      <div class="pname">${hl(a.product)}${a.plan?` <span style="color:var(--mut);font-weight:600;font-size:13px">· ${hl(a.plan)}</span>`:''}</div>
+      <div class="price">${priceLine}</div></div>${badge}</div>
+    <div class="rows">
+      ${a.email?`<div class="row"><span class="k">Gmail</span><span class="v mono">${hl(a.email)}</span><button class="mini" data-copy="${esc(a.email)}" title="Copy">${ICONS.copy}</button></div>`:''}
+      ${passRow}${faRow}${cust}${refRow}
+      ${a.supplier?`<div class="row"><span class="k">Supplier</span><span class="v dim">${hl(a.supplier)}</span></div>`:''}
+      ${a.renew?`<div class="row"><span class="k">Renew</span><span class="v dim">${fmtDate(a.renew)}</span></div>`:''}
+      ${a.expire?`<div class="row"><span class="k">Expire</span><span class="v">${fmtDate(a.expire)}</span>${expTag(a)}</div>`:''}
+    </div>
+    ${hist}
+    <div class="card-foot">${foot}</div>
+  </div>`;
+}
+function categories(){
+  const m={};
+  for(const a of db.accounts){ const p=(a.product||'').trim(); if(!p) continue;
+    const k=p.toLowerCase(); m[k]=m[k]||{name:p,n:0}; m[k].n++; }
+  return Object.values(m).sort((a,b)=>b.n-a.n);
+}
+
+/* ================= sell radar ================= */
+function stockOf(product){ return db.accounts.filter(a=>a.status==='stock'&&(a.product||'').toLowerCase().includes(product.toLowerCase())); }
+function radarItems(){
+  const out=[];
+  // renewals due: sold accounts expiring soon or recently expired, with a customer
+  for(const a of db.accounts){
+    if(a.status!=='sold'||!a.customerId||!a.expire) continue;
+    const dl=daysLeft(a.expire);
+    if(dl===null||dl>7||dl<-30) continue;
+    const st=stockOf(a.product);
+    out.push({type:'renew',acc:a,cust:custById(a.customerId),dl,stock:st[0]||null});
+  }
+  // requests matching stock
+  for(const c of db.customers){
+    for(const req of (c.requests||[])){
+      const st=db.accounts.filter(a=>a.status==='stock'&&((a.product||'')+' '+(a.plan||'')).toLowerCase().includes(req.toLowerCase()));
+      if(st.length) out.push({type:'req',cust:c,req,stock:st[0]});
+    }
+  }
+  out.sort((x,y)=>(x.type==='renew'?x.dl:99)-(y.type==='renew'?y.dl:99));
+  return out;
+}
+function renderRadar(){
+  const items=radarItems();
+  const r=$('#radar');
+  if(!items.length){ r.style.display='none'; return; }
+  r.style.display='block';
+  $('#radarCnt').textContent=items.length;
+  $('#radarList').innerHTML=items.map(it=>{
+    if(it.type==='renew'){
+      const tag=it.dl<0?`<span class="exp-tag exp-dead">expired ${Math.abs(it.dl)}d ago</span>`
+        :it.dl===0?'<span class="exp-tag exp-soon">expires today</span>'
+        :`<span class="exp-tag exp-soon">${it.dl}d left</span>`;
+      return `<div class="radar-item"><span class="ic">⏰</span>
+        <span class="t"><b>${esc(it.cust?.name||'?')}</b> — ${esc(it.acc.product)} ${esc(it.acc.plan)} renewal
+        <span class="why">${it.stock?'✓ in stock, ready to sell':'✗ no stock — restock '+esc(it.acc.product)}</span></span>
+        ${tag}
+        ${it.stock?`<button class="btn sm primary" data-radar-sell="${it.stock.id}" data-radar-cust="${it.cust?.id||''}">Sell renewal</button>`
+          :`<button class="btn sm" data-radar-add="${esc(it.acc.product)}">+ Restock</button>`}</div>`;
+    }
+    return `<div class="radar-item"><span class="ic">🙋</span>
+      <span class="t"><b>${esc(it.cust.name)}</b> requested <b>${esc(it.req)}</b>
+      <span class="why">✓ ${esc(it.stock.product)} ${esc(it.stock.plan)} is in stock now</span></span>
+      <button class="btn sm primary" data-radar-sell="${it.stock.id}" data-radar-cust="${it.cust.id}">Sell it</button></div>`;
+  }).join('');
+}
+
+/* ================= customers ================= */
+function custStats(c){
+  const accs=db.accounts.filter(a=>a.customerId===c.id);
+  const spent=accs.reduce((s,a)=>s+(a.soldPrice||0),0);
+  const refunded=db.refunds.filter(r=>accs.some(a=>a.id===r.accountId)).reduce((s,r)=>s+r.amount,0);
+  const active=accs.filter(a=>a.status==='sold'&&(daysLeft(a.expire)===null||daysLeft(a.expire)>=0)).length;
+  return {accs,spent,refunded,active};
+}
+function custMatches(c){
+  if(!query) return true;
+  const hay=[c.name,c.contact,c.sourceHead,custName(c.sourceCustomerId),(c.requests||[]).join(' '),c.note].join(' ').toLowerCase();
+  return hay.includes(query.toLowerCase());
+}
+function srcLabel(c){
+  if(c.sourceType==='friend'&&c.sourceCustomerId) return `via ${esc(custName(c.sourceCustomerId))}`;
+  if(c.sourceType==='head'&&c.sourceHead) return `📍 ${esc(c.sourceHead)}`;
+  return '';
+}
+function renderCustomers(){
+  const list=db.customers.filter(custMatches).sort((a,b)=>(b.created||0)-(a.created||0));
+  const g=$('#custGrid');
+  if(!list.length){
+    g.innerHTML=`<div class="empty"><div class="big">👥</div><b>${db.customers.length?'No matches':'No customers yet'}</b>
+      <p>${db.customers.length?'Try a different search.':'Customers are created automatically when you sell an account — or add one now.'}</p></div>`;
+  } else {
+    g.innerHTML=list.map(c=>{
+      const st=custStats(c);
+      const reqTags=(c.requests||[]).map(r=>{
+        const inStock=db.accounts.some(a=>a.status==='stock'&&((a.product||'')+' '+(a.plan||'')).toLowerCase().includes(r.toLowerCase()));
+        return `<span class="tag ${inStock?'instock':''}">${inStock?'✓ ':''}${hl(r)}</span>`;
+      }).join('');
+      const referred=db.customers.filter(x=>x.sourceCustomerId===c.id);
+      return `<div class="card" data-cid="${c.id}">
+        <div class="card-top">
+          <div style="display:flex;gap:11px;align-items:center">
+            <div class="avatar" style="width:40px;height:40px;font-size:16px;border-radius:12px">${esc((c.name||'?')[0].toUpperCase())}</div>
+            <div><div class="pname">${hl(c.name)}</div>
+            ${c.contact?`<div style="font-size:12px;color:var(--mut);font-family:'JetBrains Mono',monospace">${hl(c.contact)}</div>`:''}</div>
+          </div>
+          ${srcLabel(c)?`<span class="src-badge" style="margin-left:auto">${srcLabel(c)}</span>`:''}
+        </div>
+        <div class="rows">
+          <div class="row"><span class="k">Bought</span><span class="v">${st.accs.length} account${st.accs.length!==1?'s':''} · <b>${money(st.spent)} Ks</b>${st.refunded?` <span style="color:var(--ch-red)">(−${money(st.refunded)} refunded)</span>`:''}</span></div>
+          ${st.active?`<div class="row"><span class="k">Active</span><span class="v">${st.active} running subscription${st.active!==1?'s':''}</span></div>`:''}
+          ${referred.length?`<div class="row"><span class="k">Referred</span><span class="v dim">${referred.map(r=>esc(r.name)).join(', ')}</span></div>`:''}
+          ${c.note?`<div class="row"><span class="k">Note</span><span class="v dim">${hl(c.note)}</span></div>`:''}
+        </div>
+        ${reqTags?`<div class="tags">${reqTags}</div>`:''}
+        <div class="card-foot">
+          <button class="btn sm primary" data-cprofile>👤 Profile</button>
+          <span class="sp"></span>
+          <button class="btn sm ghost" data-cedit>${ICONS.edit}</button>
+          <button class="btn sm ghost danger" data-cdel>${ICONS.trash}</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  // stats
+  $('#csTotal').textContent=db.customers.length;
+  $('#csReq').textContent=db.customers.reduce((s,c)=>s+(c.requests||[]).length,0);
+  $('#csRenew').textContent=radarItems().filter(i=>i.type==='renew').length;
+  $('#csSpent').textContent=money(db.accounts.reduce((s,a)=>s+(a.soldPrice||0),0));
+  renderNetwork();
+}
+function renderNetwork(){
+  const heads={};
+  for(const c of db.customers){ if(c.sourceType==='head'&&c.sourceHead){ (heads[c.sourceHead]??=[]).push(c); } }
+  const refPairs=db.customers.filter(c=>c.sourceType==='friend'&&c.sourceCustomerId&&custById(c.sourceCustomerId));
+  const box=$('#netBox');
+  if(!Object.keys(heads).length&&!refPairs.length){ box.style.display='none'; return; }
+  box.style.display='block';
+  let html='';
+  for(const [h,members] of Object.entries(heads)){
+    html+=`<div class="net-grp"><span class="gname head">📍 ${esc(h)}</span><span class="arrow">→</span>${members.map(m=>`<span class="pill" data-cust="${m.id}">${esc(m.name)}</span>`).join(' ')}</div>`;
+  }
+  for(const c of refPairs){
+    html+=`<div class="net-grp"><span class="gname">🤝 ${esc(custName(c.sourceCustomerId))}</span><span class="arrow">referred →</span><span class="pill" data-cust="${c.id}">${esc(c.name)}</span></div>`;
+  }
+  $('#netBody').innerHTML=html;
+}
+/* profile */
+function openProfile(cid){
+  const c=custById(cid); if(!c) return;
+  const st=custStats(c);
+  const referred=db.customers.filter(x=>x.sourceCustomerId===c.id);
+  const hist=st.accs.sort((a,b)=>(b.soldDate||'').localeCompare(a.soldDate||'')).map(a=>{
+    const refs=db.refunds.filter(r=>r.accountId===a.id);
+    const dl=daysLeft(a.expire);
+    const state=a.status==='inactive'?'<span class="exp-tag" style="background:rgba(139,145,181,.15);color:var(--mut)">inactive</span>'
+      :dl!==null&&dl<0?'<span class="exp-tag exp-dead">expired</span>'
+      :dl!==null&&dl<=7?`<span class="exp-tag exp-soon">${dl}d left</span>`:'<span class="exp-tag exp-ok">active</span>';
+    return `<div class="hist-item"><span class="t"><b>${esc(a.product)}</b> ${esc(a.plan)}
+      ${a.replacesId?'<span style="color:var(--cyan);font-size:11.5px"> · replacement</span>':''}
+      ${a.status==='inactive'?`<span style="color:var(--mut);font-size:11.5px"> · ${esc(a.inactiveNote||'no longer used')}</span>`:''}
+      <span class="dt" style="display:block">${fmtDate(a.soldDate)}${a.expire?' → '+fmtDate(a.expire):''}</span></span>
+      ${state}<span class="amt">${money(a.soldPrice)} Ks</span></div>`
+      + refs.map(r=>`<div class="hist-item" style="border-color:rgba(230,103,103,.3)"><span class="t">↩ Refund — ${esc(r.note||'')}<span class="dt" style="display:block">${fmtDate(r.date)}</span></span><span class="amt neg">− ${money(r.amount)} Ks</span></div>`).join('');
+  }).join('')||'<div class="hist-item"><span class="t" style="color:var(--dim)">No purchases yet</span></div>';
+  const reqTags=(c.requests||[]).map(r=>{
+    const inStock=db.accounts.some(a=>a.status==='stock'&&((a.product||'')+' '+(a.plan||'')).toLowerCase().includes(r.toLowerCase()));
+    return `<span class="tag ${inStock?'instock':''}">${inStock?'✓ ':''}${esc(r)}</span>`;}).join('');
+  $('#profileBody').innerHTML=`
+    <div class="prof-h">
+      <div class="avatar">${esc((c.name||'?')[0].toUpperCase())}</div>
+      <div><div class="nm">${esc(c.name)}</div>
+        ${c.contact?`<div class="ct">${esc(c.contact)} <button class="mini" data-copy="${esc(c.contact)}" style="display:inline-grid;vertical-align:middle">${ICONS.copy}</button></div>`:''}</div>
+      ${srcLabel(c)?`<span class="src-badge" style="margin-left:auto">${srcLabel(c)}</span>`:''}
+    </div>
+    <div class="prof-stats">
+      <div class="ps">Total spent<b>${money(st.spent)} Ks</b></div>
+      <div class="ps">Refunded<b style="color:${st.refunded?'var(--ch-red)':'var(--txt)'}">${st.refunded?'− ':''}${money(st.refunded)} Ks</b></div>
+      <div class="ps">Net<b>${money(st.spent-st.refunded)} Ks</b></div>
+      <div class="ps">Accounts<b>${st.accs.length}</b></div>
+    </div>
+    ${referred.length?`<div class="prof-sec"><h4>Referred customers</h4><div class="tags">${referred.map(r=>`<span class="pill" data-cust="${r.id}">${esc(r.name)}</span>`).join('')}</div></div>`:''}
+    ${reqTags?`<div class="prof-sec"><h4>Requested products</h4><div class="tags">${reqTags}</div></div>`:''}
+    <div class="prof-sec"><h4>Purchase history</h4>${hist}</div>
+    <div class="modal-foot">
+      <button class="btn ghost" data-close="ovProfile">Close</button>
+      <button class="btn" data-cedit-modal="${c.id}">Edit Customer</button>
+    </div>`;
+  $('#ovProfile').classList.add('show');
+}
+
+/* ================= account form ================= */
+const DEFAULT_PRESETS=['Netflix','ChatGPT','Canva','CapCut','Spotify','YouTube','Prime Video','Telegram'];
+function lastOf(product){
+  return [...db.accounts].sort((a,b)=>(b.created||0)-(a.created||0)).find(a=>(a.product||'').toLowerCase()===product.toLowerCase());
+}
+function renderPresets(){
+  const names=[...new Set([...categories().map(c=>c.name),...DEFAULT_PRESETS])].slice(0,10);
+  $('#presetRow').innerHTML=names.map(n=>`<button type="button" class="preset" data-preset="${esc(n)}">${esc(n)}</button>`).join('');
+  $('#prodList').innerHTML=names.map(n=>`<option value="${esc(n)}">`).join('');
+  $('#supList').innerHTML=[...new Set(db.accounts.map(a=>a.supplier).filter(Boolean))].map(s=>`<option value="${esc(s)}">`).join('');
+}
+function applyPreset(name){
+  $('#fProduct').value=name;
+  const last=lastOf(name);
+  if(last){
+    $('#fPlan').value=last.plan||''; $('#fCost').value=last.cost||''; $('#fPrice').value=last.price||'';
+    $('#fSupplier').value=last.supplier||'';
+    toast('Auto-filled from your last '+name,'ok');
+  }
+  $('#fEmail').focus();
+}
+function openForm(id,dupFrom){
+  editId=id||null;
+  $('#formTitle').textContent=editId?'Edit Account':'Add Account';
+  renderPresets();
+  const it=editId?accById(editId):(dupFrom?accById(dupFrom):null);
+  $('#fProduct').value=it?.product||''; $('#fPlan').value=it?.plan||'';
+  $('#fCost').value=it?.cost||''; $('#fPrice').value=it?.price||'';
+  $('#fEmail').value=(editId&&it)?it.email:''; $('#fPass').value=(editId&&it)?it.pass:'';
+  $('#f2fa').value=(editId&&it)?it.twofa:'';
+  $('#fSupplier').value=it?.supplier||'';
+  $('#fRenew').value=(editId&&it)?it.renew:''; $('#fExpire').value=(editId&&it)?it.expire:(dupFrom?it?.expire||'':'');
+  updateCodeField();
+  $('#ovForm').classList.add('show');
+  setTimeout(()=>$(dupFrom?'#fEmail':'#fProduct').focus(),60);
+}
+function updateCodeField(){
+  const p=$('#fProduct').value.trim(), pl=$('#fPlan').value.trim();
+  const existing=codeFor(p,pl,false);
+  if(existing){ $('#fCode').value=existing; $('#codeHelp').textContent='ရှိပြီးသား variant — code '+existing; }
+  else { $('#fCode').value=''; $('#fCode').placeholder=p?('auto → '+nextCode(p)):'auto — e.g. G001';
+    $('#codeHelp').textContent=p?('အသစ်ဖြစ်လို့ save ရင် '+nextCode(p)+' auto ဖန်တီးမယ် (ကိုယ်တိုင်လည်းရိုက်လို့ရ)'):'Product + Plan အသစ်ဆို ပထမတစ်ကြိမ်မှာ auto ဖန်တီးပေးမယ်'; }
+}
+function saveForm(){
+  const product=$('#fProduct').value.trim();
+  if(!product){ toast('Product name is required','err'); $('#fProduct').focus(); return; }
+  const data={ product, plan:$('#fPlan').value.trim(), cost:num($('#fCost').value), price:num($('#fPrice').value),
+    email:$('#fEmail').value.trim(), pass:$('#fPass').value, twofa:$('#f2fa').value.trim().replace(/\s+/g,''),
+    supplier:$('#fSupplier').value.trim(), renew:$('#fRenew').value, expire:$('#fExpire').value };
+  const typedCode=$('#fCode').value.trim().toUpperCase();
+  db.codes??={};
+  const vk=variantKey(data.product,data.plan);
+  if(typedCode){ db.codes[vk]=typedCode; data.code=typedCode; }
+  else data.code=codeFor(data.product,data.plan,true);
+  if(editId){ Object.assign(accById(editId),data); toast('Account updated ✓','ok'); }
+  else db.accounts.unshift({id:uid(),status:'stock',customerId:null,soldDate:'',soldPrice:0,soldNote:'',
+    replacedById:null,replacesId:null,inactiveNote:'',created:Date.now(),...data});
+  if(!editId) toast(`Added to stock ✓ — Code ${data.code}`,'ok');
+  save(); $('#ovForm').classList.remove('show'); render();
+}
+
+/* ================= sell / refund / replace flows ================= */
+function fillCustList(){
+  $('#custList').innerHTML=db.customers.map(c=>`<option value="${esc(c.name)}">`).join('');
+}
+function openSell(accId,custId){
+  const a=accById(accId); if(!a) return;
+  sellId=accId; fillCustList();
+  $('#sellSub').innerHTML=`<b>${esc(a.product)} ${esc(a.plan)}</b> · ${esc(a.email||'no email')}`;
+  $('#sCustomer').value=custId?custName(custId):'';
+  $('#sContact').value=''; $('#sContactWrap').style.display='none'; $('#sCustHint').textContent='';
+  $('#sPrice').value=a.price||''; $('#sDate').value=todayStr(); $('#sNote').value='';
+  $('#ovSell').classList.add('show');
+  setTimeout(()=>$(custId?'#sPrice':'#sCustomer').focus(),60);
+  checkSellCust();
+}
+function checkSellCust(){
+  const name=$('#sCustomer').value.trim();
+  const exists=db.customers.find(c=>c.name.toLowerCase()===name.toLowerCase());
+  $('#sContactWrap').style.display=name&&!exists?'block':'none';
+  $('#sCustHint').textContent=!name?'':exists?`✓ Existing customer — ${custStats(exists).accs.length} previous purchase(s)`:'New customer — a profile will be created';
+}
+function saveSell(){
+  const a=accById(sellId); if(!a) return;
+  const name=$('#sCustomer').value.trim();
+  if(!name){ toast('Customer name is required','err'); $('#sCustomer').focus(); return; }
+  let c=db.customers.find(x=>x.name.toLowerCase()===name.toLowerCase());
+  if(!c){ c={id:uid(),name,contact:$('#sContact').value.trim(),sourceType:'',sourceCustomerId:null,sourceHead:'',requests:[],note:'',created:Date.now()};
+    db.customers.push(c); }
+  a.status='sold'; a.customerId=c.id; a.soldPrice=num($('#sPrice').value);
+  a.soldDate=$('#sDate').value||todayStr(); a.soldNote=$('#sNote').value.trim();
+  // clear matching request
+  const before=(c.requests||[]).length;
+  c.requests=(c.requests||[]).filter(r=>!((a.product+' '+a.plan).toLowerCase().includes(r.toLowerCase())));
+  if(c.requests.length<before) toast(`Request cleared from ${c.name}'s wishlist ✓`,'ok');
+  save(); $('#ovSell').classList.remove('show'); render();
+  toast(`Sold to ${c.name} — ${money(a.soldPrice)} Ks ✓`,'ok');
+}
+function warrantyCalc(a){
+  if(!a.soldDate||!a.soldPrice) return null;
+  const day=86400000;
+  const sold=new Date(a.soldDate+'T00:00:00');
+  const today=new Date(todayStr()+'T00:00:00');
+  const usedDays=Math.max(0,Math.round((today-sold)/day));
+  const warrantyDays=a.renew?Math.max(0,Math.round((new Date(a.renew+'T00:00:00')-sold)/day)):null;
+  const totalDays=a.expire?Math.max(1,Math.round((new Date(a.expire+'T00:00:00')-sold)/day)):null;
+  if(warrantyDays===null||totalDays===null) return {usedDays,warrantyDays,totalDays,refund:null};
+  const perDay=a.soldPrice/totalDays;
+  const refund=Math.max(0,Math.round((warrantyDays-usedDays)*perDay));
+  return {usedDays,warrantyDays,totalDays,perDay,refund,inWarranty:usedDays<=warrantyDays};
+}
+function openRefund(accId){
+  const a=accById(accId); if(!a) return;
+  refundId=accId;
+  $('#refundSub').innerHTML=`<b>${esc(a.product)} ${esc(a.plan)}</b> — sold to <b>${esc(custName(a.customerId)||'?')}</b> for ${money(a.soldPrice)} Ks on ${fmtDate(a.soldDate)}`;
+  const w=warrantyCalc(a);
+  const rc=$('#refCalc');
+  if(w&&w.refund!==null){
+    rc.style.display='block';
+    rc.innerHTML=`<b>🧮 Warranty Refund Calculator</b><br>
+      Warranty ${w.warrantyDays}d − Used ${w.usedDays}d = <b>${Math.max(0,w.warrantyDays-w.usedDays)}d left</b> ·
+      Price ${money(a.soldPrice)} ÷ ${w.totalDays}d = <b>${money(Math.round(w.perDay))} Ks/day</b><br>
+      ${w.inWarranty
+        ?`→ Suggested refund: <b style="font-size:15px">${money(w.refund)} Ks</b>
+          <button class="btn sm primary" data-usecalc="${w.refund}" style="margin-left:10px">Use this amount</button>`
+        :`<span style="color:var(--red);font-weight:700">⚠ Warranty expired ${w.usedDays-w.warrantyDays}d ago — refund not required (formula = ${money(w.refund)} Ks)</span>`}`;
+  } else if(w){
+    rc.style.display='block';
+    rc.innerHTML=`<b>🧮 Warranty Refund Calculator</b><br><span style="color:var(--mut)">Warranty Expired Date ${a.renew?'':'မရှိပါ — Edit မှာထည့်ပါ'}${!a.expire?' · Expire date မရှိပါ':''} — formula မတွက်နိုင်ပါ</span>`;
+  } else rc.style.display='none';
+  $('#rAmount').value=w&&w.refund!==null&&w.inWarranty?w.refund:(a.soldPrice||'');
+  $('#rDate').value=todayStr(); $('#rNote').value=''; $('#rInactive').checked=true;
+  $('#ovRefund').classList.add('show');
+}
+function saveRefund(){
+  const a=accById(refundId); if(!a) return;
+  const amount=num($('#rAmount').value);
+  if(!amount){ toast('Refund amount is required','err'); return; }
+  db.refunds.push({id:uid(),accountId:a.id,amount,date:$('#rDate').value||todayStr(),note:$('#rNote').value.trim()});
+  if($('#rInactive').checked){ a.status='inactive'; a.inactiveNote='Refunded'+($('#rNote').value.trim()?' — '+$('#rNote').value.trim():''); }
+  save(); $('#ovRefund').classList.remove('show'); render();
+  toast(`Refund ${money(amount)} Ks recorded — shown against ${monthLabel(monthKey(a.soldDate))} income`,'ok');
+}
+function openReplace(accId){
+  const a=accById(accId); if(!a) return;
+  replaceId=accId;
+  const stock=db.accounts.filter(x=>x.status==='stock');
+  if(!stock.length){ toast('No in-stock accounts to replace with — add stock first','err'); return; }
+  const same=stock.filter(x=>(x.product||'').toLowerCase()===(a.product||'').toLowerCase());
+  const rest=stock.filter(x=>!same.includes(x));
+  $('#pStock').innerHTML=[...same,...rest].map(x=>`<option value="${x.id}">${esc(x.product)} ${esc(x.plan)} — ${esc(x.email||'no email')}</option>`).join('');
+  $('#replaceSub').innerHTML=`Replacing <b>${esc(a.product)} ${esc(a.plan)}</b> (${esc(a.email||'')}) for <b>${esc(custName(a.customerId)||'?')}</b>`;
+  $('#pPrice').value='0'; $('#pDate').value=todayStr(); $('#pNote').value='';
+  $('#ovReplace').classList.add('show');
+}
+function saveReplace(){
+  const oldA=accById(replaceId); if(!oldA) return;
+  const newA=accById($('#pStock').value);
+  if(!newA){ toast('Pick a replacement account','err'); return; }
+  const note=$('#pNote').value.trim();
+  newA.status='sold'; newA.customerId=oldA.customerId;
+  newA.soldPrice=num($('#pPrice').value); newA.soldDate=$('#pDate').value||todayStr();
+  newA.soldNote='Replacement for old '+oldA.product+(note?' — '+note:''); newA.replacesId=oldA.id;
+  oldA.status='inactive'; oldA.replacedById=newA.id;
+  oldA.inactiveNote='Replaced'+(note?' — '+note:'')+' ('+fmtDate(newA.soldDate)+')';
+  save(); $('#ovReplace').classList.remove('show'); render();
+  toast(`Replaced with ${newA.product} for ${custName(newA.customerId)} ✓`,'ok');
+}
+
+/* ================= customer form ================= */
+function openCustForm(id){
+  editCustId=id||null;
+  $('#custFormTitle').textContent=editCustId?'Edit Customer':'Add Customer';
+  const c=editCustId?custById(editCustId):null;
+  $('#cName').value=c?.name||''; $('#cContact').value=c?.contact||'';
+  $('#cSourceType').value=c?.sourceType||'';
+  $('#cSourceCustomer').innerHTML='<option value="">— choose —</option>'+db.customers.filter(x=>x.id!==editCustId).map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('');
+  $('#cSourceCustomer').value=c?.sourceCustomerId||'';
+  $('#cSourceHead').value=c?.sourceHead||'';
+  $('#headList').innerHTML=[...new Set(db.customers.map(x=>x.sourceHead).filter(Boolean))].map(h=>`<option value="${esc(h)}">`).join('');
+  $('#cRequests').value=(c?.requests||[]).join(', ');
+  $('#cNote').value=c?.note||'';
+  custSrcVis();
+  $('#ovCust').classList.add('show');
+  setTimeout(()=>$('#cName').focus(),60);
+}
+function custSrcVis(){
+  const t=$('#cSourceType').value;
+  $('#cSrcFriendWrap').style.display=t==='friend'?'flex':'none';
+  $('#cSrcHeadWrap').style.display=t==='head'?'flex':'none';
+}
+function saveCust(){
+  const name=$('#cName').value.trim();
+  if(!name){ toast('Name is required','err'); $('#cName').focus(); return; }
+  const data={ name, contact:$('#cContact').value.trim(), sourceType:$('#cSourceType').value,
+    sourceCustomerId:$('#cSourceType').value==='friend'?($('#cSourceCustomer').value||null):null,
+    sourceHead:$('#cSourceType').value==='head'?$('#cSourceHead').value.trim():'',
+    requests:$('#cRequests').value.split(',').map(s=>s.trim()).filter(Boolean),
+    note:$('#cNote').value.trim() };
+  if(editCustId){ Object.assign(custById(editCustId),data); toast('Customer updated ✓','ok'); }
+  else { db.customers.push({id:uid(),created:Date.now(),...data}); toast('Customer added ✓','ok'); }
+  save(); $('#ovCust').classList.remove('show'); render();
+}
+
+/* ================= analytics ================= */
+function sales(){ return db.accounts.filter(a=>a.soldDate); }
+function refundMonth(r){ const a=accById(r.accountId); return monthKey(a?.soldDate)||monthKey(r.date); }
+function lastMonths(n){
+  const out=[]; const d=new Date(); d.setDate(1);
+  for(let i=n-1;i>=0;i--){ const t=new Date(d.getFullYear(),d.getMonth()-i,1);
+    out.push(t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')); }
+  return out;
+}
+function monthAgg(mk){
+  const ss=sales().filter(a=>monthKey(a.soldDate)===mk);
+  const revenue=ss.reduce((s,a)=>s+(a.soldPrice||0),0);
+  const cost=ss.reduce((s,a)=>s+(a.cost||0),0);
+  const refs=db.refunds.filter(r=>refundMonth(r)===mk);
+  const refund=refs.reduce((s,r)=>s+r.amount,0);
+  return {mk,count:ss.length,revenue,cost,profit:revenue-cost,refund,net:revenue-cost-refund,refs};
+}
+const fmtK=n=>{const x=Math.abs(n);if(x>=1e6)return (n/1e6).toFixed(x>=1e7?0:1).replace(/\.0$/,'')+'M';
+  if(x>=1e3)return (n/1e3).toFixed(x>=1e4?0:1).replace(/\.0$/,'')+'K';return String(n);};
+function niceStep(range,target){ const raw=range/target, p=Math.pow(10,Math.floor(Math.log10(raw||1)));
+  for(const m of [1,2,5,10]){ if(m*p>=raw) return m*p; } return 10*p; }
+function deltaHtml(cur,prev){
+  if(prev===0&&cur===0) return '<div class="d flat">—</div>';
+  if(prev===0) return '<div class="d up">new</div>';
+  const pct=Math.round((cur-prev)/Math.abs(prev)*100);
+  if(pct===0) return '<div class="d flat">± 0% vs last month</div>';
+  return pct>0?`<div class="d up">▲ ${pct}% vs last month</div>`:`<div class="d down">▼ ${Math.abs(pct)}% vs last month</div>`;
+}
+function renderAnalytics(){
+  const months=lastMonths(12);
+  const aggs=months.map(monthAgg);
+  const cur=aggs[aggs.length-1], prev=aggs[aggs.length-2]||{revenue:0,profit:0,refund:0,net:0};
+  const ts=todaySales();
+  const tsAmt=ts.reduce((s,a)=>s+(a.soldPrice||0),0);
+  const tsCost=ts.reduce((s,a)=>s+(a.cost||0),0);
+  const tsRef=db.refunds.filter(r=>r.date===todayStr()).reduce((s,r)=>s+r.amount,0);
+  const tsBrk=Object.entries(ts.reduce((m,a)=>{const k=a.product||'—';m[k]=(m[k]||0)+1;return m;},{})).map(([k,n])=>`${esc(k)} ${n}Acc`).join(' · ');
+  $('#anTiles').innerHTML=`
+    <div class="stat" style="--sc:var(--ch-blue)"><div class="n">${money(tsAmt)}</div><div class="l">Today Selling (MMK)</div><div class="d flat">${tsBrk||'no sales yet'}</div></div>
+    <div class="stat" style="--sc:var(--green)"><div class="n">${money(tsAmt-tsCost-tsRef)}</div><div class="l">Today ဝင်ငွေ − ထွက်ငွေ</div><div class="d flat">out: cost ${money(tsCost)}${tsRef?' + refund '+money(tsRef):''}</div></div>
+    <div class="stat" style="--sc:var(--cyan)"><div class="n">${money(cur.revenue)}</div><div class="l">${monthLabel(cur.mk)} Selling (Ks)</div>${deltaHtml(cur.revenue,prev.revenue)}</div>
+    <div class="stat" style="--sc:var(--amber)"><div class="n">${cur.count}</div><div class="l">Accounts sold · ${monthLabel(cur.mk)}</div>${deltaHtml(cur.count,prev.count||0)}</div>
+    <div class="stat" style="--sc:var(--dim)"><div class="n" style="font-size:16px;color:var(--mut)">profit ${money(cur.net)}${cur.refund?' · refund − '+money(cur.refund):''}</div><div class="l">Small detail (this month)</div></div>`;
+  drawBars($('#chartMonthly'),aggs.map(a=>({label:monthLabel(a.mk).split(' ')[0],pos:a.revenue,neg:0,tip:a})),true);
+  // daily month selector
+  const sel=$('#dailyMonthSel');
+  const activeMonths=[...new Set([...sales().map(a=>monthKey(a.soldDate)),...db.refunds.map(r=>monthKey(r.date)),months[months.length-1]])].filter(Boolean).sort().reverse();
+  const keep=sel.value;
+  sel.innerHTML=activeMonths.map(mk=>`<option value="${mk}">${monthLabel(mk)}</option>`).join('');
+  sel.value=activeMonths.includes(keep)?keep:activeMonths[0];
+  renderDaily();
+  renderCompare(aggs);
+}
+function renderDaily(){
+  const mk=$('#dailyMonthSel').value; if(!mk) return;
+  const [y,m]=mk.split('-').map(Number);
+  const nDays=new Date(y,m,0).getDate();
+  const data=[];
+  for(let d=1;d<=nDays;d++){
+    const ds=mk+'-'+String(d).padStart(2,'0');
+    const ss=sales().filter(a=>a.soldDate===ds);
+    const revenue=ss.reduce((s,a)=>s+(a.soldPrice||0),0);
+    const profit=ss.reduce((s,a)=>s+(a.soldPrice||0)-(a.cost||0),0);
+    const refs=db.refunds.filter(r=>r.date===ds);
+    const refund=refs.reduce((s,r)=>s+r.amount,0);
+    data.push({label:String(d),pos:revenue,neg:0,tip:{mk:ds,count:ss.length,revenue,cost:ss.reduce((s,a)=>s+(a.cost||0),0),profit,refund,net:profit-refund},day:d});
+  }
+  $('#dailySub').textContent=monthLabel(mk)+' · selling amount per day';
+  drawBars($('#chartDaily'),data,false);
+}
+function drawBars(el,data,isMonthly){
+  const hasAny=data.some(d=>d.pos||d.neg);
+  if(!hasAny){ el.innerHTML='<div class="empty" style="padding:40px"><div class="big">📊</div><b>No sales data yet</b><p>Sell an account and the charts come to life.</p></div>'; return; }
+  const W=920,H=280,L=56,R=12,T=26,B=34,plotW=W-L-R,plotH=H-T-B;
+  const maxP=Math.max(...data.map(d=>d.pos),1);
+  const maxN=Math.max(...data.map(d=>d.neg),0);
+  const step=niceStep(maxP+maxN,4);
+  const yMax=Math.ceil(maxP/step)*step;
+  const yMin=maxN?-Math.ceil(maxN/step)*step:0;
+  const y=v=>T+(yMax-v)/(yMax-yMin)*plotH;
+  const y0=y(0);
+  const slot=plotW/data.length;
+  const bw=Math.min(24,slot*0.55);
+  let grid='',bars='',hovers='',labels='';
+  for(let v=yMin;v<=yMax;v+=step){
+    const yy=y(v);
+    grid+=`<line x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}" stroke="${v===0?'var(--axis)':'var(--grid)'}" stroke-width="1"/>
+      <text x="${L-8}" y="${yy+4}" text-anchor="end" font-size="11" fill="var(--dim)" style="font-variant-numeric:tabular-nums">${fmtK(v)}</text>`;
+  }
+  const maxIdx=data.reduce((mi,d,i)=>d.pos>data[mi].pos?i:mi,0);
+  data.forEach((d,i)=>{
+    const x=L+slot*i+(slot-bw)/2;
+    if(d.pos>0){
+      const hh=y0-y(d.pos), r=Math.min(4,hh);
+      bars+=`<path d="M${x} ${y0} v${-(hh-r)} q0 ${-r} ${r} ${-r} h${bw-2*r} q${r} 0 ${r} ${r} v${hh-r} z" fill="var(--ch-blue)"/>`;
+    }
+    if(d.neg>0){
+      const hh=y(-d.neg)-y0, r=Math.min(4,hh);
+      bars+=`<path d="M${x} ${y0+2} v${hh-r-2} q0 ${r} ${r} ${r} h${bw-2*r} q${r} 0 ${r} ${-r} v${-(hh-r-2)} z" fill="var(--ch-red)"/>`;
+    }
+    if(i===maxIdx&&d.pos>0)
+      labels+=`<text x="${x+bw/2}" y="${y(d.pos)-7}" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--mut)" style="font-variant-numeric:tabular-nums">${fmtK(d.pos)}</text>`;
+    const showLbl=isMonthly||data.length<=16||d.day===1||d.day%5===0;
+    if(showLbl) labels+=`<text x="${L+slot*i+slot/2}" y="${H-10}" text-anchor="middle" font-size="11" fill="var(--dim)">${esc(d.label)}</text>`;
+    hovers+=`<rect x="${L+slot*i}" y="${T}" width="${slot}" height="${plotH}" fill="transparent" data-hi="${i}"/>`;
+  });
+  el.innerHTML=`<svg class="chart-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">${grid}${bars}${labels}${hovers}</svg>`;
+  const tip=$('#chTip');
+  el.querySelector('svg').addEventListener('mousemove',e=>{
+    const t=e.target.closest('[data-hi]'); if(!t){ tip.style.display='none'; return; }
+    const d=data[+t.dataset.hi].tip;
+    tip.innerHTML=`<b>${isMonthly?monthLabel(d.mk):fmtDate(d.mk)}</b><br>
+      <span class="tr"><span><i style="background:var(--ch-blue)"></i>Selling</span><span class="tv">${money(d.revenue)}</span></span>
+      <span class="tr"><span>Sold</span><span class="tv">${d.count} Acc</span></span>
+      <span class="tr" style="color:var(--dim);font-size:11px"><span>profit</span><span class="tv" style="font-weight:600">${money(d.profit)}</span></span>
+      ${d.refund?`<span class="tr" style="color:var(--dim);font-size:11px"><span>refund</span><span class="tv" style="font-weight:600">− ${money(d.refund)}</span></span>`:''}`;
+    tip.style.display='block';
+    const tw=tip.offsetWidth;
+    tip.style.left=Math.min(e.clientX+14,window.innerWidth-tw-10)+'px';
+    tip.style.top=(e.clientY+14)+'px';
+  });
+  el.querySelector('svg').addEventListener('mouseleave',()=>tip.style.display='none');
+}
+function renderCompare(aggs){
+  const rows=[...aggs].reverse().filter(a=>a.count||a.refund);
+  $('#cmpBody').innerHTML=rows.map((a,i)=>{
+    const prev=rows[i+1];
+    let vs='—';
+    if(prev){ const diff=a.revenue-prev.revenue;
+      vs=diff===0?'± 0':(diff>0?`<span style="color:var(--green)">▲ ${money(diff)}</span>`:`<span style="color:var(--ch-red)">▼ ${money(-diff)}</span>`); }
+    return `<tr><td class="mo">${monthLabel(a.mk)}</td><td>${a.count}</td><td class="pos"><b>${money(a.revenue)}</b></td>
+      <td style="color:var(--dim);font-size:12px">${money(a.cost)}</td>
+      <td style="color:var(--dim);font-size:12px">${money(a.profit)}</td>
+      <td style="font-size:12px" class="${a.refund?'neg':''}">${a.refund?'− '+money(a.refund):'0'}</td>
+      <td style="color:var(--mut);font-size:12px">${money(a.net)}</td><td>${vs}</td></tr>`;
+  }).join('')||'<tr><td colspan="8" style="text-align:center;color:var(--dim)">No sales yet</td></tr>';
+  const notes=db.refunds.map(r=>{
+    const a=accById(r.accountId);
+    return `<div class="rline"><i></i><span><b>${monthLabel(refundMonth(r))} sales</b>: − ${money(r.amount)} Ks refund
+      ${a?`(${esc(a.product)}${a.customerId?' · '+esc(custName(a.customerId)):''})`:''}
+      ${r.note?' — '+esc(r.note):''} · paid ${fmtDate(r.date)}</span></div>`;
+  }).join('');
+  $('#refundNotes').innerHTML=notes?`<b>Refund remarks</b>${notes}`:'';
+}
+
+/* ================= CSV export (context-aware) ================= */
+const csvCell=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+function downloadFile(content,name,type){
+  const blob=new Blob([content],{type});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},400);
+}
+function openExport(){
+  const cats=categories();
+  $('#xProd').innerHTML='<option value="all">All Products</option>'+cats.map(c=>`<option value="${esc(c.name)}">${esc(c.name)} (${c.n})</option>`).join('');
+  $('#xRange').value='all'; $('#xFromWrap').style.display='none'; $('#xToWrap').style.display='none';
+  $('#ovExport').classList.add('show');
+}
+function exportCsv(){
+  const prod=$('#xProd').value, r=$('#xRange').value, from=$('#xFrom').value, to=$('#xTo').value;
+  const rows=db.accounts.filter(a=>
+    (prod==='all'||(a.product||'').toLowerCase()===prod.toLowerCase()) &&
+    inDateRange(actDate(a),r,from,to));
+  if(!rows.length){ toast('No accounts in that range','err'); return; }
+  const lines=[['Code','Product','Plan','Cost','Price','Gmail','Password','2FA Key','Supplier','Customer','Sold Price','Sold Date','Profit','Warranty End','Expire Date','Days Left','Status','Note'].map(csvCell).join(',')];
+  for(const a of accSorted(rows)){
+    const dl=daysLeft(a.expire);
+    lines.push([a.code||'',a.product,a.plan,a.cost,a.price,a.email,a.pass,a.twofa,a.supplier,custName(a.customerId),
+      a.soldDate?a.soldPrice:'',a.soldDate,a.soldDate?(a.soldPrice-(a.cost||0)):'',a.renew,a.expire,dl===null?'':dl,
+      a.status==='stock'?'In Stock':a.status==='sold'?'Sold':'Inactive',a.inactiveNote||a.soldNote].map(csvCell).join(','));
+  }
+  const tag=r==='all'?'all':r==='custom'?(from||'x')+'_'+(to||'x'):r;
+  downloadFile('﻿'+lines.join('\r\n'),`vaultkey-accounts-${prod==='all'?'all':prod}-${tag}.csv`,'text/csv;charset=utf-8');
+  $('#ovExport').classList.remove('show');
+  toast(`Exported ${rows.length} accounts ✓`,'ok');
+}
+
+/* ================= CSV import ================= */
+function parseCSV(text){
+  text=text.replace(/^﻿/,'');
+  const rows=[]; let row=[],cell='',inQ=false;
+  for(let i=0;i<text.length;i++){
+    const ch=text[i];
+    if(inQ){
+      if(ch==='"'){ if(text[i+1]==='"'){cell+='"';i++;} else inQ=false; }
+      else cell+=ch;
+    } else {
+      if(ch==='"') inQ=true;
+      else if(ch===','){ row.push(cell); cell=''; }
+      else if(ch==='\n'||ch==='\r'){ if(ch==='\r'&&text[i+1]==='\n') i++;
+        row.push(cell); cell='';
+        if(row.some(c=>c.trim()!=='')) rows.push(row);
+        row=[]; }
+      else cell+=ch;
+    }
+  }
+  row.push(cell);
+  if(row.some(c=>c.trim()!=='')) rows.push(row);
+  return rows;
+}
+const normHdr=h=>String(h||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+const HDR_MAP={
+  product:'product',plan:'plan',cost:'cost',price:'price',sellingprice:'price',
+  gmail:'email',email:'email',gmailemail:'email',
+  password:'pass',pass:'pass',
+  '2fakey':'twofa','2fa':'twofa',twofa:'twofa',twofakey:'twofa',
+  supplier:'supplier',customer:'customer',
+  soldprice:'soldPrice',solddate:'soldDate',
+  warrantyend:'renew',warrantyexpireddate:'renew',warranty:'renew',warrantydate:'renew',renewdate:'renew',renew:'renew',
+  expiredate:'expire',expire:'expire',expirydate:'expire',
+  status:'status',note:'note',dayleft:null,daysleft:null,profit:null,
+  code:'code',acccode:'code',
+};
+function importCSV(text){
+  const rows=parseCSV(text);
+  if(rows.length<2) return {err:'CSV needs a header row + at least 1 data row'};
+  const hdrs=rows[0].map(normHdr);
+  const idx={};
+  hdrs.forEach((h,i)=>{ const k=HDR_MAP[h]; if(k) idx[k]=i; });
+  if(idx.product===undefined) return {err:'No "Product" column found in the header row'};
+  let added=0,skipped=0,custMade=0;
+  for(const r of rows.slice(1)){
+    const g=k=>idx[k]!==undefined?String(r[idx[k]]??'').trim():'';
+    const product=g('product'); if(!product){skipped++;continue;}
+    const email=g('email');
+    if(email&&db.accounts.some(a=>a.email.toLowerCase()===email.toLowerCase()&&(a.product||'').toLowerCase()===product.toLowerCase())){skipped++;continue;}
+    let customerId=null;
+    const cname=g('customer');
+    if(cname){
+      let c=db.customers.find(x=>x.name.toLowerCase()===cname.toLowerCase());
+      if(!c){ c={id:uid(),name:cname,contact:'',sourceType:'',sourceCustomerId:null,sourceHead:'',requests:[],note:'',created:Date.now()}; db.customers.push(c); custMade++; }
+      customerId=c.id;
+    }
+    const st=g('status').toLowerCase();
+    const soldDate=g('soldDate');
+    const status=st.includes('inactive')?'inactive':(st.includes('sold')||soldDate)?'sold':'stock';
+    db.codes??={};
+    const vk=variantKey(product,g('plan'));
+    let code=g('code').toUpperCase();
+    if(code) db.codes[vk]=code; else code=codeFor(product,g('plan'),true);
+    db.accounts.push({ id:uid(), code, product, plan:g('plan'), cost:num(g('cost')), price:num(g('price')),
+      email, pass:g('pass'), twofa:g('twofa').replace(/\s+/g,''), supplier:g('supplier'),
+      renew:g('renew'), expire:g('expire'), status,
+      customerId:status!=='stock'?customerId:null,
+      soldDate:status!=='stock'?(soldDate||todayStr()):'',
+      soldPrice:num(g('soldPrice'))||(status==='sold'?num(g('price')):0),
+      soldNote:g('note'), replacedById:null, replacesId:null,
+      inactiveNote:status==='inactive'?(g('note')||'Imported as inactive'):'', created:Date.now() });
+    added++;
+  }
+  return {added,skipped,custMade};
+}
+function downloadTemplate(){
+  const lines=[
+    'Code,Product,Plan,Cost,Price,Gmail,Password,2FA Key,Supplier,Customer,Sold Price,Sold Date,Warranty End,Expire Date,Status,Note',
+    'N001,Netflix,Premium · 1 Month,8000,12000,nfx01@gmail.com,Pass@123,JBSWY3DPEHPK3PXP,MM Store,,,,,2026-09-01,In Stock,',
+    ',ChatGPT,Plus · 1 Month,30000,38000,gpt02@gmail.com,Gpt@456,,Global Keys,Ko Zaw,38000,2026-07-20,2026-08-19,2026-08-19,Sold,',
+  ];
+  downloadFile('﻿'+lines.join('\r\n'),'vaultkey-import-template.csv','text/csv;charset=utf-8');
+}
+function doImport(text){
+  if(!text.trim()){ toast('Choose a CSV file or paste CSV text first','err'); return; }
+  const res=importCSV(text);
+  if(res.err){ toast(res.err,'err'); return; }
+  save(); render();
+  $('#ovImport').classList.remove('show');
+  toast(`Imported ${res.added} accounts ✓${res.custMade?` · ${res.custMade} new customers`:''}${res.skipped?` · ${res.skipped} skipped (duplicate/empty)`:''}`,'ok');
+}
+
+/* ================= login / lock ================= */
+async function sha256(t){
+  if(window.crypto?.subtle){
+    const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('vk:'+t));
+    return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+  }
+  return 'plain:'+btoa('vk:'+t);
+}
+function lockUi(){
+  const hasPin=!!db.settings?.pin;
+  $('#lockLbl').textContent=hasPin?'Logout — Lock Now':'Login — Set Passcode';
+  $('#mPin').style.display=hasPin?'flex':'none';
+}
+function showLock(){ $('#lockScreen').style.display='flex'; setTimeout(()=>$('#lockPin').focus(),80); }
+function hideLock(){ $('#lockScreen').style.display='none'; $('#lockPin').value=''; $('#lockErr').textContent=''; }
+async function tryUnlock(){
+  const v=$('#lockPin').value;
+  if(!v) return;
+  if(await sha256(v)===db.settings.pin){ hideLock(); toast('Welcome back ✓','ok'); }
+  else { $('#lockErr').textContent='Wrong passcode — try again'; $('#lockPin').value=''; $('#lockPin').focus(); }
+}
+async function savePin(){
+  const v=$('#pinNew').value.trim();
+  if(!v){ toast('Enter a passcode','err'); return; }
+  db.settings??={}; db.settings.pin=await sha256(v);
+  save(); lockUi();
+  $('#ovPin').classList.remove('show'); $('#pinNew').value='';
+  toast('Passcode set — Login is on 🔒','ok');
+}
+
+/* ================= backup / restore ================= */
+function backupJson(){
+  downloadFile(JSON.stringify({app:'vaultkey',version:2,exported:new Date().toISOString(),...db},null,2),'vaultkey-backup.json','application/json');
+  toast('Backup downloaded ✓','ok');
+}
+function parseBackup(data){
+  if(Array.isArray(data)) { migrateV1(data); return true; }
+  if(Array.isArray(data.accounts)){ db={accounts:data.accounts,customers:data.customers||[],refunds:data.refunds||[],settings:data.settings||{goal:200000},codes:data.codes||{}}; migrateCodes(); return true; }
+  if(Array.isArray(data.items)){ migrateV1(data.items); return true; }
+  return false;
+}
+function restoreJson(file){
+  const r=new FileReader();
+  r.onload=()=>{ try{
+      if(!parseBackup(JSON.parse(r.result))) throw 0;
+      save(); render();
+      toast(`Restored ${db.accounts.length} accounts, ${db.customers.length} customers ✓`,'ok');
+      $('#ovBackup').classList.remove('show');
+    }catch(e){ toast('Invalid backup file','err'); } };
+  r.readAsText(file);
+}
+
+/* ================= Google Drive sync ================= */
+const DRIVE_FILE='vaultkey-backup.json';
+let gToken=null,gTokenClient=null;
+function driveUiState(){
+  const on=!!gToken;
+  $('#driveDot').classList.toggle('on',on);
+  $('#driveDot2').classList.toggle('on',on);
+  $('#driveStatusTxt').textContent=on?'Connected to Google Drive':'Not connected';
+  $('#btnDriveUp').disabled=!on; $('#btnDriveDown').disabled=!on;
+  const ls=store.get(KEY_SYNC);
+  $('#lastSync').textContent=ls?('Last sync: '+new Date(+ls).toLocaleString()):'';
+}
+function loadGsi(){
+  return new Promise((res,rej)=>{
+    if(window.google?.accounts?.oauth2) return res();
+    const s=document.createElement('script'); s.src='https://accounts.google.com/gsi/client';
+    s.onload=res; s.onerror=()=>rej(new Error('load fail'));
+    document.head.appendChild(s);
+  });
+}
+async function driveConnect(){
+  const cid=$('#fClientId').value.trim();
+  if(!cid){ toast('Paste your Google Client ID first','err'); return; }
+  if(location.protocol==='file:'){ toast('Google sign-in needs http(s) — host this file first (see guide)','err'); return; }
+  store.set(KEY_CID,cid);
+  try{ await loadGsi(); }catch(e){ toast('Could not load Google sign-in (offline?)','err'); return; }
+  gTokenClient=google.accounts.oauth2.initTokenClient({
+    client_id:cid, scope:'https://www.googleapis.com/auth/drive.file',
+    callback:(resp)=>{ if(resp.access_token){ gToken=resp.access_token; driveUiState(); toast('Google connected ✓','ok'); } else toast('Sign-in failed','err'); },
+    error_callback:()=>toast('Sign-in cancelled','err'),
+  });
+  gTokenClient.requestAccessToken();
+}
+async function driveFind(){
+  const q=encodeURIComponent(`name='${DRIVE_FILE}' and trashed=false`);
+  const r=await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)`,{headers:{Authorization:'Bearer '+gToken}});
+  if(!r.ok) throw new Error('list '+r.status);
+  return (await r.json()).files?.[0]?.id||null;
+}
+async function driveUpload(){
+  try{
+    const body=JSON.stringify({app:'vaultkey',version:2,exported:new Date().toISOString(),...db});
+    const id=await driveFind(); let r;
+    if(id){ r=await fetch(`https://www.googleapis.com/upload/drive/v3/files/${id}?uploadType=media`,
+      {method:'PATCH',headers:{Authorization:'Bearer '+gToken,'Content-Type':'application/json'},body}); }
+    else{ const meta={name:DRIVE_FILE,mimeType:'application/json'}; const bound='vkb'+Date.now();
+      const mp=`--${bound}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(meta)}\r\n--${bound}\r\nContent-Type: application/json\r\n\r\n${body}\r\n--${bound}--`;
+      r=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',
+        {method:'POST',headers:{Authorization:'Bearer '+gToken,'Content-Type':'multipart/related; boundary='+bound},body:mp}); }
+    if(!r.ok) throw new Error('upload '+r.status);
+    store.set(KEY_SYNC,String(Date.now())); driveUiState();
+    toast('Saved to Google Drive ✓','ok');
+  }catch(e){
+    if(String(e).includes('401')){ gToken=null; driveUiState(); toast('Session expired — connect again','err'); }
+    else toast('Drive save failed: '+e.message,'err');
+  }
+}
+async function driveDownload(){
+  try{
+    const id=await driveFind();
+    if(!id){ toast('No backup found in Drive yet','err'); return; }
+    const r=await fetch(`https://www.googleapis.com/drive/v3/files/${id}?alt=media`,{headers:{Authorization:'Bearer '+gToken}});
+    if(!r.ok) throw new Error('download '+r.status);
+    if(!parseBackup(await r.json())) throw new Error('bad file');
+    save(); render();
+    toast(`Restored from Drive ✓`,'ok');
+  }catch(e){
+    if(String(e).includes('401')){ gToken=null; driveUiState(); toast('Session expired — connect again','err'); }
+    else toast('Drive restore failed: '+e.message,'err');
+  }
+}
+
+/* ================= render dispatch & tabs ================= */
+function render(){
+  if(tab==='dash') renderDash();
+  else if(tab==='accounts') renderAccounts();
+  else if(tab==='customers') renderCustomers();
+  else renderAnalytics();
+}
+function setTab(t){
+  tab=t;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on',v.id==='view-'+t));
+  document.querySelectorAll('.d-item[data-goto]').forEach(b=>b.classList.toggle('on',b.dataset.goto===t));
+  $('#searchRow').style.display=(t==='analytics'||t==='dash')?'none':'flex';
+  $('#sort').style.display=t==='accounts'?'block':'none';
+  $('#q').placeholder=t==='customers'?'Search customers — name, contact, source, requests…':'Search everything — product, gmail, customer, supplier, 2FA…';
+  $('#btnAddLbl').textContent=t==='customers'?'Add Customer':'Add Account';
+  closeDrawer();
+  render();
+}
+function openDrawer(){ $('#drawer').classList.add('show'); $('#drawerOv').classList.add('show'); }
+function closeDrawer(){ $('#drawer').classList.remove('show'); $('#drawerOv').classList.remove('show'); }
+
+/* ================= events ================= */
+$('#tabs').addEventListener('click',e=>{ const b=e.target.closest('.tab-btn'); if(b) setTab(b.dataset.tab); });
+$('#q').addEventListener('input',e=>{ query=e.target.value.trim(); $('#qClr').style.display=query?'block':'none'; render(); });
+$('#qClr').addEventListener('click',()=>{ $('#q').value=''; query=''; $('#qClr').style.display='none'; render(); $('#q').focus(); });
+$('#sort').addEventListener('change',e=>{ sortBy=e.target.value; render(); });
+$('#prodSel').addEventListener('change',e=>{ prodFilter=e.target.value; render(); });
+$('#statusSel').addEventListener('change',e=>{ filter=e.target.value; render(); });
+document.querySelector('.rangechips').addEventListener('click',e=>{
+  const b=e.target.closest('.chip'); if(!b) return;
+  range=b.dataset.r;
+  document.querySelectorAll('.rangechips .chip').forEach(c=>c.classList.toggle('on',c===b));
+  const cu=range==='custom';
+  $('#rFrom').style.display=cu?'block':'none'; $('#rTo').style.display=cu?'block':'none';
+  render();
+});
+$('#rFrom').addEventListener('change',e=>{ rangeFrom=e.target.value; render(); });
+$('#rTo').addEventListener('change',e=>{ rangeTo=e.target.value; render(); });
+$('#btnAdd').addEventListener('click',()=>{ tab==='customers'?openCustForm():openForm(); });
+$('#btnSave').addEventListener('click',saveForm);
+$('#form').addEventListener('submit',e=>{e.preventDefault();saveForm();});
+$('#presetRow').addEventListener('click',e=>{ const b=e.target.closest('[data-preset]'); if(b) applyPreset(b.dataset.preset); });
+/* drawer */
+$('#btnMenu').addEventListener('click',openDrawer);
+$('#drawerClose').addEventListener('click',closeDrawer);
+$('#drawerOv').addEventListener('click',closeDrawer);
+document.querySelectorAll('.d-item[data-goto]').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.goto)));
+$('#mExport').addEventListener('click',()=>{ closeDrawer(); openExport(); });
+$('#mBackup').addEventListener('click',()=>{ closeDrawer(); $('#ovBackup').classList.add('show'); });
+$('#mImport').addEventListener('click',()=>{ closeDrawer(); $('#csvPaste').value=''; $('#ovImport').classList.add('show'); });
+$('#btnCsvFile').addEventListener('click',()=>$('#csvFileIn').click());
+$('#csvFileIn').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{ $('#csvPaste').value=r.result; toast('File loaded — press Import','ok'); };
+  r.readAsText(f); e.target.value='';
+});
+$('#btnTemplate').addEventListener('click',downloadTemplate);
+/* acc code auto-fill */
+$('#fProduct').addEventListener('input',updateCodeField);
+$('#fPlan').addEventListener('input',updateCodeField);
+/* supabase */
+$('#mSb').addEventListener('click',()=>{
+  closeDrawer();
+  const c=sbCfg();
+  $('#sbUrl').value=c.url||''; $('#sbKey').value=c.key||''; $('#sbAuto').checked=!!c.auto;
+  sbUi(); $('#ovSb').classList.add('show');
+});
+$('#btnSbSave').addEventListener('click',sbSaveSettings);
+$('#btnSbPush').addEventListener('click',()=>sbPush(false));
+$('#btnSbPull').addEventListener('click',sbPull);
+$('#btnSbSqlCopy').addEventListener('click',()=>copyText($('#sbSql').textContent));
+$('#btnImportGo').addEventListener('click',()=>doImport($('#csvPaste').value));
+/* login / lock */
+$('#mLock').addEventListener('click',()=>{
+  closeDrawer();
+  if(db.settings?.pin) showLock();
+  else { $('#pinSub').textContent='Set a passcode — the app will ask for it every time it opens (Login), and you can lock it any time (Logout).';
+    $('#btnPinRemove').style.display='none'; $('#pinNew').value=''; $('#ovPin').classList.add('show'); setTimeout(()=>$('#pinNew').focus(),60); }
+});
+$('#mPin').addEventListener('click',()=>{
+  closeDrawer();
+  $('#pinSub').textContent='Enter a new passcode, or remove the passcode to turn Login off.';
+  $('#btnPinRemove').style.display='inline-flex'; $('#pinNew').value='';
+  $('#ovPin').classList.add('show'); setTimeout(()=>$('#pinNew').focus(),60);
+});
+$('#btnPinSave').addEventListener('click',savePin);
+$('#btnPinRemove').addEventListener('click',()=>{ delete db.settings.pin; save(); lockUi();
+  $('#ovPin').classList.remove('show'); toast('Passcode removed — Login off','ok'); });
+$('#btnUnlock').addEventListener('click',tryUnlock);
+$('#lockPin').addEventListener('keydown',e=>{ if(e.key==='Enter') tryUnlock(); });
+$('#mDrive').addEventListener('click',()=>{ closeDrawer(); $('#fClientId').value=store.get(KEY_CID)||''; driveUiState(); $('#ovDrive').classList.add('show'); });
+/* export modal */
+$('#xRange').addEventListener('change',e=>{ const cu=e.target.value==='custom';
+  $('#xFromWrap').style.display=cu?'flex':'none'; $('#xToWrap').style.display=cu?'flex':'none'; });
+$('#btnExportGo').addEventListener('click',exportCsv);
+/* goal */
+$('#btnGoalEdit').addEventListener('click',()=>{ $('#gAmount').value=db.settings?.goal||''; $('#ovGoal').classList.add('show'); setTimeout(()=>$('#gAmount').focus(),60); });
+$('#btnGoalSave').addEventListener('click',()=>{ db.settings??={}; db.settings.goal=num($('#gAmount').value);
+  save(); $('#ovGoal').classList.remove('show'); render(); toast('Today goal set — '+money(db.settings.goal)+' Ks 🎯','ok'); });
+/* requests */
+$('#btnReqAdd').addEventListener('click',addRequest);
+$('#reqCust').addEventListener('keydown',e=>{ if(e.key==='Enter') addRequest(); });
+/* dashboard stock rows */
+$('#stockList').addEventListener('click',e=>{
+  const r=e.target.closest('[data-stockgo]'); if(!r) return;
+  prodFilter=r.dataset.stockgo; filter='stock'; range='all';
+  setTab('accounts');
+  $('#statusSel').value='stock';
+});
+/* backup & drive */
+$('#btnJsonOut').addEventListener('click',backupJson);
+$('#btnJsonIn').addEventListener('click',()=>$('#fileIn').click());
+$('#fileIn').addEventListener('change',e=>{ if(e.target.files[0]) restoreJson(e.target.files[0]); e.target.value=''; });
+$('#btnDriveConnect').addEventListener('click',driveConnect);
+$('#btnDriveUp').addEventListener('click',driveUpload);
+$('#btnDriveDown').addEventListener('click',driveDownload);
+$('#btnSellSave').addEventListener('click',saveSell);
+$('#sCustomer').addEventListener('input',checkSellCust);
+$('#btnRefundSave').addEventListener('click',saveRefund);
+$('#btnReplaceSave').addEventListener('click',saveReplace);
+$('#btnCustSave').addEventListener('click',saveCust);
+$('#cSourceType').addEventListener('change',custSrcVis);
+$('#dailyMonthSel').addEventListener('change',renderDaily);
+$('#radarH').addEventListener('click',()=>$('#radar').classList.toggle('closed'));
+document.addEventListener('click',e=>{
+  const cl=e.target.closest('[data-close]'); if(cl){ $('#'+cl.dataset.close).classList.remove('show'); return; }
+  const cp=e.target.closest('[data-cust]'); if(cp){ document.querySelectorAll('.overlay.show').forEach(o=>o.classList.remove('show')); openProfile(cp.dataset.cust); return; }
+  const ce=e.target.closest('[data-cedit-modal]'); if(ce){ $('#ovProfile').classList.remove('show'); openCustForm(ce.dataset.ceditModal); return; }
+  const rs=e.target.closest('[data-radar-sell]'); if(rs){ openSell(rs.dataset.radarSell,rs.dataset.radarCust||null); return; }
+  const ra=e.target.closest('[data-radar-add]'); if(ra){ openForm(); setTimeout(()=>applyPreset(ra.dataset.radarAdd),80); return; }
+  const uc=e.target.closest('[data-usecalc]');
+  if(uc){ $('#rAmount').value=uc.dataset.usecalc; toast('Calculated amount filled ✓','ok'); return; }
+  const rd=e.target.closest('[data-reqdel]');
+  if(rd){ const [cid,req]=rd.dataset.reqdel.split('|');
+    const c=custById(cid);
+    if(c){ c.requests=(c.requests||[]).filter(r=>r!==req); save(); render(); toast('Request removed','ok'); }
+    return; }
+});
+document.querySelectorAll('.overlay').forEach(ov=>ov.addEventListener('mousedown',e=>{ if(e.target===ov) ov.classList.remove('show'); }));
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape') document.querySelectorAll('.overlay.show').forEach(o=>o.classList.remove('show'));
+  if((e.ctrlKey||e.metaKey)&&e.key==='k'){ e.preventDefault(); $('#q').focus(); }
+});
+/* accounts table */
+let pendingUnsell=null;
+$('#tblBody').addEventListener('click',e=>{
+  const card=e.target.closest('tr[data-id]'); if(!card) return;
+  const id=card.dataset.id, a=accById(id);
+  if(e.target.closest('[data-copyacc]')){ copyText(accCopyText(a)); toast('Acc copied — customer ကိုပို့လို့ရပြီ (supplier/cost မပါ) ✓','ok'); return; }
+  const isAction=e.target.closest('[data-sell],[data-unsell],[data-refund],[data-replace],[data-dup],[data-edit],[data-del],[data-cust]');
+  if(!isAction){
+    const copyCell=e.target.closest('[data-copy]');
+    if(copyCell&&copyCell.dataset.copy){ copyText(copyCell.dataset.copy); return; }
+  }
+  if(e.target.closest('[data-sell]')){ openSell(id); return; }
+  if(e.target.closest('[data-refund]')){ openRefund(id); return; }
+  if(e.target.closest('[data-replace]')){ openReplace(id); return; }
+  if(e.target.closest('[data-dup]')){ openForm(null,id); return; }
+  const us=e.target.closest('[data-unsell]');
+  if(us){
+    if(pendingUnsell===id){ pendingUnsell=null;
+      a.status='stock'; a.customerId=null; a.soldDate=''; a.soldPrice=0; a.soldNote='';
+      save(); render(); toast('Returned to stock','ok'); }
+    else{ pendingUnsell=id; us.textContent='→ Stock?'; setTimeout(()=>{ if(pendingUnsell===id){ pendingUnsell=null; render(); } },2600); }
+    return;
+  }
+  if(e.target.closest('[data-edit]')){ openForm(id); return; }
+  const delBtn=e.target.closest('[data-del]');
+  if(delBtn){
+    if(pendingDelete===id){ db.accounts=db.accounts.filter(x=>x.id!==id);
+      db.refunds=db.refunds.filter(r=>r.accountId!==id);
+      db.accounts.forEach(x=>{ if(x.replacesId===id)x.replacesId=null; if(x.replacedById===id)x.replacedById=null; });
+      pendingDelete=null; save(); render(); toast('Account deleted','ok'); }
+    else{ pendingDelete=id; delBtn.innerHTML='Sure?'; delBtn.style.color='var(--red)'; delBtn.style.borderColor='var(--red)';
+      setTimeout(()=>{ if(pendingDelete===id){ pendingDelete=null; render(); } },2600); }
+  }
+});
+/* customers grid */
+let pendingCDel=null;
+$('#custGrid').addEventListener('click',e=>{
+  const card=e.target.closest('.card'); if(!card) return;
+  const cid=card.dataset.cid;
+  if(e.target.closest('[data-cprofile]')){ openProfile(cid); return; }
+  if(e.target.closest('[data-cedit]')){ openCustForm(cid); return; }
+  const delBtn=e.target.closest('[data-cdel]');
+  if(delBtn){
+    if(pendingCDel===cid){ db.customers=db.customers.filter(c=>c.id!==cid);
+      db.accounts.forEach(a=>{ if(a.customerId===cid)a.customerId=null; });
+      db.customers.forEach(c=>{ if(c.sourceCustomerId===cid){c.sourceCustomerId=null;c.sourceType='';} });
+      pendingCDel=null; save(); render(); toast('Customer deleted (sales history kept)','ok'); }
+    else{ pendingCDel=cid; delBtn.innerHTML='Sure?'; delBtn.style.color='var(--red)'; delBtn.style.borderColor='var(--red)';
+      setTimeout(()=>{ if(pendingCDel===cid){ pendingCDel=null; render(); } },2600); }
+  }
+});
+
+/* ================= init ================= */
+load(); lockUi();
+if(db.settings?.pin) showLock();
+setTab('dash');
+
+</script>
+</body>
+</html>
