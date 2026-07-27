@@ -11,7 +11,7 @@
   --bg:#f2f1f9; --bg2:#ffffff; --card:#ffffff; --card2:#f4f2fb;
   --line:rgba(35,30,90,.09); --line2:rgba(35,30,90,.16);
   --txt:#1d1b33; --mut:#6b7194; --dim:#9aa2c0;
-  --vio:#8b3dff; --cyan:#0097a0; --grad:linear-gradient(135deg,#8b3dff,#00c4cc);
+  --vio:#2563eb; --cyan:#0891b2; --blue:#2563eb; --blue2:#0ea5e9; --grad:linear-gradient(135deg,#2563eb,#0ea5e9);
   --green:#0e9f6e; --red:#e02440; --amber:#c27803;
   --ch-blue:#2a78d6; --ch-red:#e34948; --grid:#e7e5f0; --axis:#cfccde;
   --r:16px; --sh:0 14px 34px rgba(80,60,180,.13);
@@ -43,7 +43,7 @@ header{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:18p
   padding:9px 20px;border-radius:11px;cursor:pointer;transition:.18s;display:flex;gap:8px;align-items:center}
 .tab-btn svg{width:15px;height:15px}
 .tab-btn:hover{color:var(--txt)}
-.tab-btn.on{background:var(--grad);color:#fff;box-shadow:0 4px 14px rgba(139,61,255,.3)}
+.tab-btn.on{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;box-shadow:0 4px 14px rgba(37,99,235,.28)}
 .view{display:none}.view.on{display:block}
 /* ---------- buttons ---------- */
 .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line2);background:var(--card);
@@ -263,8 +263,8 @@ details.guide[open] summary::before{content:'▾ '}
   border:none;color:var(--txt);font:inherit;font-size:14px;font-weight:600;cursor:pointer;text-align:left;width:100%;transition:.15s}
 .d-item:hover{background:var(--card2)}
 .d-item svg{width:17px;height:17px;color:var(--mut);flex:none}
-.d-item.on{background:rgba(139,61,255,.10);color:#7c3aed}
-.d-item.on svg{color:#7c3aed}
+.d-item.on{background:rgba(37,99,235,.10);color:var(--blue)}
+.d-item.on svg{color:var(--blue)}
 .d-close{margin-left:auto;background:var(--card);border:1px solid var(--line2);color:var(--mut);width:32px;height:32px;border-radius:10px;cursor:pointer;font-size:15px}
 /* ---------- dashboard ---------- */
 .goal-card{background:linear-gradient(135deg,rgba(139,61,255,.16),rgba(0,196,204,.08));border:1px solid rgba(139,61,255,.35);
@@ -351,6 +351,67 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
   .tabs{width:100%}
   .tab-btn{flex:1;justify-content:center;padding:9px 8px}
 }
+
+/* ---------- responsive & requested enhancements ---------- */
+.view,.chart-card,.tbl-wrap,.tbl-scroll,.dash-card,.goal-card{min-width:0;max-width:100%}
+.chart-card{overflow:hidden}
+.chart-svg{width:100%;height:auto;max-width:100%}
+.tbl-wrap,.tbl-scroll{-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+.badge.stock{background:rgba(14,159,110,.14);color:var(--green);border-color:rgba(14,159,110,.42)}
+.badge.sold{background:rgba(224,36,64,.14);color:var(--red);border-color:rgba(224,36,64,.42)}
+.delivery-cell{max-width:230px}
+.delivery-preview{display:inline-block;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle;font-family:'JetBrains Mono',monospace;font-size:11.5px}
+.key-chip{display:inline-flex;align-items:center;gap:5px;margin-top:4px;padding:3px 8px;border-radius:8px;background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.22);color:var(--blue);font-size:10.5px;font-weight:700;max-width:180px}
+.key-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.metric-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}
+.metric-box{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:14px;min-width:0}
+.metric-box .mv{font-size:21px;font-weight:800;letter-spacing:-.02em;overflow-wrap:anywhere}
+.metric-box .ml{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin-top:3px}
+.product-bars{display:flex;flex-direction:column;gap:11px;margin-top:4px}
+.product-bar-row{display:grid;grid-template-columns:minmax(90px,180px) minmax(120px,1fr) minmax(90px,130px);gap:12px;align-items:center;font-size:12.5px}
+.product-bar-name{min-width:0;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.product-bar-track{height:15px;background:rgba(30,20,80,.07);border-radius:99px;overflow:hidden}
+.product-bar-fill{height:100%;min-width:3px;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--blue2))}
+.product-bar-val{text-align:right;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+.slip-paper{background:#fff;color:#172033;border:1px solid #dbe3ef;border-radius:16px;padding:22px;box-shadow:0 10px 30px rgba(15,23,42,.08)}
+.slip-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding-bottom:14px;border-bottom:2px solid #e8eef7}
+.slip-brand{font-size:22px;font-weight:900;color:#2563eb}.slip-paid{padding:6px 13px;border-radius:99px;background:#dcfce7;color:#15803d;font-size:12px;font-weight:900;letter-spacing:.08em}
+.slip-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;margin:17px 0}
+.slip-field{font-size:12px;color:#64748b}.slip-field b{display:block;color:#172033;font-size:14px;margin-top:3px;overflow-wrap:anywhere}
+.slip-thanks{text-align:center;background:#eff6ff;border-radius:12px;padding:12px;color:#1d4ed8;font-weight:800}
+.delete-warning{background:rgba(224,36,64,.07);border:1px solid rgba(224,36,64,.24);border-radius:13px;padding:13px;color:var(--red);font-size:12.5px;line-height:1.55;margin:13px 0}
+.safe-code{font-family:'JetBrains Mono',monospace;background:var(--card2);border:1px solid var(--line2);border-radius:8px;padding:2px 7px;font-weight:800}
+.file-line{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.file-line input[type=file]{flex:1;min-width:200px}
+@media(max-width:1024px){
+  .wrap{max-width:100%;padding-left:18px;padding-right:18px}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .chart-card{padding:17px}
+  table.data{min-width:1180px}
+}
+@media(max-width:760px){
+  .wrap{padding:14px 12px 54px}
+  header{gap:10px;margin-bottom:12px}.logo h1{font-size:18px}.logo-ic{width:38px;height:38px}
+  .hdr-actions{width:auto;margin-left:auto}.hdr-actions .btn{padding:9px 12px}.burger{width:40px;height:40px}
+  .tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:5px;padding:5px;border-radius:15px}
+  .tab-btn{justify-content:center;padding:9px 7px;font-size:12.5px;min-width:0}
+  .search-row{gap:8px}.search{min-width:100%}.search input{padding-top:12px;padding-bottom:12px}.search-row .sort{width:100%}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.stat{padding:13px}.stat .n{font-size:20px}
+  .goal-card{padding:17px}.goal-top .amt{font-size:24px}.goal-top .pct{width:100%;margin-left:0}
+  .dash-card,.chart-card{padding:14px;border-radius:14px}
+  .chart-hd{align-items:stretch}.chart-hd>div{min-width:0}.chart-hd .sort{width:100%;margin-left:0!important}
+  .metric-strip{grid-template-columns:1fr}.product-bar-row{grid-template-columns:minmax(82px,120px) minmax(80px,1fr);gap:8px}.product-bar-val{grid-column:2;text-align:left;font-size:11.5px;color:var(--mut);margin-top:-6px}
+  .slip-grid{grid-template-columns:1fr}.modal{padding:18px;border-radius:16px}.overlay{padding:14px 10px;align-items:flex-start}
+  .modal-foot{flex-wrap:wrap}.modal-foot .btn{flex:1;justify-content:center;min-width:135px}
+  .fbar{gap:7px}.fbar>select,.fbar>input{flex:1;min-width:140px}.rangechips{width:100%;overflow-x:auto;flex-wrap:nowrap;padding-bottom:3px}
+  table.data{min-width:1120px}.tbl-foot{gap:8px 14px}
+}
+@media(max-width:420px){
+  .logo small{font-size:9px}.hdr-actions .btn span{display:none}.hdr-actions .btn{width:40px;height:40px;padding:0;justify-content:center}
+  .stats{grid-template-columns:1fr}.tab-btn{font-size:12px}.tab-btn svg{width:14px;height:14px}
+  .goal-top .amt{font-size:21px}.goal-top .amt small{font-size:12px}
+  .slip-paper{padding:15px}.slip-brand{font-size:19px}
+}
+
 </style>
 </head>
 <body>
@@ -477,7 +538,7 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
     <div class="tbl-wrap">
       <table class="data">
         <thead><tr>
-          <th>Product</th><th>Gmail</th><th>Password</th><th>2FA</th><th>Customer</th>
+          <th>Product</th><th>Gmail</th><th>Password</th><th>2FA</th><th>Delivery / Key</th><th>Customer</th>
           <th>Price</th><th>Date</th><th>Expire</th><th>Status</th><th></th>
         </tr></thead>
         <tbody id="tblBody"></tbody>
@@ -506,9 +567,11 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
     <div class="stats" id="anTiles"></div>
     <div class="chart-card">
       <div class="chart-hd">
-        <div><h3>Monthly Selling</h3><div class="sub">Last 12 months · selling amount (revenue) — profit &amp; refunds in the hover detail</div></div>
+        <div><h3>Product Sales Comparison</h3><div class="sub">Selected month အတွင်း Product အလိုက် sold accounts နဲ့ selling amount နှိုင်းယှဉ်ချက်</div></div>
+        <select class="sort" id="prodMonthSel" style="margin-left:auto"></select>
       </div>
-      <div id="chartMonthly"></div>
+      <div id="chartProduct"></div>
+      <div class="metric-strip" id="productMetrics"></div>
     </div>
     <div class="chart-card">
       <div class="chart-hd">
@@ -518,7 +581,7 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
       <div id="chartDaily"></div>
     </div>
     <div class="chart-card">
-      <div class="chart-hd"><div><h3>Month by Month Compare</h3><div class="sub">Revenue − cost = profit · refunds attributed to sale month</div></div></div>
+      <div class="chart-hd"><div><h3>Monthly Sales History</h3><div class="sub">လစဉ် selling, cost, profit, refund နဲ့ net comparison</div></div></div>
       <div class="tbl-scroll">
       <table class="cmp"><thead><tr>
         <th>Month</th><th>Sold</th><th>Revenue</th><th>Cost</th><th>Profit</th><th>Refunds</th><th>Net</th><th>vs Prev</th>
@@ -544,6 +607,8 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
       <div class="fg full"><label>Gmail / Email</label><input id="fEmail" class="mono" placeholder="account@gmail.com"></div>
       <div class="fg"><label>Password</label><input id="fPass" class="mono" placeholder="••••••••"></div>
       <div class="fg"><label>2FA Key (secret)</label><input id="f2fa" class="mono" placeholder="JBSWY3DPEHPK3PXP"></div>
+      <div class="fg full"><label>Activation Link / License Key / Delivery Text</label><textarea id="fDelivery" class="mono" rows="3" placeholder="https://...  or  XXXX-XXXX-XXXX"></textarea><div class="help">Link/key အရှည်ကြီးကို table မှာ အလိုအလျောက်ချုံ့ပြပြီး full value ကိုသိမ်းထားမယ်။</div></div>
+      <div class="fg full"><label>Key File (optional · max 200 KB)</label><div class="file-line"><input id="fKeyFile" type="file"><button type="button" class="btn sm danger" id="btnKeyClear">Remove file</button></div><div class="help" id="keyFileHelp">Small activation/key files only. JSON backup and Supabase sync will include the saved file.</div></div>
       <div class="fg"><label>Supplier</label><input id="fSupplier" placeholder="Where it came from" list="supList"></div>
       <div class="fg"><label>Warranty Expired Date</label><input id="fRenew" type="date"><div class="help">Warranty ကုန်မယ့်ရက် — refund formula မှာသုံးမယ်</div></div>
       <div class="fg"><label>Expire Date</label><input id="fExpire" type="date"></div>
@@ -575,6 +640,7 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
     </div>
     <div class="modal-foot">
       <button class="btn ghost" data-close="ovSell">Cancel</button>
+      <button class="btn" id="btnSlipOpen">🧾 Get Payment Slip</button>
       <button class="btn primary" id="btnSellSave">✓ Mark as Sold</button>
     </div>
   </div>
@@ -689,6 +755,36 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
     </div>
     <div class="drive-status" style="margin-top:12px"><span id="lastSync" style="font-weight:500;color:var(--dim)"></span></div>
     <div class="modal-foot"><button class="btn ghost" data-close="ovDrive">Close</button></div>
+  </div>
+</div>
+
+
+<!-- payment slip modal -->
+<div class="overlay" id="ovSlip">
+  <div class="modal wide">
+    <h2>🧾 Payment Slip</h2>
+    <div class="sub">Preview the receipt, download CSV, or print and choose “Save as PDF”.</div>
+    <div id="slipPreview"></div>
+    <div class="modal-foot">
+      <button class="btn ghost" data-close="ovSlip">Close</button>
+      <button class="btn" id="btnSlipCsv">⬇ Slip CSV</button>
+      <button class="btn primary" id="btnSlipPdf">🖨 Print / Save PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- safe account delete modal -->
+<div class="overlay" id="ovDeleteAcc">
+  <div class="modal" style="max-width:470px">
+    <h2 style="color:var(--red)">Delete Account Permanently?</h2>
+    <div class="sub" id="deleteAccSub"></div>
+    <div class="delete-warning">ဒီလုပ်ဆောင်ချက်က account နဲ့ ဆက်စပ် refund history ကိုပါ ဖျက်မယ်။ ပြန်ယူလို့မရပါ။ မဖျက်ခင် Backup လုပ်ထားတာ ပိုလုံခြုံပါတယ်။</div>
+    <label class="check" style="margin:10px 0"><input type="checkbox" id="deleteAccCheck"> I understand this cannot be undone</label>
+    <div class="fg"><label id="deleteAccLabel">Type account code to confirm</label><input id="deleteAccInput" class="mono" autocomplete="off"></div>
+    <div class="modal-foot">
+      <button class="btn ghost" data-close="ovDeleteAcc">Cancel</button>
+      <button class="btn danger" id="btnDeleteAccFinal" disabled>Delete Permanently</button>
+    </div>
   </div>
 </div>
 
@@ -854,7 +950,8 @@ const KEY='vaultkey.v2', KEY_V1='vaultkey.items', KEY_CID='vaultkey.clientId', K
 let db={accounts:[],customers:[],refunds:[],settings:{goal:200000}};
 let tab='dash', query='', filter='all', prodFilter='all', sortBy='new';
 let range='all', rangeFrom='', rangeTo='';
-let editId=null, editCustId=null, sellId=null, refundId=null, replaceId=null, pendingDelete=null;
+let editId=null, editCustId=null, sellId=null, refundId=null, replaceId=null;
+let deleteAccountId=null, slipAccountId=null, formKeyFile=null;
 
 const $=s=>document.querySelector(s);
 const uid=()=>'a'+Math.random().toString(36).slice(2,10)+Date.now().toString(36);
@@ -916,15 +1013,31 @@ function migrateCodes(){
   });
 }
 /* customer-safe copy text — supplier & cost are NEVER included */
+function codeBlock(txt){ return '```\n'+String(txt??'')+'\n```'; }
 function accCopyText(a){
   const dl=daysLeft(a.expire);
+  const credentials=[
+    a.email?`Mail: ${a.email}`:'',
+    a.pass?`Pass: ${a.pass}`:'',
+    a.twofa?`2FA: ${a.twofa}`:'',
+    a.delivery?`Activation / Key: ${a.delivery}`:'',
+  ].filter(Boolean).join('\n');
   return [
     `${a.code?'['+a.code+'] ':''}${a.product}${a.plan?' · '+a.plan:''}`,
-    a.email?`Gmail: ${a.email}`:'',
-    a.pass?`Password: ${a.pass}`:'',
-    a.twofa?`2FA Key: ${a.twofa}`:'',
+    credentials?codeBlock(credentials):'',
+    a.keyFileName?`Key File: ${a.keyFileName}`:'',
     a.expire?`Expire: ${fmtDate(a.expire)}${dl!==null&&dl>=0?' ('+dl+' days left)':''}`:'',
   ].filter(Boolean).join('\n');
+}
+function shortText(v,n=34){ const t=String(v||''); return t.length>n?t.slice(0,n-1)+'…':t; }
+function fileDataToBlob(data,type){
+  if(!data) return new Blob([],{type:type||'application/octet-stream'});
+  if(data.startsWith('data:')){ const [meta,b64]=data.split(','); const mime=(meta.match(/data:([^;]+)/)||[])[1]||type||'application/octet-stream'; const bin=atob(b64); const arr=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i); return new Blob([arr],{type:mime}); }
+  return new Blob([data],{type:type||'text/plain;charset=utf-8'});
+}
+function downloadKeyFile(a){
+  if(!a?.keyFileData){ toast('No key file saved','err'); return; }
+  const blob=fileDataToBlob(a.keyFileData,a.keyFileType); const x=document.createElement('a'); x.href=URL.createObjectURL(blob); x.download=a.keyFileName||'key-file'; document.body.appendChild(x); x.click(); setTimeout(()=>{URL.revokeObjectURL(x.href);x.remove();},400);
 }
 
 /* ================= supabase sync ================= */
@@ -954,45 +1067,79 @@ async function sbSaveSettings(){
   toast('Testing connection…','ok');
   const ok=await sbTest();
   c.ok=ok; sbStore(c); sbUi(ok);
-  if(ok) toast('Supabase connected ✓','ok');
+  if(ok){ toast('Supabase connected ✓','ok'); sbStartAutoSync(); }
   else toast('မချိတ်နိုင်ပါ — URL/Key မှန်လား၊ Setup SQL run ပြီးပြီလား စစ်ပါ','err');
 }
 async function sbPush(silent){
   const c=sbCfg();
-  if(!c.url||!c.key){ if(!silent) toast('Supabase settings အရင် save လုပ်ပါ','err'); return; }
+  if(!c.url||!c.key){ if(!silent) toast('Supabase settings အရင် save လုပ်ပါ','err'); return false; }
   try{
+    const now=new Date().toISOString();
     const r=await fetch(c.url+'/rest/v1/vault',{
       method:'POST',
       headers:{...sbHeaders(c),Prefer:'resolution=merge-duplicates'},
-      body:JSON.stringify([{id:'main',data:db,updated_at:new Date().toISOString()}])});
+      body:JSON.stringify([{id:'main',data:db,updated_at:now}])});
     if(!r.ok) throw new Error(r.status);
-    store.set(KEY_SBSYNC,String(Date.now())); sbUi(true);
+    sbDirty=false;
+    store.set(KEY_SBSYNC,String(Date.parse(now))); sbUi(true);
     if(!silent) toast('Saved to Supabase cloud ✓','ok');
-  }catch(e){ if(!silent) toast('Cloud save failed ('+e.message+') — Setup SQL run ပြီးပြီလား?','err'); }
+    return true;
+  }catch(e){
+    sbDirty=true;
+    if(!silent) toast('Cloud save failed ('+e.message+') — Setup SQL run ပြီးပြီလား?','err');
+    return false;
+  }
 }
-async function sbPull(){
+async function sbPull(silent=false){
   const c=sbCfg();
-  if(!c.url||!c.key){ toast('Supabase settings အရင် save လုပ်ပါ','err'); return; }
+  if(!c.url||!c.key){ if(!silent) toast('Supabase settings အရင် save လုပ်ပါ','err'); return false; }
+  /* Never overwrite local edits that are still waiting to upload. */
+  if(silent&&sbDirty) return false;
   try{
-    const r=await fetch(c.url+'/rest/v1/vault?id=eq.main&select=data',{headers:sbHeaders(c)});
+    const r=await fetch(c.url+'/rest/v1/vault?id=eq.main&select=data,updated_at',{headers:sbHeaders(c)});
     if(!r.ok) throw new Error(r.status);
     const rows=await r.json();
-    if(!rows.length||!rows[0].data){ toast('Cloud မှာ data မရှိသေးပါ — Save to Cloud အရင်လုပ်ပါ','err'); return; }
+    if(!rows.length||!rows[0].data){
+      if(!silent) toast('Cloud မှာ data မရှိသေးပါ — Save to Cloud အရင်လုပ်ပါ','err');
+      return false;
+    }
     db=rows[0].data;
     db.accounts??=[]; db.customers??=[]; db.refunds??=[]; db.settings??={goal:200000}; db.codes??={};
-    migrateCodes(); save(); lockUi(); render();
-    store.set(KEY_SBSYNC,String(Date.now())); sbUi(true);
-    toast(`Cloud data ဆွဲပြီးပြီ ✓ — ${db.accounts.length} accounts`,'ok');
-  }catch(e){ toast('Cloud load failed ('+e.message+')','err'); }
+    migrateCodes();
+    /* Save locally without triggering another cloud upload. */
+    store.set(KEY,JSON.stringify(db));
+    sbDirty=false;
+    lockUi(); render();
+    const syncedAt=rows[0].updated_at?Date.parse(rows[0].updated_at):Date.now();
+    store.set(KEY_SBSYNC,String(Number.isFinite(syncedAt)?syncedAt:Date.now())); sbUi(true);
+    if(!silent) toast(`Cloud data ဆွဲပြီးပြီ ✓ — ${db.accounts.length} accounts`,'ok');
+    return true;
+  }catch(e){
+    if(!silent) toast('Cloud load failed ('+e.message+')','err');
+    return false;
+  }
 }
-let sbTimer=null;
+let sbTimer=null, sbPollTimer=null, sbDirty=false;
 function sbAutoKick(){
   const c=sbCfg();
-  if(c.auto&&c.url&&c.key){ clearTimeout(sbTimer); sbTimer=setTimeout(()=>sbPush(true),2500); }
+  if(c.auto&&c.url&&c.key){
+    clearTimeout(sbTimer);
+    sbTimer=setTimeout(async()=>{ sbTimer=null; await sbPush(true); },2500);
+  }
+}
+function sbStartAutoSync(){
+  clearInterval(sbPollTimer); sbPollTimer=null;
+  const c=sbCfg();
+  if(!(c.auto&&c.url&&c.key)) return;
+  /* Pull once when the app opens, then refresh from cloud while it stays open. */
+  setTimeout(()=>sbPull(true),400);
+  sbPollTimer=setInterval(()=>{
+    if(document.visibilityState==='visible'&&!sbTimer&&!sbDirty) sbPull(true);
+  },15000);
 }
 
 /* ================= load / migrate / seed ================= */
-function save(){ store.set(KEY,JSON.stringify(db)); sbAutoKick(); }
+function save(){ store.set(KEY,JSON.stringify(db)); sbDirty=true; sbAutoKick(); }
 function load(){
   const raw=store.get(KEY);
   if(raw){ try{ db=JSON.parse(raw); db.accounts??=[]; db.customers??=[]; db.refunds??=[]; db.settings??={goal:200000}; migrateCodes(); return; }catch(e){} }
@@ -1139,23 +1286,29 @@ function expTag(a){
 }
 function tblRow(a){
   const dl=daysLeft(a.expire);
-  const badge=a.status==='stock'?'<span class="badge stock" data-sell title="Sell">In Stock</span>'
-    :a.status==='sold'?'<span class="badge sold" data-unsell title="Click twice → back to stock">Sold</span>'
+  const badge=a.status==='stock'?'<span class="badge stock" data-sell title="Mark as sold">In Stock</span>'
+    :a.status==='sold'?'<span class="badge sold" data-unsell title="Click twice → back to stock">Sold Out</span>'
     :'<span class="badge inactive" title="'+esc(a.inactiveNote||'')+'">Inactive</span>';
   const expCell=a.expire?`${fmtDate(a.expire)}<span class="subtxt" style="color:${dl<0?'var(--red)':dl<=7?'var(--amber)':'var(--dim)'}">${dl<0?'expired '+Math.abs(dl)+'d ago':dl+'d left'}</span>`:'—';
   const priceCell=a.status==='stock'?`${money(a.price)}${a.cost?`<span class="subtxt">cost ${money(a.cost)}</span>`:''}`
     :`${money(a.soldPrice)}${a.cost?`<span class="subtxt">cost ${money(a.cost)} · +${money((a.soldPrice||0)-a.cost)}</span>`:''}`;
-  const copyBtn=`<button class="mini" data-copyacc title="Copy acc for customer (gmail+pass+2FA — no supplier/cost)" style="color:var(--vio);border-color:rgba(139,61,255,.35)">${ICONS.copy}</button>`;
+  const copyBtn=`<button class="mini" data-copyacc title="Copy customer credentials in code format" style="color:var(--blue);border-color:rgba(37,99,235,.35)">${ICONS.copy}</button>`;
+  const slipBtn=`<button class="mini" data-slip title="Payment slip">🧾</button>`;
   const acts=a.status==='stock'
-    ?`${copyBtn}<button class="mini" data-sell title="Sell">💰</button><button class="mini" data-dup title="Duplicate">${ICONS.dup}</button><button class="mini" data-edit title="Edit">${ICONS.edit}</button><button class="mini" data-del title="Delete">${ICONS.trash}</button>`
+    ?`${copyBtn}<button class="mini" data-sell title="Mark as sold">💰</button><button class="mini" data-dup title="Duplicate">${ICONS.dup}</button><button class="mini" data-edit title="Edit">${ICONS.edit}</button><button class="mini" data-del title="Delete safely">${ICONS.trash}</button>`
     :a.status==='sold'
-    ?`${copyBtn}<button class="mini" data-refund title="Refund">↩</button><button class="mini" data-replace title="Replace">↺</button><button class="mini" data-edit title="Edit">${ICONS.edit}</button><button class="mini" data-del title="Delete">${ICONS.trash}</button>`
-    :`${copyBtn}<button class="mini" data-edit title="Edit">${ICONS.edit}</button><button class="mini" data-del title="Delete">${ICONS.trash}</button>`;
+    ?`${copyBtn}${slipBtn}<button class="mini" data-refund title="Refund">↩</button><button class="mini" data-replace title="Replace">↺</button><button class="mini" data-edit title="Edit">${ICONS.edit}</button><button class="mini" data-del title="Delete safely">${ICONS.trash}</button>`
+    :`${copyBtn}<button class="mini" data-edit title="Edit">${ICONS.edit}</button><button class="mini" data-del title="Delete safely">${ICONS.trash}</button>`;
+  const delivery=(a.delivery||a.keyFileName)?`<div class="delivery-cell">
+      ${a.delivery?`<span class="delivery-preview" title="${esc(a.delivery)}">${esc(shortText(a.delivery))}</span><button class="mini" data-codecopy="${esc(a.delivery)}" title="Copy in code format">${ICONS.copy}</button>`:''}
+      ${a.keyFileName?`<button class="key-chip" data-keydownload title="Download saved key file">📎 <span>${esc(a.keyFileName)}</span></button>`:''}
+    </div>`:'—';
   return `<tr data-id="${a.id}" ${a.status==='inactive'?'style="opacity:.55"':''}>
     <td>${a.code?`<span class="codechip">${hl(a.code)}</span>`:''}<b>${hl(a.product)}</b>${a.plan?`<span class="subtxt">${hl(a.plan)}</span>`:''}</td>
-    <td class="mono copyable" data-copy="${esc(a.email)}" title="Click to copy">${hl(a.email)||'—'}</td>
-    <td class="mono copyable" data-copy="${esc(a.pass)}" title="Click to copy">${hl(a.pass)||'—'}</td>
-    <td class="mono copyable" ${a.twofa?`data-copy="${esc(a.twofa)}" title="Click to copy secret"`:''}>${a.twofa?`<span class="totp" data-totp="${esc(a.twofa)}"><span class="code" style="font-size:13px">------</span></span>`:'—'}</td>
+    <td class="mono copyable" data-codecopy="${esc(a.email)}" title="Click to copy as code">${hl(a.email)||'—'}</td>
+    <td class="mono copyable" data-codecopy="${esc(a.pass)}" title="Click to copy as code">${hl(a.pass)||'—'}</td>
+    <td class="mono copyable" ${a.twofa?`data-codecopy="${esc(a.twofa)}" title="Click to copy secret as code"`:''}>${a.twofa?`<span class="totp" data-totp="${esc(a.twofa)}"><span class="code" style="font-size:13px">------</span></span>`:'—'}</td>
+    <td>${delivery}</td>
     <td>${a.customerId?`<span class="custlink" data-cust="${a.customerId}">${hl(custName(a.customerId))}</span>`:'—'}</td>
     <td style="font-variant-numeric:tabular-nums">${priceCell}</td>
     <td class="dimsm" style="font-size:12px;color:var(--mut)">${fmtDate(actDate(a))}${a.renew?`<span class="subtxt">W: ${fmtDate(a.renew)}</span>`:''}</td>
@@ -1175,7 +1328,7 @@ function renderAccounts(){
   fillProdSel();
   const list=accSorted(db.accounts.filter(accMatches));
   $('#tblBody').innerHTML=list.length?list.map(tblRow).join('')
-    :'<tr><td colspan="10" style="text-align:center;padding:40px;color:var(--dim)">No accounts match — change product, status or range</td></tr>';
+    :'<tr><td colspan="11" style="text-align:center;padding:40px;color:var(--dim)">No accounts match — change product, status or range</td></tr>';
   const stockV=list.filter(a=>a.status==='stock').reduce((s,a)=>s+(a.price||0),0);
   const soldV=list.filter(a=>a.soldDate).reduce((s,a)=>s+(a.soldPrice||0),0);
   $('#tblFoot').innerHTML=`<span><b>${list.length}</b> account${list.length!==1?'s':''}</span>
@@ -1208,7 +1361,8 @@ function renderDash(){
   const stock=db.accounts.filter(a=>a.status==='stock');
   const grp={};
   for(const a of stock){ const k=(a.product||'—').trim();
-    (grp[k]??={n:0,plans:{},soon:0}); grp[k].n++;
+    (grp[k]??={n:0,plans:{},soon:0,keys:0}); grp[k].n++;
+    if(a.delivery||a.keyFileName) grp[k].keys++;
     if(a.plan) grp[k].plans[a.plan]=(grp[k].plans[a.plan]||0)+1;
     const dl=daysLeft(a.expire); if(dl!==null&&dl<=7) grp[k].soon++; }
   const keys=Object.keys(grp).sort((a,b)=>grp[b].n-grp[a].n);
@@ -1216,6 +1370,7 @@ function renderDash(){
   $('#stockList').innerHTML=keys.length?keys.map(k=>`
     <div class="stock-row" data-stockgo="${esc(k)}">
       <div><div class="pn">${esc(k)}</div><div class="plans">${Object.entries(grp[k].plans).map(([p,n])=>esc(p)+(n>1?' ×'+n:'')).join(' · ')||''}</div></div>
+      ${grp[k].keys?`<span class="key-chip" title="Activation/key data saved">🔑 ${grp[k].keys}</span>`:''}
       ${grp[k].soon?`<span class="warn">⚠ ${grp[k].soon} expiring</span>`:''}
       <span class="acc">${grp[k].n} <small>Acc</small></span>
       <span class="badge stock" style="cursor:default">In Stock</span>
@@ -1516,6 +1671,9 @@ function openForm(id,dupFrom){
   $('#fCost').value=it?.cost||''; $('#fPrice').value=it?.price||'';
   $('#fEmail').value=(editId&&it)?it.email:''; $('#fPass').value=(editId&&it)?it.pass:'';
   $('#f2fa').value=(editId&&it)?it.twofa:'';
+  $('#fDelivery').value=(editId&&it)?(it.delivery||''):'';
+  formKeyFile=(editId&&it&&it.keyFileData)?{name:it.keyFileName||'key-file',type:it.keyFileType||'application/octet-stream',data:it.keyFileData}:null;
+  $('#fKeyFile').value=''; $('#keyFileHelp').textContent=formKeyFile?('Saved: '+formKeyFile.name):'Small activation/key files only. JSON backup and Supabase sync will include the saved file.';
   $('#fSupplier').value=it?.supplier||'';
   $('#fRenew').value=(editId&&it)?it.renew:''; $('#fExpire').value=(editId&&it)?it.expire:(dupFrom?it?.expire||'':'');
   updateCodeField();
@@ -1534,6 +1692,7 @@ function saveForm(){
   if(!product){ toast('Product name is required','err'); $('#fProduct').focus(); return; }
   const data={ product, plan:$('#fPlan').value.trim(), cost:num($('#fCost').value), price:num($('#fPrice').value),
     email:$('#fEmail').value.trim(), pass:$('#fPass').value, twofa:$('#f2fa').value.trim().replace(/\s+/g,''),
+    delivery:$('#fDelivery').value.trim(), keyFileName:formKeyFile?.name||'', keyFileType:formKeyFile?.type||'', keyFileData:formKeyFile?.data||'',
     supplier:$('#fSupplier').value.trim(), renew:$('#fRenew').value, expire:$('#fExpire').value };
   const typedCode=$('#fCode').value.trim().toUpperCase();
   db.codes??={};
@@ -1583,6 +1742,40 @@ function saveSell(){
   if(c.requests.length<before) toast(`Request cleared from ${c.name}'s wishlist ✓`,'ok');
   save(); $('#ovSell').classList.remove('show'); render();
   toast(`Sold to ${c.name} — ${money(a.soldPrice)} Ks ✓`,'ok');
+}
+function slipDataFromForm(a){
+  const name=$('#sCustomer').value.trim();
+  if(!name){ toast('Customer name is required for the payment slip','err'); $('#sCustomer').focus(); return null; }
+  return {store:'PxAiStore',customer:name,product:a.product||'',plan:a.plan||'',amount:num($('#sPrice').value)||(a.price||0),date:$('#sDate').value||todayStr(),warranty:a.renew||a.expire||'',status:'PAID',thanks:'Thanks For Choosing Our Service'};
+}
+function slipDataFromAccount(a){
+  return {store:'PxAiStore',customer:custName(a.customerId)||'Customer',product:a.product||'',plan:a.plan||'',amount:a.soldPrice||a.price||0,date:a.soldDate||todayStr(),warranty:a.renew||a.expire||'',status:'PAID',thanks:'Thanks For Choosing Our Service'};
+}
+function renderSlipPreview(d){
+  $('#slipPreview').innerHTML=`<div class="slip-paper">
+    <div class="slip-head"><div><div class="slip-brand">${esc(d.store)}</div><div style="font-size:12px;color:#64748b;margin-top:3px">PAYMENT RECEIPT · ${esc(d.date)}</div></div><span class="slip-paid">${esc(d.status)}</span></div>
+    <div class="slip-grid">
+      <div class="slip-field">Customer Name<b>${esc(d.customer)}</b></div>
+      <div class="slip-field">Product<b>${esc(d.product)}${d.plan?' · '+esc(d.plan):''}</b></div>
+      <div class="slip-field">Paid Amount<b>${money(d.amount)} MMK</b></div>
+      <div class="slip-field">Warranty Expired Date<b>${d.warranty?fmtDate(d.warranty):'—'}</b></div>
+    </div><div class="slip-thanks">${esc(d.thanks)}</div></div>`;
+  $('#ovSlip').dataset.slip=JSON.stringify(d); $('#ovSlip').classList.add('show');
+}
+function openSlipForSell(){ const a=accById(sellId); if(!a)return; const d=slipDataFromForm(a); if(d)renderSlipPreview(d); }
+function openSlipForAccount(a){ if(!a)return; slipAccountId=a.id; renderSlipPreview(slipDataFromAccount(a)); }
+function currentSlip(){ try{return JSON.parse($('#ovSlip').dataset.slip||'null');}catch(e){return null;} }
+function downloadSlipCsv(){
+  const d=currentSlip(); if(!d)return;
+  const lines=[['Store','Customer Name','Paid Status','Product','Plan','Paid Amount MMK','Purchase Date','Warranty Expired Date','Message'].map(csvCell).join(','),
+    [d.store,d.customer,d.status,d.product,d.plan,d.amount,d.date,d.warranty,d.thanks].map(csvCell).join(',')];
+  downloadFile('\ufeff'+lines.join('\r\n'),`payment-slip-${d.customer.replace(/[^a-z0-9]+/gi,'-')||'customer'}-${d.date}.csv`,'text/csv;charset=utf-8');
+}
+function printSlipPdf(){
+  const d=currentSlip(); if(!d)return;
+  const w=window.open('','_blank','width=760,height=900'); if(!w){toast('Popup blocked — allow popups and try again','err');return;}
+  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Payment Slip - ${esc(d.customer)}</title><style>body{font-family:Arial,sans-serif;background:#f3f6fb;padding:30px;color:#172033}.paper{max-width:650px;margin:auto;background:white;border:1px solid #dbe3ef;border-radius:18px;padding:32px}.head{display:flex;justify-content:space-between;border-bottom:2px solid #e8eef7;padding-bottom:18px}.brand{font-size:28px;font-weight:900;color:#2563eb}.paid{background:#dcfce7;color:#15803d;padding:7px 16px;border-radius:999px;font-weight:900}.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:25px 0}.l{font-size:12px;color:#64748b}.v{font-size:17px;font-weight:800;margin-top:5px}.thanks{text-align:center;padding:14px;background:#eff6ff;color:#1d4ed8;border-radius:12px;font-weight:800}@media print{body{background:white;padding:0}.paper{border:none;box-shadow:none}}</style></head><body><div class="paper"><div class="head"><div><div class="brand">${esc(d.store)}</div><div>PAYMENT RECEIPT · ${esc(d.date)}</div></div><div class="paid">${esc(d.status)}</div></div><div class="grid"><div><div class="l">Customer Name</div><div class="v">${esc(d.customer)}</div></div><div><div class="l">Product</div><div class="v">${esc(d.product)}${d.plan?' · '+esc(d.plan):''}</div></div><div><div class="l">Paid Amount</div><div class="v">${money(d.amount)} MMK</div></div><div><div class="l">Warranty Expired Date</div><div class="v">${d.warranty?fmtDate(d.warranty):'—'}</div></div></div><div class="thanks">${esc(d.thanks)}</div></div><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>`);
+  w.document.close();
 }
 function warrantyCalc(a){
   if(!a.soldDate||!a.soldPrice) return null;
@@ -1718,31 +1911,51 @@ function deltaHtml(cur,prev){
   if(pct===0) return '<div class="d flat">± 0% vs last month</div>';
   return pct>0?`<div class="d up">▲ ${pct}% vs last month</div>`:`<div class="d down">▼ ${Math.abs(pct)}% vs last month</div>`;
 }
+function analyticsMonths(){
+  const base=lastMonths(12);
+  return [...new Set([...sales().map(a=>monthKey(a.soldDate)),...db.refunds.map(r=>refundMonth(r)),...base])].filter(Boolean).sort().reverse();
+}
 function renderAnalytics(){
   const months=lastMonths(12);
   const aggs=months.map(monthAgg);
   const cur=aggs[aggs.length-1], prev=aggs[aggs.length-2]||{revenue:0,profit:0,refund:0,net:0};
   const ts=todaySales();
-  const tsAmt=ts.reduce((s,a)=>s+(a.soldPrice||0),0);
-  const tsCost=ts.reduce((s,a)=>s+(a.cost||0),0);
-  const tsRef=db.refunds.filter(r=>r.date===todayStr()).reduce((s,r)=>s+r.amount,0);
+  const tsAmt=ts.reduce((sum,a)=>sum+(a.soldPrice||0),0);
+  const tsCost=ts.reduce((sum,a)=>sum+(a.cost||0),0);
+  const tsRef=db.refunds.filter(r=>r.date===todayStr()).reduce((sum,r)=>sum+r.amount,0);
   const tsBrk=Object.entries(ts.reduce((m,a)=>{const k=a.product||'—';m[k]=(m[k]||0)+1;return m;},{})).map(([k,n])=>`${esc(k)} ${n}Acc`).join(' · ');
   $('#anTiles').innerHTML=`
-    <div class="stat" style="--sc:var(--ch-blue)"><div class="n">${money(tsAmt)}</div><div class="l">Today Selling (MMK)</div><div class="d flat">${tsBrk||'no sales yet'}</div></div>
-    <div class="stat" style="--sc:var(--green)"><div class="n">${money(tsAmt-tsCost-tsRef)}</div><div class="l">Today ဝင်ငွေ − ထွက်ငွေ</div><div class="d flat">out: cost ${money(tsCost)}${tsRef?' + refund '+money(tsRef):''}</div></div>
-    <div class="stat" style="--sc:var(--cyan)"><div class="n">${money(cur.revenue)}</div><div class="l">${monthLabel(cur.mk)} Selling (Ks)</div>${deltaHtml(cur.revenue,prev.revenue)}</div>
-    <div class="stat" style="--sc:var(--amber)"><div class="n">${cur.count}</div><div class="l">Accounts sold · ${monthLabel(cur.mk)}</div>${deltaHtml(cur.count,prev.count||0)}</div>
-    <div class="stat" style="--sc:var(--dim)"><div class="n" style="font-size:16px;color:var(--mut)">profit ${money(cur.net)}${cur.refund?' · refund − '+money(cur.refund):''}</div><div class="l">Small detail (this month)</div></div>`;
-  drawBars($('#chartMonthly'),aggs.map(a=>({label:monthLabel(a.mk).split(' ')[0],pos:a.revenue,neg:0,tip:a})),true);
-  // daily month selector
-  const sel=$('#dailyMonthSel');
-  const activeMonths=[...new Set([...sales().map(a=>monthKey(a.soldDate)),...db.refunds.map(r=>monthKey(r.date)),months[months.length-1]])].filter(Boolean).sort().reverse();
-  const keep=sel.value;
-  sel.innerHTML=activeMonths.map(mk=>`<option value="${mk}">${monthLabel(mk)}</option>`).join('');
-  sel.value=activeMonths.includes(keep)?keep:activeMonths[0];
-  renderDaily();
-  renderCompare(aggs);
+    <div class="stat" style="--sc:var(--blue)"><div class="n">${money(tsAmt)}</div><div class="l">Today Selling (MMK)</div><div class="d flat">${tsBrk||'no sales yet'}</div></div>
+    <div class="stat" style="--sc:var(--green)"><div class="n">${money(tsAmt-tsCost-tsRef)}</div><div class="l">Today Net Profit</div><div class="d flat">cost ${money(tsCost)}${tsRef?' + refund '+money(tsRef):''}</div></div>
+    <div class="stat" style="--sc:var(--cyan)"><div class="n">${money(cur.revenue)}</div><div class="l">${monthLabel(cur.mk)} Selling</div>${deltaHtml(cur.revenue,prev.revenue)}</div>
+    <div class="stat" style="--sc:var(--amber)"><div class="n">${cur.count}</div><div class="l">Accounts Sold · ${monthLabel(cur.mk)}</div>${deltaHtml(cur.count,prev.count||0)}</div>`;
+  const activeMonths=analyticsMonths();
+  for(const sel of [$('#prodMonthSel'),$('#dailyMonthSel')]){
+    const keep=sel.value; sel.innerHTML=activeMonths.map(mk=>`<option value="${mk}">${monthLabel(mk)}</option>`).join(''); sel.value=activeMonths.includes(keep)?keep:activeMonths[0];
+  }
+  renderProductComparison(); renderDaily(); renderCompare(aggs);
 }
+function renderProductComparison(){
+  const mk=$('#prodMonthSel').value; if(!mk)return;
+  const ss=sales().filter(a=>monthKey(a.soldDate)===mk);
+  const groups={};
+  for(const a of ss){ const k=(a.product||'—').trim(); const g=groups[k]??={name:k,count:0,revenue:0,cost:0}; g.count++; g.revenue+=a.soldPrice||0; g.cost+=a.cost||0; }
+  const rows=Object.values(groups).sort((a,b)=>b.revenue-a.revenue);
+  const max=Math.max(...rows.map(r=>r.revenue),1);
+  $('#chartProduct').innerHTML=rows.length?`<div class="product-bars">${rows.map(r=>`<div class="product-bar-row" title="${esc(r.name)} · ${r.count} Acc · ${money(r.revenue)} MMK">
+    <div class="product-bar-name">${esc(r.name)} <span class="dimsm">${r.count} Acc</span></div><div class="product-bar-track"><div class="product-bar-fill" style="width:${Math.max(2,r.revenue/max*100)}%"></div></div><div class="product-bar-val">${money(r.revenue)} MMK</div></div>`).join('')}</div>`
+    :'<div class="empty" style="padding:36px"><div class="big">📊</div><b>No product sales in this month</b></div>';
+  const revenue=rows.reduce((x,r)=>x+r.revenue,0), cost=rows.reduce((x,r)=>x+r.cost,0);
+  const refund=db.refunds.filter(r=>refundMonth(r)===mk).reduce((x,r)=>x+r.amount,0);
+  const net=revenue-cost-refund;
+  const margin=revenue?(net/revenue*100):0;
+  const stockValue=db.accounts.filter(a=>a.status==='stock').reduce((x,a)=>x+(a.price||0),0);
+  $('#productMetrics').innerHTML=`
+    <div class="metric-box"><div class="mv">${money(stockValue)} Ks</div><div class="ml">Stock Remaining Amount</div></div>
+    <div class="metric-box"><div class="mv">${money(net)} Ks</div><div class="ml">Net Profit · ${monthLabel(mk)}</div></div>
+    <div class="metric-box"><div class="mv">${margin.toFixed(1)}%</div><div class="ml">Net Profit Margin</div></div>`;
+}
+
 function renderDaily(){
   const mk=$('#dailyMonthSel').value; if(!mk) return;
   const [y,m]=mk.split('-').map(Number);
@@ -1855,10 +2068,10 @@ function exportCsv(){
     (prod==='all'||(a.product||'').toLowerCase()===prod.toLowerCase()) &&
     inDateRange(actDate(a),r,from,to));
   if(!rows.length){ toast('No accounts in that range','err'); return; }
-  const lines=[['Code','Product','Plan','Cost','Price','Gmail','Password','2FA Key','Supplier','Customer','Sold Price','Sold Date','Profit','Warranty End','Expire Date','Days Left','Status','Note'].map(csvCell).join(',')];
+  const lines=[['Code','Product','Plan','Cost','Price','Gmail','Password','2FA Key','Activation Link / Key','Key File Name','Supplier','Customer','Sold Price','Sold Date','Profit','Warranty End','Expire Date','Days Left','Status','Note'].map(csvCell).join(',')];
   for(const a of accSorted(rows)){
     const dl=daysLeft(a.expire);
-    lines.push([a.code||'',a.product,a.plan,a.cost,a.price,a.email,a.pass,a.twofa,a.supplier,custName(a.customerId),
+    lines.push([a.code||'',a.product,a.plan,a.cost,a.price,a.email,a.pass,a.twofa,a.delivery||'',a.keyFileName||'',a.supplier,custName(a.customerId),
       a.soldDate?a.soldPrice:'',a.soldDate,a.soldDate?(a.soldPrice-(a.cost||0)):'',a.renew,a.expire,dl===null?'':dl,
       a.status==='stock'?'In Stock':a.status==='sold'?'Sold':'Inactive',a.inactiveNote||a.soldNote].map(csvCell).join(','));
   }
@@ -1897,6 +2110,7 @@ const HDR_MAP={
   gmail:'email',email:'email',gmailemail:'email',
   password:'pass',pass:'pass',
   '2fakey':'twofa','2fa':'twofa',twofa:'twofa',twofakey:'twofa',
+  activationlinkkey:'delivery',activationlink:'delivery',licensekey:'delivery',delivery:'delivery',key:'delivery',keyfilename:'keyFileName',
   supplier:'supplier',customer:'customer',
   soldprice:'soldPrice',solddate:'soldDate',
   warrantyend:'renew',warrantyexpireddate:'renew',warranty:'renew',warrantydate:'renew',renewdate:'renew',renew:'renew',
@@ -1932,7 +2146,7 @@ function importCSV(text){
     let code=g('code').toUpperCase();
     if(code) db.codes[vk]=code; else code=codeFor(product,g('plan'),true);
     db.accounts.push({ id:uid(), code, product, plan:g('plan'), cost:num(g('cost')), price:num(g('price')),
-      email, pass:g('pass'), twofa:g('twofa').replace(/\s+/g,''), supplier:g('supplier'),
+      email, pass:g('pass'), twofa:g('twofa').replace(/\s+/g,''), delivery:g('delivery'), keyFileName:g('keyFileName'), keyFileType:'', keyFileData:'', supplier:g('supplier'),
       renew:g('renew'), expire:g('expire'), status,
       customerId:status!=='stock'?customerId:null,
       soldDate:status!=='stock'?(soldDate||todayStr()):'',
@@ -2146,6 +2360,14 @@ $('#btnTemplate').addEventListener('click',downloadTemplate);
 /* acc code auto-fill */
 $('#fProduct').addEventListener('input',updateCodeField);
 $('#fPlan').addEventListener('input',updateCodeField);
+$('#fKeyFile').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(!f)return;
+  if(f.size>200*1024){ toast('Key file is too large — max 200 KB','err'); e.target.value=''; return; }
+  const r=new FileReader();
+  r.onload=()=>{ formKeyFile={name:f.name,type:f.type||'application/octet-stream',data:String(r.result)}; $('#keyFileHelp').textContent='Ready to save: '+f.name+' ('+Math.ceil(f.size/1024)+' KB)'; toast('Key file attached ✓','ok'); };
+  if((f.type||'').startsWith('text/')||/\.(txt|json|key|lic|csv|xml|pem)$/i.test(f.name)) r.readAsText(f); else r.readAsDataURL(f);
+});
+$('#btnKeyClear').addEventListener('click',()=>{ formKeyFile=null; $('#fKeyFile').value=''; $('#keyFileHelp').textContent='No key file selected'; });
 /* supabase */
 $('#mSb').addEventListener('click',()=>{
   closeDrawer();
@@ -2155,7 +2377,7 @@ $('#mSb').addEventListener('click',()=>{
 });
 $('#btnSbSave').addEventListener('click',sbSaveSettings);
 $('#btnSbPush').addEventListener('click',()=>sbPush(false));
-$('#btnSbPull').addEventListener('click',sbPull);
+$('#btnSbPull').addEventListener('click',()=>sbPull(false));
 $('#btnSbSqlCopy').addEventListener('click',()=>copyText($('#sbSql').textContent));
 $('#btnImportGo').addEventListener('click',()=>doImport($('#csvPaste').value));
 /* login / lock */
@@ -2203,12 +2425,16 @@ $('#btnDriveConnect').addEventListener('click',driveConnect);
 $('#btnDriveUp').addEventListener('click',driveUpload);
 $('#btnDriveDown').addEventListener('click',driveDownload);
 $('#btnSellSave').addEventListener('click',saveSell);
+$('#btnSlipOpen').addEventListener('click',openSlipForSell);
+$('#btnSlipCsv').addEventListener('click',downloadSlipCsv);
+$('#btnSlipPdf').addEventListener('click',printSlipPdf);
 $('#sCustomer').addEventListener('input',checkSellCust);
 $('#btnRefundSave').addEventListener('click',saveRefund);
 $('#btnReplaceSave').addEventListener('click',saveReplace);
 $('#btnCustSave').addEventListener('click',saveCust);
 $('#cSourceType').addEventListener('change',custSrcVis);
 $('#dailyMonthSel').addEventListener('change',renderDaily);
+$('#prodMonthSel').addEventListener('change',renderProductComparison);
 $('#radarH').addEventListener('click',()=>$('#radar').classList.toggle('closed'));
 document.addEventListener('click',e=>{
   const cl=e.target.closest('[data-close]'); if(cl){ $('#'+cl.dataset.close).classList.remove('show'); return; }
@@ -2229,17 +2455,42 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape') document.querySelectorAll('.overlay.show').forEach(o=>o.classList.remove('show'));
   if((e.ctrlKey||e.metaKey)&&e.key==='k'){ e.preventDefault(); $('#q').focus(); }
 });
+function openDeleteAccount(id){
+  const a=accById(id); if(!a)return; deleteAccountId=id;
+  const token=(a.code||'DELETE').toUpperCase();
+  $('#deleteAccSub').innerHTML=`<b>${esc(a.product)}${a.plan?' · '+esc(a.plan):''}</b><br>${a.email?esc(a.email)+'<br>':''}Status: <b>${a.status==='sold'?'Sold Out':a.status==='stock'?'In Stock':'Inactive'}</b>`;
+  $('#deleteAccLabel').innerHTML=`Type <span class="safe-code">${esc(token)}</span> to confirm`;
+  $('#deleteAccInput').value=''; $('#deleteAccInput').placeholder=token; $('#deleteAccCheck').checked=false; $('#btnDeleteAccFinal').disabled=true;
+  $('#ovDeleteAcc').classList.add('show'); setTimeout(()=>$('#deleteAccInput').focus(),80);
+}
+function updateDeleteReady(){
+  const a=accById(deleteAccountId); const token=(a?.code||'DELETE').toUpperCase();
+  $('#btnDeleteAccFinal').disabled=!(a&&$('#deleteAccCheck').checked&&$('#deleteAccInput').value.trim().toUpperCase()===token);
+}
+function deleteAccountFinal(){
+  if($('#btnDeleteAccFinal').disabled)return;
+  const id=deleteAccountId; const a=accById(id); if(!a)return;
+  db.accounts=db.accounts.filter(x=>x.id!==id); db.refunds=db.refunds.filter(r=>r.accountId!==id);
+  db.accounts.forEach(x=>{if(x.replacesId===id)x.replacesId=null;if(x.replacedById===id)x.replacedById=null;});
+  deleteAccountId=null; save(); $('#ovDeleteAcc').classList.remove('show'); render(); toast('Account permanently deleted','ok');
+}
+$('#deleteAccInput').addEventListener('input',updateDeleteReady);
+$('#deleteAccCheck').addEventListener('change',updateDeleteReady);
+$('#btnDeleteAccFinal').addEventListener('click',deleteAccountFinal);
+
 /* accounts table */
 let pendingUnsell=null;
 $('#tblBody').addEventListener('click',e=>{
   const card=e.target.closest('tr[data-id]'); if(!card) return;
   const id=card.dataset.id, a=accById(id);
   if(e.target.closest('[data-copyacc]')){ copyText(accCopyText(a)); toast('Acc copied — customer ကိုပို့လို့ရပြီ (supplier/cost မပါ) ✓','ok'); return; }
-  const isAction=e.target.closest('[data-sell],[data-unsell],[data-refund],[data-replace],[data-dup],[data-edit],[data-del],[data-cust]');
+  const isAction=e.target.closest('[data-sell],[data-unsell],[data-refund],[data-replace],[data-dup],[data-edit],[data-del],[data-cust],[data-slip],[data-keydownload]');
   if(!isAction){
-    const copyCell=e.target.closest('[data-copy]');
-    if(copyCell&&copyCell.dataset.copy){ copyText(copyCell.dataset.copy); return; }
+    const copyCell=e.target.closest('[data-codecopy]');
+    if(copyCell&&copyCell.dataset.codecopy){ copyText(codeBlock(copyCell.dataset.codecopy)); return; }
   }
+  if(e.target.closest('[data-keydownload]')){ downloadKeyFile(a); return; }
+  if(e.target.closest('[data-slip]')){ openSlipForAccount(a); return; }
   if(e.target.closest('[data-sell]')){ openSell(id); return; }
   if(e.target.closest('[data-refund]')){ openRefund(id); return; }
   if(e.target.closest('[data-replace]')){ openReplace(id); return; }
@@ -2254,14 +2505,7 @@ $('#tblBody').addEventListener('click',e=>{
   }
   if(e.target.closest('[data-edit]')){ openForm(id); return; }
   const delBtn=e.target.closest('[data-del]');
-  if(delBtn){
-    if(pendingDelete===id){ db.accounts=db.accounts.filter(x=>x.id!==id);
-      db.refunds=db.refunds.filter(r=>r.accountId!==id);
-      db.accounts.forEach(x=>{ if(x.replacesId===id)x.replacesId=null; if(x.replacedById===id)x.replacedById=null; });
-      pendingDelete=null; save(); render(); toast('Account deleted','ok'); }
-    else{ pendingDelete=id; delBtn.innerHTML='Sure?'; delBtn.style.color='var(--red)'; delBtn.style.borderColor='var(--red)';
-      setTimeout(()=>{ if(pendingDelete===id){ pendingDelete=null; render(); } },2600); }
-  }
+  if(delBtn){ openDeleteAccount(id); return; }
 });
 /* customers grid */
 let pendingCDel=null;
@@ -2285,6 +2529,8 @@ $('#custGrid').addEventListener('click',e=>{
 load(); lockUi();
 if(db.settings?.pin) showLock();
 setTab('dash');
+sbUi();
+sbStartAutoSync();
 
 </script>
 </body>
