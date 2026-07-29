@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VaultKey — Digital Product Business Manager</title>
+<title>VaultKey — Account & Service Business Manager</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
@@ -412,6 +412,32 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
   .slip-paper{padding:15px}.slip-brand{font-size:19px}
 }
 
+
+/* ---------- service tasks, product profiles, JPG receipts ---------- */
+.type-switch{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:var(--card2);border:1px solid var(--line);padding:5px;border-radius:13px}
+.type-choice{border:1px solid transparent;background:transparent;color:var(--mut);font:inherit;font-size:13px;font-weight:800;padding:10px;border-radius:10px;cursor:pointer;transition:.18s}
+.type-choice.on{background:var(--blue);color:#fff;box-shadow:0 5px 14px rgba(37,99,235,.24)}
+.type-choice[data-itemtype="service"].on{background:linear-gradient(135deg,#0891b2,#2563eb)}
+.service-note{background:rgba(37,99,235,.07);border:1px solid rgba(37,99,235,.22);color:#1d4ed8;border-radius:12px;padding:11px 13px;font-size:12px;line-height:1.55}
+.term-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.item-type-tag{display:inline-flex;align-items:center;margin-left:7px;padding:2px 7px;border-radius:99px;font-size:9.5px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;vertical-align:middle}
+.item-type-tag.account{background:rgba(37,99,235,.09);color:var(--blue);border:1px solid rgba(37,99,235,.22)}
+.item-type-tag.service{background:rgba(8,145,178,.10);color:var(--cyan);border:1px solid rgba(8,145,178,.25)}
+.badge.service{background:rgba(37,99,235,.11);color:var(--blue);border-color:rgba(37,99,235,.32)}
+.restock-panel{display:none;background:linear-gradient(135deg,rgba(224,36,64,.10),rgba(255,255,255,.65));border:1px solid rgba(224,36,64,.32);border-radius:var(--r);padding:16px 18px;margin-bottom:16px}
+.restock-panel.show{display:block}.restock-head{display:flex;align-items:center;gap:9px;color:var(--red);font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.055em;margin-bottom:10px}
+.restock-list{display:flex;flex-direction:column;gap:8px}.restock-item{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid rgba(224,36,64,.20);border-radius:12px;padding:11px 13px;flex-wrap:wrap}
+.restock-item .rp{font-weight:900}.restock-item .rt{color:var(--mut);font-size:12px;flex:1;min-width:210px}.restock-now{margin-left:auto;color:#fff;background:var(--red);border:none;border-radius:9px;padding:7px 11px;font:inherit;font-size:11px;font-weight:900;cursor:pointer}
+.profile-columns{display:grid;grid-template-columns:1fr 1fr;gap:16px}.profile-section{min-width:0}.profile-section h4{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--mut);margin-bottom:9px}
+.product-profile-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}.product-profile-card{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:13px;cursor:pointer;transition:.18s;min-width:0}
+.product-profile-card:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:0 8px 22px rgba(37,99,235,.10)}.product-profile-top{display:flex;align-items:center;gap:10px;min-width:0}.product-logo{width:42px;height:42px;border-radius:12px;object-fit:cover;background:linear-gradient(135deg,#dbeafe,#cffafe);border:1px solid rgba(37,99,235,.18);display:grid;place-items:center;color:var(--blue);font-weight:900;flex:none;overflow:hidden}.product-logo img{width:100%;height:100%;object-fit:cover}
+.product-profile-name{font-size:14px;font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.product-profile-desc{font-size:11.5px;color:var(--mut);margin-top:8px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.profile-mini-stats{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}.profile-mini-stats span{font-size:10.5px;font-weight:800;padding:3px 7px;border-radius:99px;background:#fff;border:1px solid var(--line2)}
+.profile-hero{display:flex;gap:14px;align-items:flex-start}.profile-hero .product-logo{width:66px;height:66px;border-radius:18px;font-size:22px}.profile-copy-block{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:13px;white-space:pre-wrap;line-height:1.65;font-size:13px;color:var(--mut)}
+.logo-preview{width:74px;height:74px;border-radius:16px;background:var(--card2);border:1px dashed var(--line2);display:grid;place-items:center;overflow:hidden;color:var(--dim);font-size:11px;text-align:center}.logo-preview img{width:100%;height:100%;object-fit:cover}
+.slip-order{font-size:11.5px;color:#64748b;margin-top:4px;font-family:'JetBrains Mono',monospace}.slip-contact{margin-top:14px;border-top:1px dashed #cbd5e1;padding-top:12px;text-align:center;color:#475569;font-size:11.5px;line-height:1.7}.slip-planline{font-size:12px;color:#64748b;margin-top:4px}
+@media(max-width:760px){.profile-columns{grid-template-columns:1fr}.product-profile-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.term-row{grid-template-columns:1fr}.restock-item .rt{min-width:150px}.restock-now{width:100%;margin-left:0}.type-switch{grid-template-columns:1fr}}
+@media(max-width:420px){.product-profile-grid{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -429,7 +455,7 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
     <div class="hdr-actions">
       <button class="btn primary" id="btnAdd">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        <span id="btnAddLbl">Add Account</span>
+        <span id="btnAddLbl">Add Product</span>
       </button>
       <button class="burger" id="btnMenu" title="Menu">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
@@ -443,7 +469,7 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
       Dashboard</button>
     <button class="tab-btn" data-tab="accounts">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2.5"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-      Acc Data</button>
+      Products</button>
     <button class="tab-btn" data-tab="customers">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       Customers</button>
@@ -492,6 +518,11 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
         <div id="todayLines"></div>
         <div class="tiny-note" id="todayCostNote"></div>
       </div>
+    </div>
+
+    <div class="restock-panel" id="restockPanel">
+      <div class="restock-head">🚨 Smart Restock Alerts</div>
+      <div class="restock-list" id="restockList"></div>
     </div>
 
     <div class="radar closed" id="radar" style="display:none;margin-bottom:16px">
@@ -567,6 +598,16 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
     <div class="stats" id="anTiles"></div>
     <div class="chart-card">
       <div class="chart-hd">
+        <div><h3>Product & Service Profiles</h3><div class="sub">Product ကိုနှိပ်ပြီး Sold, Refund, Stock, Revenue နဲ့ အသုံးပြုနည်း/ကြော်ငြာအချက်အလက်တွေကြည့်ပါ။</div></div>
+        <button class="btn primary sm" id="btnAddProductProfile" style="margin-left:auto">+ Add Profile</button>
+      </div>
+      <div class="profile-columns">
+        <div class="profile-section"><h4>Account Products Profile</h4><div class="product-profile-grid" id="accountProfiles"></div></div>
+        <div class="profile-section"><h4>Service Products Profile</h4><div class="product-profile-grid" id="serviceProfiles"></div></div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-hd">
         <div><h3>Product Sales Comparison</h3><div class="sub">Selected month အတွင်း Product အလိုက် sold accounts နဲ့ selling amount နှိုင်းယှဉ်ချက်</div></div>
         <select class="sort" id="prodMonthSel" style="margin-left:auto"></select>
       </div>
@@ -599,21 +640,35 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
     <div class="sub">Quick add: tap a preset to auto-fill from your last entry of that product.</div>
     <div class="preset-row" id="presetRow"></div>
     <form id="form" class="fgrid" autocomplete="off">
-      <div class="fg"><label>Product Name *</label><input id="fProduct" required placeholder="Netflix" list="prodList"></div>
-      <div class="fg"><label>Plan</label><input id="fPlan" placeholder="Premium · 1 Month"></div>
-      <div class="fg full"><label>Acc Code</label><input id="fCode" class="mono" placeholder="auto — e.g. G001"><div class="help" id="codeHelp">Product + Plan အသစ်ဆို ပထမတစ်ကြိမ်မှာ auto ဖန်တီးပေးမယ် (ပြင်လို့ရတယ်)</div></div>
-      <div class="fg"><label>Cost (from supplier) Ks</label><input id="fCost" inputmode="numeric" placeholder="8000"></div>
-      <div class="fg"><label>Selling Price Ks</label><input id="fPrice" inputmode="numeric" placeholder="12000"></div>
-      <div class="fg full"><label>Gmail / Email</label><input id="fEmail" class="mono" placeholder="account@gmail.com"></div>
-      <div class="fg"><label>Password</label><input id="fPass" class="mono" placeholder="••••••••"></div>
-      <div class="fg"><label>2FA Key (secret)</label><input id="f2fa" class="mono" placeholder="JBSWY3DPEHPK3PXP"></div>
-      <div class="fg full"><label>Activation Link / License Key / Delivery Text</label><textarea id="fDelivery" class="mono" rows="3" placeholder="https://...  or  XXXX-XXXX-XXXX"></textarea><div class="help">Link/key အရှည်ကြီးကို table မှာ အလိုအလျောက်ချုံ့ပြပြီး full value ကိုသိမ်းထားမယ်။</div></div>
-      <div class="fg full"><label>Key File (optional · max 200 KB)</label><div class="file-line"><input id="fKeyFile" type="file"><button type="button" class="btn sm danger" id="btnKeyClear">Remove file</button></div><div class="help" id="keyFileHelp">Small activation/key files only. JSON backup and Supabase sync will include the saved file.</div></div>
-      <div class="fg"><label>Supplier</label><input id="fSupplier" placeholder="Where it came from" list="supList"></div>
-      <div class="fg"><label>Warranty Expired Date</label><input id="fRenew" type="date"><div class="help">Warranty ကုန်မယ့်ရက် — refund formula မှာသုံးမယ်</div></div>
-      <div class="fg"><label>Expire Date</label><input id="fExpire" type="date"></div>
+      <div class="fg full"><label>Product Type</label>
+        <div class="type-switch"><button type="button" class="type-choice on" data-itemtype="account">🔐 Account Product</button><button type="button" class="type-choice" data-itemtype="service">🧩 Service Task</button></div>
+        <input id="fItemType" type="hidden" value="account">
+      </div>
+      <div class="fg full service-only" style="display:none"><div class="service-note">Service Task mode မှာ account/password/2FA မလိုပါ။ Customer, Mail, Token/Provider Fee, Price နဲ့ Warranty ကိုထည့်လိုက်တာနဲ့ sold service အဖြစ် တိုက်ရိုက်သိမ်းပေးမယ်။</div></div>
+      <div class="fg"><label>Product / Service Name *</label><input id="fProduct" required placeholder="Gemini Service" list="prodList"></div>
+      <div class="fg"><label>Plan Name</label><input id="fPlan" placeholder="Pro / Premium / Token Package" list="planList"></div>
+      <div class="fg"><label>Plan Duration</label><select id="fPlanTerm">
+        <option value="">— No duration —</option><option value="1m">1 Month</option><option value="3m">3 Months</option><option value="6m">6 Months</option><option value="12m">1 Year</option><option value="18m">18 Months</option><option value="custom">Custom Expire Date</option>
+      </select></div>
+      <div class="fg account-only" id="fCodeWrap"><label>Acc Code</label><input id="fCode" class="mono" placeholder="auto — e.g. G001"><div class="help" id="codeHelp">Product + Plan အသစ်ဆို auto code ဖန်တီးပေးမယ်</div></div>
+      <div class="fg"><label id="fCostLabel">Account Cost / Supplier Fee (Ks)</label><input id="fCost" inputmode="numeric" placeholder="8000"></div>
+      <div class="fg"><label>Selling Price (Ks)</label><input id="fPrice" inputmode="numeric" placeholder="12000"></div>
+      <div class="fg full account-only"><label>Gmail / Email</label><input id="fEmail" class="mono" placeholder="account@gmail.com"></div>
+      <div class="fg account-only"><label>Password</label><input id="fPass" class="mono" placeholder="••••••••"></div>
+      <div class="fg account-only"><label>2FA Key (secret)</label><input id="f2fa" class="mono" placeholder="JBSWY3DPEHPK3PXP"></div>
+      <div class="fg service-only" style="display:none"><label>Customer Name *</label><input id="fServiceCustomer" placeholder="Customer name" list="custListService"></div>
+      <div class="fg service-only" style="display:none"><label>Customer Mail</label><input id="fServiceMail" class="mono" placeholder="customer@gmail.com"></div>
+      <div class="fg service-only" style="display:none"><label>Service Date</label><input id="fServiceDate" type="date"></div>
+      <div class="fg full account-only"><label>Activation Link / License Key / Delivery Text</label><textarea id="fDelivery" class="mono" rows="3" placeholder="https://...  or  XXXX-XXXX-XXXX"></textarea><div class="help">Long link/key ကို table မှာချုံ့ပြပြီး full value ကိုသိမ်းထားမယ်။</div></div>
+      <div class="fg full account-only"><label>Key File (optional · max 200 KB)</label><div class="file-line"><input id="fKeyFile" type="file"><button type="button" class="btn sm danger" id="btnKeyClear">Remove file</button></div><div class="help" id="keyFileHelp">Small activation/key files only. Backup and Supabase sync မှာပါမယ်။</div></div>
+      <div class="fg"><label>Supplier / Service Provider</label><input id="fSupplier" placeholder="Provider name" list="supList"></div>
+      <div class="fg"><label>Warranty Duration</label><select id="fWarrantyPreset">
+        <option value="">— No warranty —</option><option value="7d">1 Week</option><option value="14d">2 Weeks</option><option value="1m">1 Month</option><option value="3m">3 Months</option><option value="custom">Custom Date</option>
+      </select></div>
+      <div class="fg" id="fRenewWrap"><label>Exact Warranty Expired Date</label><input id="fRenew" type="date"><div class="help">Preset ရွေးထားရင် sale date မှ auto တွက်မယ်။</div></div>
+      <div class="fg"><label>Exact Expire Date (optional)</label><input id="fExpire" type="date"><div class="help">Plan duration ရွေးထားရင် sale date မှ auto တွက်မယ်။</div></div>
     </form>
-    <datalist id="prodList"></datalist><datalist id="supList"></datalist>
+    <datalist id="prodList"></datalist><datalist id="supList"></datalist><datalist id="planList"><option value="Free"><option value="Pro"><option value="Plus"><option value="Premium"><option value="Token Package"></datalist><datalist id="custListService"></datalist>
     <div class="modal-foot">
       <button class="btn ghost" data-close="ovForm">Cancel</button>
       <button class="btn primary" id="btnSave">Save Account</button>
@@ -763,12 +818,11 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
 <div class="overlay" id="ovSlip">
   <div class="modal wide">
     <h2>🧾 Payment Slip</h2>
-    <div class="sub">Preview the receipt, download CSV, or print and choose “Save as PDF”.</div>
+    <div class="sub">Customer ကိုပို့ရန် JPG receipt photo အနေနဲ့သိမ်းပါ။ Print/PDF မသုံးတော့ပါ။</div>
     <div id="slipPreview"></div>
     <div class="modal-foot">
       <button class="btn ghost" data-close="ovSlip">Close</button>
-      <button class="btn" id="btnSlipCsv">⬇ Slip CSV</button>
-      <button class="btn primary" id="btnSlipPdf">🖨 Print / Save PDF</button>
+      <button class="btn primary" id="btnSlipJpg">⬇ Save Payment Slip JPG</button>
     </div>
   </div>
 </div>
@@ -788,6 +842,28 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
   </div>
 </div>
 
+<!-- product profile editor -->
+<div class="overlay" id="ovProductEdit">
+  <div class="modal wide">
+    <h2 id="productEditTitle">Product Profile</h2>
+    <div class="sub">Logo, description, abilities နဲ့ customer အသုံးပြုနည်းကိုသိမ်းပါ။</div>
+    <div class="fgrid">
+      <div class="fg"><label>Product Name *</label><input id="ppName" placeholder="ChatGPT"></div>
+      <div class="fg"><label>Profile Type</label><select id="ppType"><option value="account">Account Product</option><option value="service">Service Product</option></select></div>
+      <div class="fg full"><label>Product Logo (JPG/PNG · max 400 KB)</label><div class="file-line"><div class="logo-preview" id="ppLogoPreview">No Logo</div><input id="ppLogo" type="file" accept="image/png,image/jpeg,image/webp"><button class="btn sm danger" type="button" id="btnPpLogoClear">Remove</button></div></div>
+      <div class="fg full"><label>Product Description</label><textarea id="ppDescription" rows="3" placeholder="Product/service အကြောင်းအကျဉ်း"></textarea></div>
+      <div class="fg full"><label>Abilities / Included Features</label><textarea id="ppAbilities" rows="4" placeholder="One feature per line"></textarea></div>
+      <div class="fg full"><label>Account / Service Usage Guide</label><textarea id="ppGuide" rows="6" placeholder="Step by step အသုံးပြုနည်း"></textarea></div>
+    </div>
+    <div class="modal-foot"><button class="btn ghost" data-close="ovProductEdit">Cancel</button><button class="btn primary" id="btnSaveProductProfile">Save Profile</button></div>
+  </div>
+</div>
+
+<!-- product profile detail -->
+<div class="overlay" id="ovProductDetail">
+  <div class="modal wide" id="productDetailBody"></div>
+</div>
+
 <!-- drawer -->
 <div class="drawer-ov" id="drawerOv"></div>
 <aside class="drawer" id="drawer">
@@ -797,7 +873,7 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
   </div>
   <h3>Pages</h3>
   <button class="d-item" data-goto="dash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>Stock Dashboard</button>
-  <button class="d-item" data-goto="accounts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2.5"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Account Data</button>
+  <button class="d-item" data-goto="accounts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2.5"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Products Data</button>
   <button class="d-item" data-goto="customers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Customers</button>
   <button class="d-item" data-goto="analytics"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>Analytics</button>
   <h3>Data</h3>
@@ -947,7 +1023,7 @@ const store={
 const KEY='vaultkey.v2', KEY_V1='vaultkey.items', KEY_CID='vaultkey.clientId', KEY_SYNC='vaultkey.lastSync';
 
 /* ================= state ================= */
-let db={accounts:[],customers:[],refunds:[],settings:{goal:200000}};
+let db={accounts:[],customers:[],refunds:[],products:[],settings:{goal:200000}};
 let tab='dash', query='', filter='all', prodFilter='all', sortBy='new';
 let range='all', rangeFrom='', rangeTo='';
 let editId=null, editCustId=null, sellId=null, refundId=null, replaceId=null;
@@ -1104,7 +1180,7 @@ async function sbPull(silent=false){
       return false;
     }
     db=rows[0].data;
-    db.accounts??=[]; db.customers??=[]; db.refunds??=[]; db.settings??={goal:200000}; db.codes??={};
+    db.accounts??=[]; db.customers??=[]; db.refunds??=[]; db.products??=[]; db.settings??={goal:200000}; db.codes??={};
     migrateCodes();
     /* Save locally without triggering another cloud upload. */
     store.set(KEY,JSON.stringify(db));
@@ -1142,13 +1218,13 @@ function sbStartAutoSync(){
 function save(){ store.set(KEY,JSON.stringify(db)); sbDirty=true; sbAutoKick(); }
 function load(){
   const raw=store.get(KEY);
-  if(raw){ try{ db=JSON.parse(raw); db.accounts??=[]; db.customers??=[]; db.refunds??=[]; db.settings??={goal:200000}; migrateCodes(); return; }catch(e){} }
+  if(raw){ try{ db=JSON.parse(raw); db.accounts??=[]; db.customers??=[]; db.refunds??=[]; db.products??=[]; db.settings??={goal:200000}; migrateCodes(); return; }catch(e){} }
   const v1=store.get(KEY_V1);
   if(v1){ try{ migrateV1(JSON.parse(v1)); migrateCodes(); save(); toast('Upgraded your data ✓','ok'); return; }catch(e){} }
   db=seed(); migrateCodes(); save();
 }
 function migrateV1(items){
-  db={accounts:[],customers:[],refunds:[]};
+  db={accounts:[],customers:[],refunds:[],products:[]};
   for(const it of (items||[])){
     let customerId=null;
     if(it.customer){
@@ -1157,7 +1233,7 @@ function migrateV1(items){
       customerId=c.id;
     }
     const sold=it.status==='sold';
-    db.accounts.push({ id:it.id||uid(), product:it.product||'', plan:it.plan||'',
+    db.accounts.push({ id:it.id||uid(), itemType:'account', planTerm:'', warrantyTerm:'', orderId:'', product:it.product||'', plan:it.plan||'',
       cost:0, price:num(it.price), email:it.email||'', pass:it.pass||'', twofa:it.twofa||'',
       supplier:it.supplier||'', renew:it.renew||'', expire:it.expire||'',
       status:sold?'sold':'stock', customerId:sold?customerId:null,
@@ -1375,7 +1451,7 @@ function renderDash(){
       <span class="acc">${grp[k].n} <small>Acc</small></span>
       <span class="badge stock" style="cursor:default">In Stock</span>
     </div>`).join('')
-    :'<div style="color:var(--dim);font-size:13px;padding:10px 0">No stock — tap + Add Account to restock</div>';
+    :'<div style="color:var(--dim);font-size:13px;padding:10px 0">No stock — tap + Add Product to restock</div>';
   // today selling
   $('#dsSellCnt').textContent=ts.length+' Acc';
   $('#todayTotal').innerHTML=money(sold)+' <small>MMK</small>';
@@ -2211,7 +2287,7 @@ function backupJson(){
 }
 function parseBackup(data){
   if(Array.isArray(data)) { migrateV1(data); return true; }
-  if(Array.isArray(data.accounts)){ db={accounts:data.accounts,customers:data.customers||[],refunds:data.refunds||[],settings:data.settings||{goal:200000},codes:data.codes||{}}; migrateCodes(); return true; }
+  if(Array.isArray(data.accounts)){ db={accounts:data.accounts,customers:data.customers||[],refunds:data.refunds||[],products:data.products||[],settings:data.settings||{goal:200000},codes:data.codes||{}}; migrateCodes(); return true; }
   if(Array.isArray(data.items)){ migrateV1(data.items); return true; }
   return false;
 }
@@ -2313,12 +2389,199 @@ function setTab(t){
   $('#searchRow').style.display=(t==='analytics'||t==='dash')?'none':'flex';
   $('#sort').style.display=t==='accounts'?'block':'none';
   $('#q').placeholder=t==='customers'?'Search customers — name, contact, source, requests…':'Search everything — product, gmail, customer, supplier, 2FA…';
-  $('#btnAddLbl').textContent=t==='customers'?'Add Customer':'Add Account';
+  $('#btnAddLbl').textContent=t==='customers'?'Add Customer':'Add Product';
   closeDrawer();
   render();
 }
 function openDrawer(){ $('#drawer').classList.add('show'); $('#drawerOv').classList.add('show'); }
 function closeDrawer(){ $('#drawer').classList.remove('show'); $('#drawerOv').classList.remove('show'); }
+
+
+/* ================= service tasks, profiles, smart restock & JPG slips ================= */
+let editProductProfileId=null, editProductProfileKey='', profileLogoData='';
+const TERM_LABELS={'7d':'1 Week','14d':'2 Weeks','1m':'1 Month','3m':'3 Months','6m':'6 Months','12m':'1 Year','18m':'18 Months','custom':'Custom Date'};
+if(window.CanvasRenderingContext2D&&!CanvasRenderingContext2D.prototype.roundRect){CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r=0){const rr=Array.isArray(r)?r:[r,r,r,r];const a=Number(rr[0]||0),b=Number(rr.length>1?rr[1]:a)||0,c=Number(rr.length>2?rr[2]:a)||0,d=Number(rr.length>3?rr[3]:b)||0;this.moveTo(x+a,y);this.lineTo(x+w-b,y);this.quadraticCurveTo(x+w,y,x+w,y+b);this.lineTo(x+w,y+h-c);this.quadraticCurveTo(x+w,y+h,x+w-c,y+h);this.lineTo(x+d,y+h);this.quadraticCurveTo(x,y+h,x,y+h-d);this.lineTo(x,y+a);this.quadraticCurveTo(x,y,x+a,y);this.closePath();return this;};}
+function isService(a){ return (a?.itemType||'account')==='service'; }
+function termLabel(v){ return TERM_LABELS[v]||''; }
+function addTerm(ds,term){
+  if(!ds||!term||term==='custom') return '';
+  const d=new Date(ds+'T00:00:00');
+  if(term.endsWith('d')) d.setDate(d.getDate()+parseInt(term,10));
+  else if(term.endsWith('m')) d.setMonth(d.getMonth()+parseInt(term,10));
+  return d.toISOString().slice(0,10);
+}
+function ensureSchema(){
+  db.products??=[]; db.accounts??=[]; db.customers??=[]; db.refunds??=[]; db.settings??={goal:200000}; db.codes??={};
+  for(const a of db.accounts){
+    a.itemType??='account'; a.planTerm??=''; a.warrantyTerm??=''; a.orderId??='';
+  }
+}
+function createOrderId(dateStr){
+  const d=(dateStr||todayStr()).replace(/-/g,''); let id='';
+  do{id='PX-'+d+'-'+Math.random().toString(36).slice(2,6).toUpperCase();}while(db.accounts.some(a=>a.orderId===id));
+  return id;
+}
+function ensureOrderId(a,dateStr){ if(!a.orderId) a.orderId=createOrderId(dateStr); return a.orderId; }
+function productKey(name,type){ return (type||'account')+'|'+String(name||'').trim().toLowerCase(); }
+function productCatalog(){
+  ensureSchema(); const map=new Map();
+  for(const p of db.products){ if(!p?.name)continue; map.set(productKey(p.name,p.itemType),p); }
+  for(const a of db.accounts){ if(!a.product)continue; const k=productKey(a.product,a.itemType); if(!map.has(k))map.set(k,{id:'',name:a.product,itemType:a.itemType||'account',logoData:'',description:'',abilities:'',guide:''}); }
+  return [...map.entries()].map(([key,p])=>({key,...p})).sort((a,b)=>a.name.localeCompare(b.name));
+}
+function productProfile(name,type){ return productCatalog().find(p=>p.key===productKey(name,type))||{key:productKey(name,type),name,itemType:type||'account',logoData:'',description:'',abilities:'',guide:''}; }
+function productStats(p){
+  const items=db.accounts.filter(a=>productKey(a.product,a.itemType)===p.key); const sold=items.filter(a=>a.soldDate); const stock=items.filter(a=>a.status==='stock'&&!isService(a));
+  const ids=new Set(items.map(a=>a.id)); const refund=db.refunds.filter(r=>ids.has(r.accountId)).reduce((n,r)=>n+(r.amount||0),0);
+  const revenue=sold.reduce((n,a)=>n+(a.soldPrice||0),0), cost=sold.reduce((n,a)=>n+(a.cost||0),0);
+  return {items,sold:sold.length,stock:stock.length,refund,revenue,cost,net:revenue-cost-refund};
+}
+function logoHtml(p){ return p.logoData?`<div class="product-logo"><img src="${p.logoData}" alt=""></div>`:`<div class="product-logo">${esc((p.name||'?').slice(0,2).toUpperCase())}</div>`; }
+function renderProductProfiles(){
+  const all=productCatalog();
+  for(const type of ['account','service']){
+    const el=$(type==='account'?'#accountProfiles':'#serviceProfiles'); const rows=all.filter(p=>(p.itemType||'account')===type);
+    el.innerHTML=rows.length?rows.map(p=>{const st=productStats(p);return `<div class="product-profile-card" data-product-profile="${esc(p.key)}"><div class="product-profile-top">${logoHtml(p)}<div style="min-width:0"><div class="product-profile-name">${esc(p.name)}</div><span class="item-type-tag ${type}">${type}</span></div></div><div class="product-profile-desc">${esc(p.description||'Description မထည့်ရသေးပါ — profile ကို edit လုပ်နိုင်ပါတယ်။')}</div><div class="profile-mini-stats"><span>Sold ${st.sold}</span>${type==='account'?`<span>Stock ${st.stock}</span>`:''}<span>Refund ${money(st.refund)}</span></div></div>`;}).join(''):'<div class="dimsm">No profiles yet</div>';
+  }
+}
+function profileShareText(p){
+  const abilities=String(p.abilities||'').split(/\n+/).map(x=>x.trim()).filter(Boolean);
+  return `${p.name}\n${p.description||''}${abilities.length?'\n\nIncluded Abilities:\n'+abilities.map(x=>'• '+x).join('\n'):''}${p.guide?'\n\nအသုံးပြုနည်း:\n'+p.guide:''}\n\nTelegram @pxaistore\nTelegram @sambusiness25\nViber 09751503246`;
+}
+function openProductDetail(key){
+  const p=productCatalog().find(x=>x.key===key); if(!p)return; const st=productStats(p);
+  const abilities=String(p.abilities||'').split(/\n+/).map(x=>x.trim()).filter(Boolean);
+  $('#productDetailBody').innerHTML=`<div class="profile-hero">${logoHtml(p)}<div style="min-width:0;flex:1"><h2 style="margin-bottom:4px">${esc(p.name)}</h2><span class="item-type-tag ${p.itemType||'account'}">${esc(p.itemType||'account')}</span></div></div>
+    <div class="prof-stats" style="margin-top:16px"><div class="ps">Sold<b>${st.sold}</b></div>${!isService(p)?`<div class="ps">Stock<b>${st.stock}</b></div>`:''}<div class="ps">Refund<b>${money(st.refund)} Ks</b></div><div class="ps">Revenue<b>${money(st.revenue)} Ks</b></div><div class="ps">Net Profit<b>${money(st.net)} Ks</b></div></div>
+    <div class="prof-sec"><h4>Description</h4><div class="profile-copy-block">${esc(p.description||'No description yet.')}</div></div>
+    <div class="prof-sec"><h4>Abilities / Included Features</h4><div class="tags">${abilities.length?abilities.map(x=>`<span class="tag instock">✓ ${esc(x)}</span>`).join(''):'<span class="dimsm">No abilities added.</span>'}</div></div>
+    <div class="prof-sec"><h4>Account / Service Usage Guide</h4><div class="profile-copy-block">${esc(p.guide||'No usage guide yet.')}</div></div>
+    <div class="modal-foot"><button class="btn ghost" data-close="ovProductDetail">Close</button><button class="btn" data-profile-copy="${esc(p.key)}">Copy Description & Guide</button><button class="btn" data-profile-jpg="${esc(p.key)}">Save Promo JPG</button><button class="btn primary" data-profile-edit="${esc(p.key)}">Edit Profile</button></div>`;
+  $('#ovProductDetail').classList.add('show');
+}
+function updatePpLogoPreview(){ $('#ppLogoPreview').innerHTML=profileLogoData?`<img src="${profileLogoData}" alt="logo">`:'No Logo'; }
+function openProductEditor(key=''){
+  const p=key?productCatalog().find(x=>x.key===key):null; editProductProfileKey=key; editProductProfileId=p?.id||null; profileLogoData=p?.logoData||'';
+  $('#productEditTitle').textContent=p?'Edit Product Profile':'Add Product Profile'; $('#ppName').value=p?.name||''; $('#ppType').value=p?.itemType||'account'; $('#ppDescription').value=p?.description||''; $('#ppAbilities').value=p?.abilities||''; $('#ppGuide').value=p?.guide||''; $('#ppLogo').value=''; updatePpLogoPreview(); $('#ovProductDetail').classList.remove('show'); $('#ovProductEdit').classList.add('show'); setTimeout(()=>$('#ppName').focus(),60);
+}
+function saveProductProfile(){
+  const name=$('#ppName').value.trim(), itemType=$('#ppType').value; if(!name){toast('Product name is required','err');return;}
+  const data={name,itemType,logoData:profileLogoData,description:$('#ppDescription').value.trim(),abilities:$('#ppAbilities').value.trim(),guide:$('#ppGuide').value.trim(),updated:Date.now()};
+  let p=editProductProfileId?db.products.find(x=>x.id===editProductProfileId):db.products.find(x=>productKey(x.name,x.itemType)===productKey(name,itemType));
+  if(p)Object.assign(p,data);else db.products.push({id:uid(),created:Date.now(),...data});
+  save(); $('#ovProductEdit').classList.remove('show'); render(); toast('Product profile saved ✓','ok');
+}
+function wrapCanvasText(ctx,text,x,y,maxWidth,lineHeight,maxLines=99){
+  const paras=String(text||'').split(/\n/); let lines=0;
+  for(const para of paras){ const words=para.split(/\s+/).filter(Boolean); let line=''; if(!words.length){y+=lineHeight;lines++;continue;} for(const word of words){const test=line?line+' '+word:word;if(ctx.measureText(test).width>maxWidth&&line){ctx.fillText(line,x,y);y+=lineHeight;lines++;line=word;if(lines>=maxLines)return y;}else line=test;} if(line&&lines<maxLines){ctx.fillText(line,x,y);y+=lineHeight;lines++;} if(lines>=maxLines)return y; }
+  return y;
+}
+function loadCanvasImage(src){ return new Promise(resolve=>{if(!src)return resolve(null);const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>resolve(null);im.src=src;}); }
+function downloadCanvasJpg(canvas,name){ canvas.toBlob(blob=>{if(!blob){toast('JPG creation failed','err');return;}const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);},'image/jpeg',.94); }
+async function saveProductPromoJpg(key){
+  const p=productCatalog().find(x=>x.key===key); if(!p)return; const c=document.createElement('canvas');c.width=1080;c.height=1350;const x=c.getContext('2d');
+  x.fillStyle='#f5f8ff';x.fillRect(0,0,c.width,c.height);x.fillStyle='#2563eb';x.fillRect(0,0,c.width,24);x.fillStyle='#fff';x.fillRect(65,70,950,1210);
+  const im=await loadCanvasImage(p.logoData); if(im){x.save();x.beginPath();x.roundRect(110,120,160,160,30);x.clip();x.drawImage(im,110,120,160,160);x.restore();}else{x.fillStyle='#dbeafe';x.beginPath();x.roundRect(110,120,160,160,30);x.fill();x.fillStyle='#2563eb';x.font='900 52px Arial';x.textAlign='center';x.fillText((p.name||'?').slice(0,2).toUpperCase(),190,220);x.textAlign='left';}
+  x.fillStyle='#172033';x.font='900 52px Arial';wrapCanvasText(x,p.name,310,175,620,62,2);x.fillStyle='#2563eb';x.font='800 23px Arial';x.fillText((p.itemType||'account').toUpperCase()+' PRODUCT',310,270);
+  x.fillStyle='#172033';x.font='800 27px Arial';x.fillText('DESCRIPTION',110,345);x.fillStyle='#475569';x.font='25px Arial';let y=wrapCanvasText(x,p.description||'Premium digital product and service.',110,390,850,38,5)+18;
+  x.fillStyle='#172033';x.font='800 27px Arial';x.fillText('INCLUDED ABILITIES',110,y);y+=45;x.fillStyle='#334155';x.font='24px Arial';const abs=String(p.abilities||'').split(/\n+/).filter(Boolean).slice(0,7);for(const a of (abs.length?abs:['Premium access','Fast service support'])){x.fillStyle='#2563eb';x.fillText('✓',115,y);x.fillStyle='#334155';y=wrapCanvasText(x,a,155,y,800,34,2)+8;}
+  y=Math.max(y+10,780);x.fillStyle='#172033';x.font='800 27px Arial';x.fillText('HOW TO USE',110,y);y+=45;x.fillStyle='#475569';x.font='23px Arial';wrapCanvasText(x,p.guide||'Purchase ပြီးနောက် ပေးထားသော instructions အတိုင်းအသုံးပြုပါ။',110,y,850,34,8);
+  x.fillStyle='#eff6ff';x.beginPath();x.roundRect(110,1120,860,105,20);x.fill();x.fillStyle='#1d4ed8';x.font='800 22px Arial';x.textAlign='center';x.fillText('Telegram @pxaistore  •  @sambusiness25',540,1162);x.fillText('Viber 09751503246',540,1198);x.fillStyle='#64748b';x.font='18px Arial';x.fillText('PxAiStore — Digital Products & Services',540,1270);x.textAlign='left';downloadCanvasJpg(c,`pxaistore-${p.name.replace(/[^a-z0-9]+/gi,'-')||'product'}.jpg`);
+}
+
+function renderRestockAlerts(){
+  const today=new Date(todayStr()+'T00:00:00'), cutoff=new Date(today);cutoff.setDate(cutoff.getDate()-29); const groups={};
+  for(const a of db.accounts){ if(isService(a)||!a.soldDate)continue; const d=new Date(a.soldDate+'T00:00:00'); if(d<cutoff||d>today)continue; const k=(a.product||'—').trim();(groups[k]??={sold:0,first:d,stock:0}).sold++;if(d<groups[k].first)groups[k].first=d; }
+  for(const a of db.accounts){if(!isService(a)&&a.status==='stock'){const k=(a.product||'—').trim();(groups[k]??={sold:0,first:today,stock:0}).stock++;}}
+  const rows=Object.entries(groups).map(([name,g])=>{const span=Math.max(1,Math.min(30,Math.floor((today-g.first)/86400000)+1));const avg=g.sold/span;const target=Math.max(1,Math.ceil(avg*3));return{name,...g,avg,target,need:Math.max(0,target-g.stock)};}).filter(x=>x.sold>0&&x.need>0).sort((a,b)=>b.avg-a.avg).slice(0,6);
+  const panel=$('#restockPanel'); if(!rows.length){panel.classList.remove('show');$('#restockList').innerHTML='';return;}panel.classList.add('show');
+  $('#restockList').innerHTML=rows.map(r=>`<div class="restock-item"><div class="rp">${esc(r.name)}</div><div class="rt">Top Sell Daily Approximately <b>${r.avg<1?r.avg.toFixed(1):r.avg.toFixed(1).replace('.0','')} Acc</b> · Stock <b>${r.stock}</b> · Need <b>${r.need}</b></div><button class="restock-now" data-restock-product="${esc(r.name)}">Restock Now</button></div>`).join('');
+}
+
+function updateFormType(type){
+  type=type||$('#fItemType').value||'account'; $('#fItemType').value=type; document.querySelectorAll('.type-choice').forEach(b=>b.classList.toggle('on',b.dataset.itemtype===type));
+  document.querySelectorAll('.account-only').forEach(x=>x.style.display=type==='account'?'flex':'none'); document.querySelectorAll('.service-only').forEach(x=>x.style.display=type==='service'?'flex':'none');
+  $('#fCostLabel').textContent=type==='service'?'Token / Provider Fees (Ks)':'Account Cost / Supplier Fee (Ks)'; $('#btnSave').textContent=type==='service'?'Save Service Sale':'Save Account';
+  if(!editId)$('#formTitle').textContent=type==='service'?'Add Service Task':'Add Account'; updateCodeField();
+}
+function updateDurationUi(){ $('#fRenewWrap').style.display=$('#fWarrantyPreset').value==='custom'?'flex':'none'; }
+const vk6UpdateCodeField=updateCodeField;
+updateCodeField=function(){ if($('#fItemType')?.value==='service'){ $('#fCode').value='';$('#codeHelp').textContent='Service Task တွေအတွက် account code မလိုပါ';return;} vk6UpdateCodeField(); };
+const vk6ApplyPreset=applyPreset;
+applyPreset=function(name){
+  const p=productCatalog().find(x=>x.name.toLowerCase()===String(name).toLowerCase()); if(p)updateFormType(p.itemType||'account'); vk6ApplyPreset(name); const last=lastOf(name); if(last){$('#fPlanTerm').value=last.planTerm||'';$('#fWarrantyPreset').value=last.warrantyTerm||'';updateDurationUi();}
+};
+openForm=function(id,dupFrom){
+  ensureSchema(); editId=id||null; renderPresets(); const it=editId?accById(editId):(dupFrom?accById(dupFrom):null); const type=it?.itemType||'account';
+  $('#formTitle').textContent=editId?(type==='service'?'Edit Service Task':'Edit Account'):(type==='service'?'Add Service Task':'Add Account');
+  $('#fProduct').value=it?.product||'';$('#fPlan').value=it?.plan||'';$('#fPlanTerm').value=it?.planTerm||'';$('#fWarrantyPreset').value=it?.warrantyTerm||(it?.renew?'custom':'');
+  $('#fCost').value=it?.cost||'';$('#fPrice').value=it?.price||it?.soldPrice||'';$('#fEmail').value=(editId&&it&&!isService(it))?it.email:'';$('#fPass').value=(editId&&it&&!isService(it))?it.pass:'';$('#f2fa').value=(editId&&it&&!isService(it))?it.twofa:'';
+  $('#fDelivery').value=(editId&&it&&!isService(it))?(it.delivery||''):'';formKeyFile=(editId&&it&&it.keyFileData&&!isService(it))?{name:it.keyFileName||'key-file',type:it.keyFileType||'application/octet-stream',data:it.keyFileData}:null;$('#fKeyFile').value='';$('#keyFileHelp').textContent=formKeyFile?('Saved: '+formKeyFile.name):'Small activation/key files only. Backup and Supabase sync မှာပါမယ်။';
+  $('#fSupplier').value=it?.supplier||'';$('#fRenew').value=it?.renew||'';$('#fExpire').value=it?.expire||'';$('#fServiceCustomer').value=isService(it)?custName(it.customerId):'';$('#fServiceMail').value=isService(it)?(it.email||''):'';$('#fServiceDate').value=isService(it)?(it.soldDate||todayStr()):todayStr();
+  $('#custListService').innerHTML=db.customers.map(c=>`<option value="${esc(c.name)}">`).join(''); updateFormType(type);updateDurationUi();updateCodeField();$('#ovForm').classList.add('show');setTimeout(()=>$(type==='service'?'#fServiceCustomer':'#fProduct').focus(),60);
+};
+saveForm=function(){
+  ensureSchema(); const product=$('#fProduct').value.trim(), itemType=$('#fItemType').value||'account'; if(!product){toast('Product / Service name is required','err');$('#fProduct').focus();return;}
+  const planTerm=$('#fPlanTerm').value,warrantyTerm=$('#fWarrantyPreset').value; const common={itemType,product,plan:$('#fPlan').value.trim(),planTerm,warrantyTerm,cost:num($('#fCost').value),price:num($('#fPrice').value),supplier:$('#fSupplier').value.trim()};
+  if(itemType==='service'){
+    const customerName=$('#fServiceCustomer').value.trim();if(!customerName){toast('Customer name is required for Service Task','err');$('#fServiceCustomer').focus();return;}const soldDate=$('#fServiceDate').value||todayStr();let c=db.customers.find(x=>x.name.toLowerCase()===customerName.toLowerCase());if(!c){c={id:uid(),name:customerName,contact:$('#fServiceMail').value.trim(),sourceType:'',sourceCustomerId:null,sourceHead:'',requests:[],note:'',created:Date.now()};db.customers.push(c);}else if(!c.contact&&$('#fServiceMail').value.trim())c.contact=$('#fServiceMail').value.trim();
+    const data={...common,email:$('#fServiceMail').value.trim(),pass:'',twofa:'',delivery:'',keyFileName:'',keyFileType:'',keyFileData:'',renew:warrantyTerm==='custom'?$('#fRenew').value:addTerm(soldDate,warrantyTerm),expire:planTerm==='custom'?$('#fExpire').value:($('#fExpire').value||addTerm(soldDate,planTerm)),status:'sold',customerId:c.id,soldDate,soldPrice:num($('#fPrice').value),soldNote:'Service task completed',replacedById:null,replacesId:null,inactiveNote:''};
+    let a;if(editId){a=accById(editId);Object.assign(a,data);ensureOrderId(a,soldDate);}else{a={id:uid(),code:'',created:Date.now(),orderId:createOrderId(soldDate),...data};db.accounts.unshift(a);}save();$('#ovForm').classList.remove('show');render();toast(`Service saved for ${c.name} ✓`,'ok');renderSlipPreview(slipDataFromAccount(a));return;
+  }
+  const data={...common,email:$('#fEmail').value.trim(),pass:$('#fPass').value,twofa:$('#f2fa').value.trim().replace(/\s+/g,''),delivery:$('#fDelivery').value.trim(),keyFileName:formKeyFile?.name||'',keyFileType:formKeyFile?.type||'',keyFileData:formKeyFile?.data||'',renew:warrantyTerm==='custom'?$('#fRenew').value:'',expire:planTerm==='custom'?$('#fExpire').value:$('#fExpire').value};
+  const typed=$('#fCode').value.trim().toUpperCase();db.codes??={};const vk=variantKey(data.product,data.plan);if(typed){db.codes[vk]=typed;data.code=typed;}else data.code=codeFor(data.product,data.plan,true);
+  if(editId){const a=accById(editId);Object.assign(a,data);if(a.soldDate){if(warrantyTerm&&warrantyTerm!=='custom')a.renew=addTerm(a.soldDate,warrantyTerm);if(planTerm&&planTerm!=='custom'&&!$('#fExpire').value)a.expire=addTerm(a.soldDate,planTerm);}toast('Account updated ✓','ok');}
+  else{db.accounts.unshift({id:uid(),status:'stock',customerId:null,soldDate:'',soldPrice:0,soldNote:'',orderId:'',replacedById:null,replacesId:null,inactiveNote:'',created:Date.now(),...data});toast(`Added to stock ✓ — Code ${data.code}`,'ok');}
+  save();$('#ovForm').classList.remove('show');render();
+};
+
+const vk6SaveSell=saveSell;
+saveSell=function(){
+  const a=accById(sellId);if(!a)return;const saleDate=$('#sDate').value||todayStr();if(a.warrantyTerm&&a.warrantyTerm!=='custom')a.renew=addTerm(saleDate,a.warrantyTerm);if(a.planTerm&&a.planTerm!=='custom'&&!a.expire)a.expire=addTerm(saleDate,a.planTerm);ensureOrderId(a,saleDate);vk6SaveSell();
+};
+const vk6AccCopyText=accCopyText;
+accCopyText=function(a){
+  if(!isService(a))return vk6AccCopyText(a);return codeBlock(`Service: ${a.product||''}\nPlan: ${a.plan||''}${a.planTerm?' ('+termLabel(a.planTerm)+')':''}\nCustomer: ${custName(a.customerId)||''}\nMail: ${a.email||''}\nPaid: ${money(a.soldPrice||a.price)} MMK\nWarranty: ${a.renew?fmtDate(a.renew):termLabel(a.warrantyTerm)||'—'}\nOrder ID: ${a.orderId||''}`);
+};
+const vk6TblRow=tblRow;
+tblRow=function(a){
+  if(!isService(a)){
+    let html=vk6TblRow(a);return html.replace(`<b>${hl(a.product)}</b>`,`<b>${hl(a.product)}</b><span class="item-type-tag account">Account</span>`);
+  }
+  const dl=daysLeft(a.expire), refs=db.refunds.filter(r=>r.accountId===a.id).reduce((n,r)=>n+(r.amount||0),0);const exp=a.expire?`${fmtDate(a.expire)}<span class="subtxt">${dl===null?'':dl<0?'expired '+Math.abs(dl)+'d ago':dl+'d left'}</span>`:'—';
+  const acts=`<button class="mini" data-copyacc title="Copy service details">${ICONS.copy}</button><button class="mini" data-slip title="Payment slip JPG">🧾</button><button class="mini" data-refund title="Refund">↩</button><button class="mini" data-dup title="Duplicate service">${ICONS.dup}</button><button class="mini" data-edit title="Edit">${ICONS.edit}</button><button class="mini" data-del title="Delete safely">${ICONS.trash}</button>`;
+  return `<tr data-id="${a.id}"><td><b>${hl(a.product)}</b><span class="item-type-tag service">Service</span>${a.plan?`<span class="subtxt">${hl(a.plan)}${a.planTerm?' · '+termLabel(a.planTerm):''}</span>`:''}</td><td class="mono copyable" data-codecopy="${esc(a.email)}">${hl(a.email)||'—'}</td><td class="dimsm">Not required</td><td class="dimsm">Not required</td><td class="dimsm">Direct service task</td><td>${a.customerId?`<span class="custlink" data-cust="${a.customerId}">${hl(custName(a.customerId))}</span>`:'—'}</td><td>${money(a.soldPrice||a.price)}<span class="subtxt">fee ${money(a.cost)} · net ${money((a.soldPrice||a.price||0)-(a.cost||0)-refs)}</span></td><td class="dimsm">${fmtDate(a.soldDate)}${a.renew?`<span class="subtxt">W: ${fmtDate(a.renew)}${a.warrantyTerm?' ('+termLabel(a.warrantyTerm)+')':''}</span>`:''}${a.orderId?`<span class="subtxt">${esc(a.orderId)}</span>`:''}</td><td>${exp}</td><td><span class="badge service">Service Done</span></td><td><div class="tblact">${acts}</div></td></tr>`;
+};
+const vk6RenderAccounts=renderAccounts;
+renderAccounts=function(){vk6RenderAccounts();const list=accSorted(db.accounts.filter(accMatches));const services=list.filter(isService).length;$('#tblFoot').insertAdjacentHTML('beforeend',`<span>Service tasks: <b>${services}</b></span>`);};
+const vk6RenderDash=renderDash;
+renderDash=function(){vk6RenderDash();renderRestockAlerts();const ts=todaySales();$('#dsSellCnt').textContent=ts.length+' Sales';};
+const vk6RenderAnalytics=renderAnalytics;
+renderAnalytics=function(){vk6RenderAnalytics();renderProductProfiles();};
+const vk6Render=render;
+render=function(){ensureSchema();vk6Render();};
+const vk6SetTab=setTab;
+setTab=function(t){vk6SetTab(t);if(t==='accounts')$('#btnAddLbl').textContent='Add Product';};
+
+function slipDataFromForm(a){
+  const name=$('#sCustomer').value.trim();if(!name){toast('Customer name is required for the payment slip','err');$('#sCustomer').focus();return null;}const date=$('#sDate').value||todayStr();ensureOrderId(a,date);
+  return {store:'PxAiStore',orderId:a.orderId,customer:name,product:a.product||'',itemType:a.itemType||'account',plan:a.plan||'',planTerm:a.planTerm||'',amount:num($('#sPrice').value)||(a.price||0),date,warranty:(a.warrantyTerm&&a.warrantyTerm!=='custom'?addTerm(date,a.warrantyTerm):a.renew)||'',warrantyTerm:a.warrantyTerm||'',status:'PAID',thanks:'Thanks For Choosing Our Service',logoData:productProfile(a.product,a.itemType).logoData||''};
+}
+function slipDataFromAccount(a){
+  const date=a.soldDate||todayStr();ensureOrderId(a,date);return {store:'PxAiStore',orderId:a.orderId,customer:custName(a.customerId)||'Customer',product:a.product||'',itemType:a.itemType||'account',plan:a.plan||'',planTerm:a.planTerm||'',amount:a.soldPrice||a.price||0,date,warranty:a.renew||'',warrantyTerm:a.warrantyTerm||'',status:'PAID',thanks:'Thanks For Choosing Our Service',logoData:productProfile(a.product,a.itemType).logoData||''};
+}
+renderSlipPreview=function(d){
+  $('#slipPreview').innerHTML=`<div class="slip-paper"><div class="slip-head"><div><div class="slip-brand">${esc(d.store)}</div><div style="font-size:12px;color:#64748b;margin-top:3px">PAYMENT RECEIPT · ${esc(d.date)}</div><div class="slip-order">Order ID: ${esc(d.orderId)}</div></div><span class="slip-paid">${esc(d.status)}</span></div><div class="slip-grid"><div class="slip-field">Customer Name<b>${esc(d.customer)}</b></div><div class="slip-field">Product / Service<b>${esc(d.product)}</b><div class="slip-planline">${d.itemType==='service'?'Service Task':'Account Product'}</div></div><div class="slip-field">Account Plan<b>${esc(d.plan||'—')}${d.planTerm?' · '+esc(termLabel(d.planTerm)):''}</b></div><div class="slip-field">Paid Amount<b>${money(d.amount)} MMK</b></div><div class="slip-field">Warranty Expired<b>${d.warranty?fmtDate(d.warranty):'—'}${d.warrantyTerm?' ('+esc(termLabel(d.warrantyTerm))+')':''}</b></div><div class="slip-field">Paid Status<b>${esc(d.status)}</b></div></div><div class="slip-thanks">${esc(d.thanks)}</div><div class="slip-contact">Telegram @pxaistore<br>Telegram @sambusiness25<br>Viber 09751503246</div></div>`;$('#ovSlip').dataset.slip=JSON.stringify(d);$('#ovSlip').classList.add('show');
+};
+openSlipForSell=function(){const a=accById(sellId);if(!a)return;const d=slipDataFromForm(a);if(d){save();renderSlipPreview(d);}};
+openSlipForAccount=function(a){if(!a)return;slipAccountId=a.id;const d=slipDataFromAccount(a);save();renderSlipPreview(d);};
+async function saveSlipJpg(){
+  const d=currentSlip();if(!d)return;const c=document.createElement('canvas');c.width=1080;c.height=1350;const x=c.getContext('2d');x.fillStyle='#eef4ff';x.fillRect(0,0,1080,1350);x.fillStyle='#fff';x.beginPath();x.roundRect(60,55,960,1240,30);x.fill();x.fillStyle='#2563eb';x.fillRect(60,55,960,18);
+  const im=await loadCanvasImage(d.logoData);if(im){x.save();x.beginPath();x.roundRect(100,105,100,100,22);x.clip();x.drawImage(im,100,105,100,100);x.restore();}else{x.fillStyle='#dbeafe';x.beginPath();x.roundRect(100,105,100,100,22);x.fill();x.fillStyle='#2563eb';x.font='900 30px Arial';x.textAlign='center';x.fillText('PX',150,167);x.textAlign='left';}
+  x.fillStyle='#2563eb';x.font='900 46px Arial';x.fillText(d.store,230,145);x.fillStyle='#64748b';x.font='20px Arial';x.fillText('PAYMENT RECEIPT',230,180);x.font='18px monospace';x.fillText('Order ID: '+d.orderId,230,210);x.fillStyle='#dcfce7';x.beginPath();x.roundRect(820,112,125,52,26);x.fill();x.fillStyle='#15803d';x.font='900 22px Arial';x.textAlign='center';x.fillText(d.status,882,146);x.textAlign='left';x.strokeStyle='#dbe3ef';x.lineWidth=2;x.beginPath();x.moveTo(100,245);x.lineTo(980,245);x.stroke();
+  const fields=[['Customer Name',d.customer],['Product / Service',d.product],['Account Plan',(d.plan||'—')+(d.planTerm?' · '+termLabel(d.planTerm):'')],['Paid Amount',money(d.amount)+' MMK'],['Warranty Expired',(d.warranty?fmtDate(d.warranty):'—')+(d.warrantyTerm?' ('+termLabel(d.warrantyTerm)+')':'')],['Purchase Date',fmtDate(d.date)],['Product Type',d.itemType==='service'?'Service Task':'Account Product'],['Paid Status',d.status]];let y=310;
+  fields.forEach((f,i)=>{const col=i%2,row=Math.floor(i/2),fx=110+col*455,fy=310+row*145;x.fillStyle='#64748b';x.font='20px Arial';x.fillText(f[0],fx,fy);x.fillStyle='#172033';x.font='800 29px Arial';wrapCanvasText(x,f[1],fx,fy+42,390,36,2);});y=900;x.fillStyle='#eff6ff';x.beginPath();x.roundRect(100,y,880,105,20);x.fill();x.fillStyle='#1d4ed8';x.font='900 27px Arial';x.textAlign='center';x.fillText(d.thanks,540,y+62);x.fillStyle='#475569';x.font='22px Arial';x.fillText('Telegram @pxaistore',540,1070);x.fillText('Telegram @sambusiness25',540,1110);x.fillText('Viber 09751503246',540,1150);x.fillStyle='#94a3b8';x.font='18px Arial';x.fillText('PxAiStore · Digital Products & Services',540,1235);x.textAlign='left';downloadCanvasJpg(c,`PxAiStore-${d.orderId}.jpg`);
+}
 
 /* ================= events ================= */
 $('#tabs').addEventListener('click',e=>{ const b=e.target.closest('.tab-btn'); if(b) setTab(b.dataset.tab); });
@@ -2340,6 +2603,12 @@ $('#rTo').addEventListener('change',e=>{ rangeTo=e.target.value; render(); });
 $('#btnAdd').addEventListener('click',()=>{ tab==='customers'?openCustForm():openForm(); });
 $('#btnSave').addEventListener('click',saveForm);
 $('#form').addEventListener('submit',e=>{e.preventDefault();saveForm();});
+document.querySelectorAll('.type-choice').forEach(b=>b.addEventListener('click',()=>updateFormType(b.dataset.itemtype)));
+$('#fWarrantyPreset').addEventListener('change',updateDurationUi);
+$('#btnAddProductProfile').addEventListener('click',()=>openProductEditor());
+$('#btnSaveProductProfile').addEventListener('click',saveProductProfile);
+$('#ppLogo').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;if(f.size>400*1024){toast('Logo image max 400 KB','err');e.target.value='';return;}const r=new FileReader();r.onload=()=>{profileLogoData=String(r.result);updatePpLogoPreview();};r.readAsDataURL(f);});
+$('#btnPpLogoClear').addEventListener('click',()=>{profileLogoData='';$('#ppLogo').value='';updatePpLogoPreview();});
 $('#presetRow').addEventListener('click',e=>{ const b=e.target.closest('[data-preset]'); if(b) applyPreset(b.dataset.preset); });
 /* drawer */
 $('#btnMenu').addEventListener('click',openDrawer);
@@ -2426,8 +2695,7 @@ $('#btnDriveUp').addEventListener('click',driveUpload);
 $('#btnDriveDown').addEventListener('click',driveDownload);
 $('#btnSellSave').addEventListener('click',saveSell);
 $('#btnSlipOpen').addEventListener('click',openSlipForSell);
-$('#btnSlipCsv').addEventListener('click',downloadSlipCsv);
-$('#btnSlipPdf').addEventListener('click',printSlipPdf);
+$('#btnSlipJpg').addEventListener('click',saveSlipJpg);
 $('#sCustomer').addEventListener('input',checkSellCust);
 $('#btnRefundSave').addEventListener('click',saveRefund);
 $('#btnReplaceSave').addEventListener('click',saveReplace);
@@ -2444,6 +2712,11 @@ document.addEventListener('click',e=>{
   const ra=e.target.closest('[data-radar-add]'); if(ra){ openForm(); setTimeout(()=>applyPreset(ra.dataset.radarAdd),80); return; }
   const uc=e.target.closest('[data-usecalc]');
   if(uc){ $('#rAmount').value=uc.dataset.usecalc; toast('Calculated amount filled ✓','ok'); return; }
+  const pp=e.target.closest('[data-product-profile]');if(pp){openProductDetail(pp.dataset.productProfile);return;}
+  const pe=e.target.closest('[data-profile-edit]');if(pe){openProductEditor(pe.dataset.profileEdit);return;}
+  const pc=e.target.closest('[data-profile-copy]');if(pc){const p=productCatalog().find(x=>x.key===pc.dataset.profileCopy);if(p){copyText(profileShareText(p));toast('Description & usage guide copied ✓','ok');}return;}
+  const pj=e.target.closest('[data-profile-jpg]');if(pj){saveProductPromoJpg(pj.dataset.profileJpg);return;}
+  const rr=e.target.closest('[data-restock-product]');if(rr){openForm();setTimeout(()=>{updateFormType('account');applyPreset(rr.dataset.restockProduct);},70);return;}
   const rd=e.target.closest('[data-reqdel]');
   if(rd){ const [cid,req]=rd.dataset.reqdel.split('|');
     const c=custById(cid);
@@ -2526,7 +2799,7 @@ $('#custGrid').addEventListener('click',e=>{
 });
 
 /* ================= init ================= */
-load(); lockUi();
+load(); ensureSchema(); store.set(KEY,JSON.stringify(db)); lockUi();
 if(db.settings?.pin) showLock();
 setTab('dash');
 sbUi();
