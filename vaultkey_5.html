@@ -852,6 +852,24 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
       <button class="btn sm" id="btnBotRefresh">🔄 Refresh</button>
     </div>
 
+    <div class="stats" id="botSalesStats">
+      <div class="stat"><div class="n" id="botTodaySales">0</div><div class="l">Today Bot Sales</div></div>
+      <div class="stat"><div class="n" id="botTodayIncome">0 MMK</div><div class="l">Today Income</div></div>
+      <div class="stat"><div class="n" id="botBuyerCount">0</div><div class="l">Bot Buyers</div></div>
+      <div class="stat"><div class="n" id="botAvailableStock">0</div><div class="l">Available Stock</div></div>
+    </div>
+
+    <div class="chart-card" style="margin-bottom:16px">
+      <div class="chart-hd"><div><h3>🗂 Bot Categories</h3><div class="sub">Category အသစ်ထည့်ပြီး customer menu အဖွင့်/အပိတ်ကို ဒီနေရာကနေထိန်းပါ။</div></div></div>
+      <div class="mini-form">
+        <input id="botCatName" placeholder="Category name (ဥပမာ ChatGPT)">
+        <input id="botCatEmoji" placeholder="Fallback emoji" value="📦">
+        <input id="botCatSort" type="number" placeholder="Sort order" value="100">
+        <button class="btn primary add-btn" id="btnBotAddCategory">＋ Create Category</button>
+      </div>
+      <div class="tbl-wrap" style="margin-top:12px"><table class="data"><thead><tr><th>Emoji</th><th>Category</th><th>Sort</th><th>Status</th><th></th></tr></thead><tbody id="botCategoriesBody"></tbody></table></div>
+    </div>
+
     <div class="chart-card" style="margin-bottom:16px">
       <div class="chart-hd">
         <div><h3>➕ New Bot Product</h3><div class="sub">Category ရွေး၊ Name/Price ထည့်ပြီး bot ထဲ product အသစ်ဖန်တီးပါ။</div></div>
@@ -1657,6 +1675,7 @@ async function botSyncSoldStatus(){
 }
 async function botSyncCustomersAndSales(){
   const data=await botRequest('dashboard-sync'); let changed=false;
+  botCatalogCache.orders=data.orders||[];
   for(const profile of (data.profiles||[])){
     const telegramId=String(profile.telegram_user_id), name=[profile.first_name,profile.last_name].filter(Boolean).join(' ').trim()||telegramId;
     let customer=db.customers.find(c=>String(c.telegramUserId||c.sourceCustomerId||'')===telegramId);
@@ -1693,6 +1712,16 @@ function botRenderCatSelect(){
     ? botCategoriesCache.map(c=>`<option value="${esc(c.slug)}">${esc(c.emoji||'')} ${esc(c.name)}</option>`).join('')
     : '<option value="">No categories — create one in Supabase first</option>';
 }
+function botRenderCategoriesTable(){
+  $('#botCategoriesBody').innerHTML=botCategoriesCache.length?botCategoriesCache.map(c=>`<tr><td>${esc(c.emoji||'📦')}</td><td>${esc(c.name)}</td><td>${c.sort_order??0}</td><td>${c.is_active?'<span class="badge stock">Active</span>':'<span class="badge sold">Inactive</span>'}</td><td><button class="btn sm ${c.is_active?'danger':'primary'}" data-botcattoggle="${c.id}" data-active="${c.is_active?'1':'0'}">${c.is_active?'Disable':'Enable'}</button></td></tr>`).join(''):'<tr><td colspan="5">No categories</td></tr>';
+}
+function botRenderStats(){
+  const orders=botCatalogCache.orders||[], today=todayStr();
+  const completed=orders.filter(o=>o.status==='completed'&&String(o.completed_at||o.created_at).slice(0,10)===today);
+  $('#botTodaySales').textContent=completed.length; $('#botTodayIncome').textContent=money(completed.reduce((s,o)=>s+num(o.amount),0))+' MMK';
+  $('#botBuyerCount').textContent=new Set(orders.filter(o=>o.status==='completed').map(o=>o.telegram_user_id)).size;
+  $('#botAvailableStock').textContent=Object.values(botCatalogCache.stockCounts||{}).reduce((s,n)=>s+num(n),0);
+}
 async function botRenderProductsTable(){
   const stockIds=botProductsCache.filter(p=>p.delivery_type==='stock').map(p=>p.id);
   let counts={};
@@ -1705,7 +1734,7 @@ async function botRenderProductsTable(){
       <td><input class="botPriceInput" data-pid="${p.id}" type="number" min="0" step="0.01" value="${p.price}" style="width:90px;border:1px solid var(--line2);border-radius:8px;padding:5px 7px;font:inherit"></td>
       <td>${stock}</td>
       <td>${p.is_active?'<span class="badge stock">Active</span>':'<span class="badge sold">Inactive</span>'}</td>
-      <td><button class="btn sm" data-botsaveprice="${p.id}">💾 Save</button></td>
+      <td><button class="btn sm" data-botsaveprice="${p.id}">💾 Save</button> <button class="btn sm ${p.is_active?'danger':'primary'}" data-botproducttoggle="${p.id}" data-active="${p.is_active?'1':'0'}">${p.is_active?'Disable':'Enable'}</button></td>
     </tr>`;
   }).join(''):`<tr><td colspan="6" style="text-align:center;color:var(--dim)">Bot product မရှိသေးပါ — အပေါ်က form နဲ့ တစ်ခုဖန်တီးပါ</td></tr>`;
 }
@@ -1735,6 +1764,8 @@ function botRenderListedTable(){
 }
 function renderBotSync(){
   botRenderCatSelect();
+  botRenderCategoriesTable();
+  botRenderStats();
   botRenderProductsTable();
   botRenderReadyTable();
   botRenderListedTable();
@@ -3222,6 +3253,15 @@ $('#btnBotOpenSb').addEventListener('click',()=>{
   sbUi(); $('#ovSb').classList.add('show');
 });
 $('#btnBotRefresh').addEventListener('click',openBotSyncTab);
+$('#btnBotAddCategory').addEventListener('click',async()=>{
+  const name=$('#botCatName').value.trim(),emoji=$('#botCatEmoji').value.trim()||'📦',sortOrder=parseInt($('#botCatSort').value,10)||100;
+  if(!name){toast('Category name ထည့်ပါ','err');return;}
+  try{await botRequest('create-category',{name,emoji,sortOrder});$('#botCatName').value='';toast('Category saved ✓','ok');await botLoadAll();renderBotSync();}catch(e){toast('Category failed — '+e.message,'err');}
+});
+$('#botCategoriesBody').addEventListener('click',async e=>{
+  const btn=e.target.closest('[data-botcattoggle]');if(!btn)return;
+  try{await botRequest('set-category-active',{categoryId:btn.dataset.botcattoggle,active:btn.dataset.active!=='1'});await botLoadAll();renderBotSync();}catch(err){toast('Category update failed — '+err.message,'err');}
+});
 $('#btnBotAddProduct').addEventListener('click',async()=>{
   const categorySlug=$('#botNewCat').value;
   const name=$('#botNewName').value.trim();
@@ -3241,6 +3281,8 @@ $('#btnBotAddProduct').addEventListener('click',async()=>{
   }catch(e){ toast('Create failed — '+e.message,'err'); }
 });
 $('#botProductsBody').addEventListener('click',async e=>{
+  const toggle=e.target.closest('[data-botproducttoggle]');
+  if(toggle){try{await botRequest('set-product-active',{productId:toggle.dataset.botproducttoggle,active:toggle.dataset.active!=='1'});await botLoadAll();renderBotSync();}catch(err){toast('Product update failed — '+err.message,'err');}return;}
   const btn=e.target.closest('[data-botsaveprice]'); if(!btn) return;
   const pid=btn.dataset.botsaveprice;
   const input=$(`.botPriceInput[data-pid="${pid}"]`);
