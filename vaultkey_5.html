@@ -521,10 +521,10 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
 
 /* ================= V9 colorful dashboard, FOC gift & compact finance ================= */
 :root{--tab-blue:#2563eb;--tab-purple:#7c3aed;--tab-teal:#0891b2;--tab-orange:#ea580c;--tab-pink:#db2777}
-.tabs{width:100%;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;background:rgba(255,255,255,.82);padding:7px;border-radius:18px;box-shadow:0 10px 28px rgba(37,99,235,.08)}
+.tabs{width:100%;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px;background:rgba(255,255,255,.82);padding:7px;border-radius:18px;box-shadow:0 10px 28px rgba(37,99,235,.08)}
 .tab-btn{justify-content:center;border:1px solid transparent;padding:11px 10px;border-radius:13px;min-width:0}
-.tab-btn[data-tab="dash"]{color:var(--tab-blue);background:#eff6ff}.tab-btn[data-tab="accounts"]{color:var(--tab-purple);background:#f5f3ff}.tab-btn[data-tab="customers"]{color:var(--tab-teal);background:#ecfeff}.tab-btn[data-tab="finance"]{color:var(--tab-orange);background:#fff7ed}.tab-btn[data-tab="analytics"]{color:var(--tab-pink);background:#fdf2f8}
-.tab-btn[data-tab="dash"].on{background:linear-gradient(135deg,#2563eb,#0ea5e9)}.tab-btn[data-tab="accounts"].on{background:linear-gradient(135deg,#7c3aed,#a855f7)}.tab-btn[data-tab="customers"].on{background:linear-gradient(135deg,#0891b2,#14b8a6)}.tab-btn[data-tab="finance"].on{background:linear-gradient(135deg,#ea580c,#f59e0b)}.tab-btn[data-tab="analytics"].on{background:linear-gradient(135deg,#db2777,#f43f5e)}
+.tab-btn[data-tab="dash"]{color:var(--tab-blue);background:#eff6ff}.tab-btn[data-tab="accounts"]{color:var(--tab-purple);background:#f5f3ff}.tab-btn[data-tab="customers"]{color:var(--tab-teal);background:#ecfeff}.tab-btn[data-tab="finance"]{color:var(--tab-orange);background:#fff7ed}.tab-btn[data-tab="analytics"]{color:var(--tab-pink);background:#fdf2f8}.tab-btn[data-tab="botsync"]{color:#0e9f6e;background:#ecfdf5}
+.tab-btn[data-tab="dash"].on{background:linear-gradient(135deg,#2563eb,#0ea5e9)}.tab-btn[data-tab="accounts"].on{background:linear-gradient(135deg,#7c3aed,#a855f7)}.tab-btn[data-tab="customers"].on{background:linear-gradient(135deg,#0891b2,#14b8a6)}.tab-btn[data-tab="finance"].on{background:linear-gradient(135deg,#ea580c,#f59e0b)}.tab-btn[data-tab="analytics"].on{background:linear-gradient(135deg,#db2777,#f43f5e)}.tab-btn[data-tab="botsync"].on{background:linear-gradient(135deg,#0e9f6e,#10b981)}
 .tab-btn.on{color:#fff;border-color:transparent;box-shadow:0 8px 20px color-mix(in srgb,currentColor 25%,transparent)}
 .goal-card{background:linear-gradient(125deg,#ede9fe 0%,#dbeafe 48%,#cffafe 100%);border-color:rgba(99,102,241,.28);box-shadow:0 16px 38px rgba(79,70,229,.12)}
 .month-progress{margin-top:13px;border-top:1px solid rgba(79,70,229,.13);padding-top:12px}.month-progress-top{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11px;font-weight:900;color:#475569;text-transform:uppercase;letter-spacing:.05em}.month-progress-top b{font-size:13px;color:#7c3aed}.month-bar{height:7px;border-radius:99px;background:rgba(99,102,241,.11);overflow:hidden;margin:7px 0}.month-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#7c3aed,#ec4899);border-radius:99px;transition:width .55s ease}.month-progress small{display:block;color:var(--mut);font-size:10.5px;font-weight:650}
@@ -534,7 +534,7 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
 .sale-mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.sale-mode{border:1px solid var(--line2);background:var(--card2);border-radius:13px;padding:11px;font:inherit;font-size:12px;font-weight:850;cursor:pointer;color:var(--mut)}.sale-mode.on[data-sale-mode="sale"]{background:#eff6ff;border-color:#60a5fa;color:#1d4ed8}.sale-mode.on[data-sale-mode="foc"]{background:#fdf2f8;border-color:#f472b6;color:#be185d}.foc-box{display:none;grid-column:1/-1;background:linear-gradient(135deg,#fdf2f8,#fff7ed);border:1px solid #fbcfe8;border-radius:14px;padding:12px}.foc-box.show{display:block}.foc-presets{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.foc-presets button{border:1px solid #f9a8d4;background:#fff;color:#be185d;border-radius:99px;padding:5px 10px;font:inherit;font-size:10.5px;font-weight:850;cursor:pointer}.sale-summary{grid-column:1/-1;background:#f8fafc;border:1px solid #e2e8f0;border-radius:13px;padding:11px 13px}.sale-summary-line{display:flex;justify-content:space-between;gap:12px;font-size:11.5px;color:#64748b;padding:3px 0}.sale-summary-line b{color:#172033}.sale-summary-line.discount b{color:#db2777}.sale-summary-line.final{font-size:14px;border-top:1px dashed #cbd5e1;margin-top:5px;padding-top:9px}.foc-tag{display:inline-flex;align-items:center;padding:2px 7px;border-radius:99px;background:#fce7f3;color:#be185d;font-size:9px;font-weight:900;margin-left:5px;vertical-align:middle}.slip-discount{color:#be185d!important}.slip-paid.foc{background:#fce7f3;color:#be185d}.slip-price-stack{font-size:11px;color:#64748b;margin-top:4px;line-height:1.55}.slip-price-stack strong{color:#172033}
 .modal-list-head{display:flex;align-items:center;justify-content:space-between;margin:18px 0 9px;font-size:12px;font-weight:900}.modal-list-head span{font-size:10px;color:var(--mut)}
 @media(max-width:820px){.tabs{grid-template-columns:repeat(3,minmax(0,1fr))}.dash-work-grid{grid-template-columns:1fr}.finance-actions{grid-template-columns:1fr 1fr}}
-@media(max-width:540px){.tabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.tab-btn{font-size:12px;padding:10px 7px}.tabs .tab-btn:last-child{grid-column:1/-1}.finance-actions{grid-template-columns:1fr}.sale-mode-grid{grid-template-columns:1fr 1fr}.modal-foot{flex-wrap:wrap}.modal-foot .btn{flex:1}.modal-foot .btn.primary{flex-basis:100%}}
+@media(max-width:540px){.tabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.tab-btn{font-size:12px;padding:10px 7px}.finance-actions{grid-template-columns:1fr}.sale-mode-grid{grid-template-columns:1fr 1fr}.modal-foot{flex-wrap:wrap}.modal-foot .btn{flex:1}.modal-foot .btn.primary{flex-basis:100%}}
 
 
 @media(max-width:540px){#ovSell .modal-foot{position:sticky;bottom:-18px;z-index:5;background:linear-gradient(180deg,rgba(255,255,255,.92),#fff 28%);border-top:1px solid var(--line);padding-top:12px;padding-bottom:4px;box-shadow:0 -12px 24px rgba(15,23,42,.06)}}
@@ -584,6 +584,9 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
     <button class="tab-btn" data-tab="analytics">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
       Analytics</button>
+    <button class="tab-btn" data-tab="botsync">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a5 5 0 0 0-5 5v1H6a3 3 0 0 0-3 3v7a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3v-7a3 3 0 0 0-3-3h-1V7a5 5 0 0 0-5-5z"/><circle cx="9" cy="14" r="1.4" fill="currentColor" stroke="none"/><circle cx="15" cy="14" r="1.4" fill="currentColor" stroke="none"/></svg>
+      Bot Sync</button>
   </nav>
 
   <div class="search-row" id="searchRow">
@@ -836,6 +839,61 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
       </tr></thead><tbody id="cmpBody"></tbody></table>
       </div>
       <div class="remarks" id="refundNotes"></div>
+    </div>
+  </section>
+
+  <!-- ============ BOT SYNC VIEW ============ -->
+  <section class="view" id="view-botsync">
+    <div class="sub" style="margin-bottom:14px">Telegram bot ရဲ့ product/price/stock ကို ဒီနေရာကနေ ချိန်ညှိပါ။ Stock ကို ဒီ webpage ကနေယူပြီး ဈေးကို ဒီနေရာ (or Telegram <code>/setprice</code>) ကနေသတ်မှတ်ပါမယ်။ <b>List on Bot</b> ထားတဲ့ item ကိုပဲ customer တွေ Telegram ပေါ်မှာ မြင်ရပါမယ်။</div>
+
+    <div class="drive-status" id="botConnStatus" style="margin-bottom:14px">
+      <span class="dot" id="botConnDot"></span><span id="botConnTxt">Not connected</span>
+      <button class="btn sm ghost" id="btnBotOpenSb" style="margin-left:auto">⚙ Supabase Settings</button>
+      <button class="btn sm" id="btnBotRefresh">🔄 Refresh</button>
+    </div>
+
+    <div class="chart-card" style="margin-bottom:16px">
+      <div class="chart-hd">
+        <div><h3>➕ New Bot Product</h3><div class="sub">Category ရွေး၊ Name/Price ထည့်ပြီး bot ထဲ product အသစ်ဖန်တီးပါ။</div></div>
+      </div>
+      <div class="mini-form" id="botNewProductForm">
+        <select id="botNewCat"></select>
+        <input id="botNewName" placeholder="Product name (ဥပမာ Express VPN 1 Month)">
+        <input id="botNewPrice" type="number" min="0" step="0.01" placeholder="Price (USD)">
+        <input id="botNewWarranty" type="number" min="0" step="1" placeholder="Warranty days (default 30)">
+        <button class="btn primary add-btn" id="btnBotAddProduct">＋ Create Product</button>
+      </div>
+    </div>
+
+    <div class="chart-card" style="margin-bottom:16px">
+      <div class="chart-hd">
+        <div><h3>🤖 Bot Products &amp; Prices</h3><div class="sub">ဈေးနှုန်းကို ဒီနေရာကနေ တိုက်ရိုက်ပြင်နိုင်ပါတယ် — Telegram ဘက်ကလည်း ချက်ချင်းပြောင်းပေးပါမယ်။</div></div>
+      </div>
+      <div class="tbl-wrap"><table class="data">
+        <thead><tr><th>Category</th><th>Product</th><th>Price (USD)</th><th>Stock</th><th>Status</th><th></th></tr></thead>
+        <tbody id="botProductsBody"></tbody>
+      </table></div>
+    </div>
+
+    <div class="chart-card" style="margin-bottom:16px">
+      <div class="chart-hd">
+        <div><h3>📥 Local Stock — Ready to List</h3><div class="sub">status = In Stock ဖြစ်ပြီး Bot ပေါ်မှာ မတင်ရသေးသော account များ။</div></div>
+      </div>
+      <div class="tbl-wrap"><table class="data">
+        <thead><tr><th>Product / Plan</th><th>Gmail</th><th>Target Bot Product</th><th></th></tr></thead>
+        <tbody id="botReadyBody"></tbody>
+      </table></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-hd">
+        <div><h3>✅ Currently Listed on Bot</h3><div class="sub">Customer Telegram ပေါ်မှာ ဝယ်လို့ရနေတဲ့ stock များ။</div></div>
+        <button class="btn sm" id="btnBotSyncSold">🔄 Sync Sold Status</button>
+      </div>
+      <div class="tbl-wrap"><table class="data">
+        <thead><tr><th>Product / Plan</th><th>Gmail</th><th>Bot Product</th><th></th></tr></thead>
+        <tbody id="botListedBody"></tbody>
+      </table></div>
     </div>
   </section>
 </div>
@@ -1530,6 +1588,167 @@ function sbStartAutoSync(){
   sbPollTimer=setInterval(()=>{
     if(document.visibilityState==='visible'&&!sbTimer&&!sbDirty) sbPull(true);
   },15000);
+}
+
+/* ================= bot stock sync (V6 bridge) =================
+   Same Supabase project/keys as the Cloud Sync above — this just talks to
+   the shop bot's real `categories`/`products`/`inventory` tables instead of
+   the `vault` blob. Run migration 20260810000000_bot_v6_web_stock_sync.sql
+   on the bot's project first (adds inventory.web_account_id + anon policies). */
+let botCategoriesCache=[], botProductsCache=[];
+function botFmtContent(a){
+  const lines=[];
+  if(a.email) lines.push('Email: '+a.email);
+  if(a.pass) lines.push('Password: '+a.pass);
+  if(a.twofa) lines.push('2FA: '+a.twofa);
+  if(a.code) lines.push('Key: '+a.code);
+  if(a.delivery) lines.push(a.delivery);
+  return lines.join('\n')||'(no delivery content set on this account)';
+}
+async function botFetchCategories(){
+  const c=sbCfg();
+  const r=await fetch(c.url+'/rest/v1/categories?select=*&order=sort_order.asc',{headers:sbHeaders(c)});
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  return r.json();
+}
+async function botFetchProducts(){
+  const c=sbCfg();
+  const r=await fetch(c.url+'/rest/v1/products?select=*&order=category_id.asc,sort_order.asc',{headers:sbHeaders(c)});
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  return r.json();
+}
+async function botFetchStockCounts(productIds){
+  if(!productIds.length) return {};
+  const c=sbCfg();
+  const r=await fetch(c.url+`/rest/v1/inventory?product_id=in.(${productIds.join(',')})&status=eq.available&select=product_id`,{headers:sbHeaders(c)});
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  const rows=await r.json();
+  const counts={};
+  for(const row of rows) counts[row.product_id]=(counts[row.product_id]||0)+1;
+  return counts;
+}
+async function botCreateProduct(input){
+  const c=sbCfg();
+  const r=await fetch(c.url+'/rest/v1/products',{method:'POST',headers:{...sbHeaders(c),Prefer:'return=representation'},
+    body:JSON.stringify([{category_id:input.categoryId,name:input.name,description:input.name,
+      price:input.price,currency:'USD',delivery_type:'stock',warranty_days:input.warrantyDays||30,sort_order:100,is_active:false}])});
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  const rows=await r.json(); return rows[0];
+}
+async function botSetPrice(productId,price){
+  const c=sbCfg();
+  const r=await fetch(c.url+`/rest/v1/products?id=eq.${productId}`,{method:'PATCH',headers:{...sbHeaders(c),Prefer:'return=representation'},
+    body:JSON.stringify({price,updated_at:new Date().toISOString()})});
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  const rows=await r.json(); return rows[0];
+}
+async function botListAccount(account,productId){
+  const c=sbCfg();
+  const r=await fetch(c.url+'/rest/v1/inventory',{method:'POST',headers:{...sbHeaders(c),Prefer:'return=representation'},
+    body:JSON.stringify([{product_id:productId,content:botFmtContent(account),status:'available',web_account_id:account.id}])});
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  const rows=await r.json();
+  account.botProductId=productId; account.botInventoryId=rows[0].id; save();
+  return rows[0];
+}
+async function botUnlistAccount(account){
+  if(!account.botInventoryId) return;
+  const c=sbCfg();
+  const r=await fetch(c.url+`/rest/v1/inventory?id=eq.${account.botInventoryId}`,{method:'PATCH',headers:sbHeaders(c),
+    body:JSON.stringify({status:'disabled',updated_at:new Date().toISOString()})});
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  account.botInventoryId=null; account.botProductId=null; save();
+}
+async function botSyncSoldStatus(){
+  const linked=db.accounts.filter(a=>a.botInventoryId&&a.status==='stock');
+  if(!linked.length) return 0;
+  const c=sbCfg();
+  const ids=linked.map(a=>a.botInventoryId);
+  const r=await fetch(c.url+`/rest/v1/inventory?id=in.(${ids.join(',')})&select=id,status`,{headers:sbHeaders(c)});
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  const rows=await r.json();
+  const soldIds=new Set(rows.filter(x=>x.status==='sold').map(x=>x.id));
+  let count=0;
+  for(const a of linked){
+    if(soldIds.has(a.botInventoryId)){
+      a.status='sold'; a.soldDate=a.soldDate||todayStr(); a.soldPrice=a.soldPrice||a.price||0;
+      a.soldNote=(a.soldNote?a.soldNote+' · ':'')+'Sold via Telegram bot'; count++;
+    }
+  }
+  if(count) save();
+  return count;
+}
+function botCatName(catId){ const c=botCategoriesCache.find(x=>x.id===catId); return c?c.name:'—'; }
+async function botLoadAll(){
+  const c=sbCfg();
+  if(!c.url||!c.key){ botConnUi(false); return; }
+  try{
+    const [cats,prods]=await Promise.all([botFetchCategories(),botFetchProducts()]);
+    botCategoriesCache=cats; botProductsCache=prods;
+    botConnUi(true);
+  }catch(e){ botConnUi(false,e.message); }
+}
+function botConnUi(connected,errMsg){
+  $('#botConnDot').classList.toggle('on',connected);
+  $('#botConnTxt').textContent=connected
+    ?`Connected — ${botProductsCache.length} products`
+    :(errMsg?('Connection error: '+errMsg):'Not connected — Supabase Settings ကနေ URL/Key (bot project) သိမ်းပါ');
+}
+function botRenderCatSelect(){
+  $('#botNewCat').innerHTML=botCategoriesCache.length
+    ? botCategoriesCache.map(c=>`<option value="${esc(c.slug)}">${esc(c.emoji||'')} ${esc(c.name)}</option>`).join('')
+    : '<option value="">No categories — create one in Supabase first</option>';
+}
+async function botRenderProductsTable(){
+  const stockIds=botProductsCache.filter(p=>p.delivery_type==='stock').map(p=>p.id);
+  let counts={};
+  try{ counts=await botFetchStockCounts(stockIds); }catch(e){}
+  $('#botProductsBody').innerHTML=botProductsCache.length?botProductsCache.map(p=>{
+    const stock=p.delivery_type==='manual'?'—':(counts[p.id]||0);
+    return `<tr data-pid="${p.id}">
+      <td>${esc(botCatName(p.category_id))}</td>
+      <td>${esc(p.name)}</td>
+      <td><input class="botPriceInput" data-pid="${p.id}" type="number" min="0" step="0.01" value="${p.price}" style="width:90px;border:1px solid var(--line2);border-radius:8px;padding:5px 7px;font:inherit"></td>
+      <td>${stock}</td>
+      <td>${p.is_active?'<span class="badge stock">Active</span>':'<span class="badge sold">Inactive</span>'}</td>
+      <td><button class="btn sm" data-botsaveprice="${p.id}">💾 Save</button></td>
+    </tr>`;
+  }).join(''):`<tr><td colspan="6" style="text-align:center;color:var(--dim)">Bot product မရှိသေးပါ — အပေါ်က form နဲ့ တစ်ခုဖန်တီးပါ</td></tr>`;
+}
+function botRenderReadyTable(){
+  const ready=db.accounts.filter(a=>a.status==='stock'&&!a.botInventoryId);
+  const options=botProductsCache.map(p=>`<option value="${p.id}">${esc(botCatName(p.category_id))} — ${esc(p.name)}</option>`).join('');
+  $('#botReadyBody').innerHTML=ready.length?ready.map(a=>`<tr data-aid="${esc(a.id)}">
+    <td>${esc(a.product||'')} ${esc(a.plan||'')}</td>
+    <td>${esc(a.email||'—')}</td>
+    <td><select class="botTargetSel" data-aid="${esc(a.id)}" ${botProductsCache.length?'':'disabled'}><option value="">— select bot product —</option>${options}</select></td>
+    <td><button class="btn sm primary" data-botlist="${esc(a.id)}" ${botProductsCache.length?'':'disabled'}>🛒 List on Bot</button></td>
+  </tr>`).join(''):`<tr><td colspan="4" style="text-align:center;color:var(--dim)">List လုပ်ဖို့ In Stock account မရှိပါ</td></tr>`;
+}
+function botRenderListedTable(){
+  const listed=db.accounts.filter(a=>a.botInventoryId);
+  $('#botListedBody').innerHTML=listed.length?listed.map(a=>{
+    const p=botProductsCache.find(x=>x.id===a.botProductId);
+    const label=p?(botCatName(p.category_id)+' — '+p.name):'(bot product not found)';
+    const soldTag=a.status!=='stock'?' <span class="badge sold">Sold via Bot</span>':'';
+    return `<tr data-aid="${esc(a.id)}">
+      <td>${esc(a.product||'')} ${esc(a.plan||'')}${soldTag}</td>
+      <td>${esc(a.email||'—')}</td>
+      <td>${esc(label)}</td>
+      <td>${a.status==='stock'?`<button class="btn sm danger" data-botunlist="${esc(a.id)}">✕ Unlist</button>`:'<span style="color:var(--dim);font-size:11px">sold</span>'}</td>
+    </tr>`;
+  }).join(''):`<tr><td colspan="4" style="text-align:center;color:var(--dim)">Bot ပေါ်တင်ထားသော stock မရှိသေးပါ</td></tr>`;
+}
+function renderBotSync(){
+  botRenderCatSelect();
+  botRenderProductsTable();
+  botRenderReadyTable();
+  botRenderListedTable();
+}
+async function openBotSyncTab(){
+  botConnUi(!!(sbCfg().url&&sbCfg().key));
+  await botLoadAll();
+  renderBotSync();
 }
 
 /* ================= load / migrate / seed ================= */
@@ -2728,6 +2947,7 @@ function render(){
   else if(tab==='accounts') renderAccounts();
   else if(tab==='customers') renderCustomers();
   else if(tab==='finance') renderFinance();
+  else if(tab==='botsync') renderBotSync();
   else renderAnalytics();
 }
 function setTab(t){
@@ -2735,13 +2955,14 @@ function setTab(t){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on',v.id==='view-'+t));
   document.querySelectorAll('.d-item[data-goto]').forEach(b=>b.classList.toggle('on',b.dataset.goto===t));
-  $('#searchRow').style.display=(t==='analytics'||t==='dash'||t==='finance')?'none':'flex';
+  $('#searchRow').style.display=(t==='analytics'||t==='dash'||t==='finance'||t==='botsync')?'none':'flex';
   $('#sort').style.display=t==='accounts'?'block':'none';
   $('#q').placeholder=t==='customers'?'Search customers — name, contact, source, requests…':'Search everything — product, gmail, customer, supplier, 2FA…';
   $('#btnAddLbl').textContent=t==='customers'?'Add Customer':'Add Product';
-  $('#btnAdd').style.display=t==='finance'?'none':'inline-flex';
+  $('#btnAdd').style.display=(t==='finance'||t==='botsync')?'none':'inline-flex';
   closeDrawer();
-  render();
+  if(t==='botsync') openBotSyncTab();
+  else render();
 }
 function openDrawer(){ $('#drawer').classList.add('show'); $('#drawerOv').classList.add('show'); }
 function closeDrawer(){ $('#drawer').classList.remove('show'); $('#drawerOv').classList.remove('show'); }
@@ -3000,6 +3221,72 @@ $('#btnSbSave').addEventListener('click',sbSaveSettings);
 $('#btnSbPush').addEventListener('click',()=>sbPush(false));
 $('#btnSbPull').addEventListener('click',()=>sbPull(false));
 $('#btnSbSqlCopy').addEventListener('click',()=>copyText($('#sbSql').textContent));
+/* bot sync */
+$('#btnBotOpenSb').addEventListener('click',()=>{
+  const c=sbCfg();
+  $('#sbUrl').value=c.url||''; $('#sbKey').value=c.key||''; $('#sbAuto').checked=!!c.auto;
+  sbUi(); $('#ovSb').classList.add('show');
+});
+$('#btnBotRefresh').addEventListener('click',openBotSyncTab);
+$('#btnBotAddProduct').addEventListener('click',async()=>{
+  const categorySlug=$('#botNewCat').value;
+  const name=$('#botNewName').value.trim();
+  const price=parseFloat($('#botNewPrice').value);
+  const warrantyDays=parseInt($('#botNewWarranty').value,10)||30;
+  const cat=botCategoriesCache.find(c=>c.slug===categorySlug);
+  if(!cat){ toast('Category ရွေးပါ','err'); return; }
+  if(!name){ toast('Product name ထည့်ပါ','err'); return; }
+  if(!(price>0)){ toast('Price မှန်ကန်အောင်ထည့်ပါ','err'); return; }
+  try{
+    await botCreateProduct({categoryId:cat.id,name,price,warrantyDays});
+    $('#botNewName').value=''; $('#botNewPrice').value=''; $('#botNewWarranty').value='';
+    toast('Bot product ဖန်တီးပြီးပါပြီ ✓ (Stock list လုပ်တာနဲ့ active ဖြစ်ပါမယ်)','ok');
+    await botLoadAll(); renderBotSync();
+  }catch(e){ toast('Create failed — '+e.message,'err'); }
+});
+$('#botProductsBody').addEventListener('click',async e=>{
+  const btn=e.target.closest('[data-botsaveprice]'); if(!btn) return;
+  const pid=btn.dataset.botsaveprice;
+  const input=$(`.botPriceInput[data-pid="${pid}"]`);
+  const price=parseFloat(input.value);
+  if(!(price>0)){ toast('Price မှန်ကန်အောင်ထည့်ပါ','err'); return; }
+  try{ await botSetPrice(pid,price); toast('ဈေးနှုန်းပြောင်းပြီးပါပြီ ✓','ok'); await botLoadAll(); renderBotSync(); }
+  catch(e){ toast('Save failed — '+e.message,'err'); }
+});
+$('#botReadyBody').addEventListener('click',async e=>{
+  const btn=e.target.closest('[data-botlist]'); if(!btn) return;
+  const aid=btn.dataset.botlist;
+  const sel=$(`.botTargetSel[data-aid="${aid}"]`);
+  const productId=sel?.value;
+  if(!productId){ toast('Bot product ရွေးပါ','err'); return; }
+  const account=db.accounts.find(a=>a.id===aid);
+  if(!account) return;
+  btn.disabled=true;
+  try{
+    await botListAccount(account,productId);
+    toast('Bot ပေါ်တင်ပြီးပါပြီ ✓ — customer တွေ Telegram မှာ မြင်ရပါပြီ','ok');
+    await botLoadAll(); renderBotSync();
+  }catch(e){ toast('List failed — '+e.message,'err'); btn.disabled=false; }
+});
+$('#botListedBody').addEventListener('click',async e=>{
+  const btn=e.target.closest('[data-botunlist]'); if(!btn) return;
+  const aid=btn.dataset.botunlist;
+  const account=db.accounts.find(a=>a.id===aid);
+  if(!account) return;
+  btn.disabled=true;
+  try{
+    await botUnlistAccount(account);
+    toast('Bot ပေါ်ကနေ ဖြုတ်ပြီးပါပြီ','ok');
+    await botLoadAll(); renderBotSync();
+  }catch(e){ toast('Unlist failed — '+e.message,'err'); btn.disabled=false; }
+});
+$('#btnBotSyncSold').addEventListener('click',async()=>{
+  try{
+    const count=await botSyncSoldStatus();
+    toast(count?`${count} item ကို Sold အဖြစ် sync ပြီးပါပြီ ✓`:'အသစ် sold ဖြစ်တာ မတွေ့ပါ','ok');
+    renderBotSync();
+  }catch(e){ toast('Sync failed — '+e.message,'err'); }
+});
 $('#btnImportGo').addEventListener('click',()=>doImport($('#csvPaste').value));
 /* login / lock */
 $('#mLock').addEventListener('click',()=>{
