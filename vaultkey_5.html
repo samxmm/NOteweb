@@ -632,7 +632,7 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
       <button class="qw-card raw" data-workflow-action="add-raw"><span class="qw-icon">📥</span><span class="qw-text"><b>Raw Gmail</b><small>Input · collect</small></span><span class="qw-value" id="wfRawCount">0</span></button>
       <button class="qw-card" data-workflow-action="show-raw"><span class="qw-icon">⚡</span><span class="qw-text"><b>Activate Plan</b><small>Need plan</small></span><span class="qw-value" id="wfReadyCount">0</span></button>
       <button class="qw-card ready" data-workflow-action="show-ready"><span class="qw-icon">💸</span><span class="qw-text"><b>Ready / Sold</b><small>Sell account</small></span><span class="qw-value" id="wfSoldToday">0</span></button>
-      <button class="qw-card rate" data-workflow-action="edit-rate"><span class="qw-icon">💱</span><span class="qw-text"><b>USD Rate</b><small id="wfRateText">1 USD = 0 MMK</small></span></button>
+      <button class="qw-card rate" data-workflow-action="edit-rate" style="display:none"><span class="qw-icon">💱</span><span class="qw-text"><b>MMK</b><small id="wfRateText">MMK only</small></span></button>
     </div>
 
     <div class="dash-work-grid">
@@ -859,7 +859,7 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
       <div class="mini-form" id="botNewProductForm">
         <select id="botNewCat"></select>
         <input id="botNewName" placeholder="Product name (ဥပမာ Express VPN 1 Month)">
-        <input id="botNewPrice" type="number" min="0" step="0.01" placeholder="Price (USD)">
+        <input id="botNewPrice" type="number" min="0" step="1" placeholder="Price (MMK)">
         <input id="botNewWarranty" type="number" min="0" step="1" placeholder="Warranty days (default 30)">
         <button class="btn primary add-btn" id="btnBotAddProduct">＋ Create Product</button>
       </div>
@@ -870,7 +870,7 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
         <div><h3>🤖 Bot Products &amp; Prices</h3><div class="sub">ဈေးနှုန်းကို ဒီနေရာကနေ တိုက်ရိုက်ပြင်နိုင်ပါတယ် — Telegram ဘက်ကလည်း ချက်ချင်းပြောင်းပေးပါမယ်။</div></div>
       </div>
       <div class="tbl-wrap"><table class="data">
-        <thead><tr><th>Category</th><th>Product</th><th>Price (USD)</th><th>Stock</th><th>Status</th><th></th></tr></thead>
+        <thead><tr><th>Category</th><th>Product</th><th>Price (MMK)</th><th>Stock</th><th>Status</th><th></th></tr></thead>
         <tbody id="botProductsBody"></tbody>
       </table></div>
     </div>
@@ -937,13 +937,13 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
       <div class="fg service-only-v7"><label>Service Date</label><input id="fServiceDate" type="date"></div>
 
       <div class="form-section-title">Cost & Selling</div>
-      <div class="fg"><label id="fRawCostLabel">Raw Gmail / Base Cost</label><div class="base-cost-grid"><select id="fBaseCurrency"><option value="MMK">MMK</option><option value="USD">USD</option></select><input id="fRawCostMmk" inputmode="decimal" placeholder="0"></div><div class="help" id="fBaseConvertedText">Converted base: 0 MMK</div></div>
-      <div class="fg plan-cost-v7"><label>Binance Pay Cost (USD)</label><input id="fPlanCostUsd" inputmode="decimal" placeholder="3.50"><div class="help">Plan / token fee ကို USD ဖြင့်ထည့်ပါ</div></div>
-      <div class="fg plan-cost-v7"><label>USD → MMK Rate</label><input id="fUsdRate" inputmode="numeric" placeholder="4500"><div class="help">Manual rate · နေ့စဉ်ပြောင်းနိုင်ပါတယ်</div></div>
+      <div class="fg"><label id="fRawCostLabel">Raw Gmail / Base Cost (MMK)</label><div class="base-cost-grid"><select id="fBaseCurrency"><option value="MMK">MMK</option></select><input id="fRawCostMmk" inputmode="decimal" placeholder="0"></div><div class="help" id="fBaseConvertedText">Base cost: 0 MMK</div></div>
+      <div class="fg plan-cost-v7"><label>Plan Cost (MMK)</label><input id="fPlanCostUsd" inputmode="decimal" placeholder="0"><div class="help">Plan / token fee ကို MMK ဖြင့်ထည့်ပါ</div></div>
+      <div class="fg plan-cost-v7" style="display:none"><label>Rate</label><input id="fUsdRate" inputmode="numeric" value="1"></div>
       <div class="fg plan-cost-v7"><label>Converted Plan Cost (MMK)</label><input id="fPlanCostMmk" inputmode="numeric" readonly></div>
       <div class="fg"><label id="fCostLabel">Total Cost (MMK)</label><input id="fCost" inputmode="numeric" readonly></div>
       <div class="fg"><label>Selling Price (MMK)</label><input id="fPrice" inputmode="numeric" placeholder="12000"></div>
-      <div class="fg full"><div class="money-preview"><div class="fx-line" id="fCostFormula">Base 0 + USD 0 × Rate 0</div><div class="fx-total" id="fCostTotalText">Total Cost 0 MMK</div><div class="fx-total" id="fProfitText" style="font-size:14px;margin-top:5px">Estimated Profit 0 MMK</div></div></div>
+      <div class="fg full"><div class="money-preview"><div class="fx-line" id="fCostFormula">Base 0 + Plan 0 MMK</div><div class="fx-total" id="fCostTotalText">Total Cost 0 MMK</div><div class="fx-total" id="fProfitText" style="font-size:14px;margin-top:5px">Estimated Profit 0 MMK</div></div></div>
       <div class="fg"><label>Supplier / Service Provider</label><input id="fSupplier" placeholder="Provider name" list="supList"></div>
 
       <div class="form-section-title warranty-v7">Warranty & Expiry</div>
@@ -1008,11 +1008,11 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
 <!-- finance transaction modal -->
 <div class="overlay" id="ovTxn">
   <div class="modal wide">
-    <h2>💳 Add Income / Expense</h2><div class="sub">MMK or USD amount ထည့်နိုင်ပြီး USD ကို current rate ဖြင့် MMK auto ပြောင်းပေးပါမယ်။</div>
+    <h2>💳 Add Income / Expense</h2><div class="sub">Amount အားလုံးကို MMK ဖြင့်ထည့်ပါ။</div>
     <div class="mini-form">
       <select id="txnType"><option value="income">Income</option><option value="expense">Expense</option></select>
       <select id="txnBank"><option value="cash">Cash</option><option value="kpay">KPay</option><option value="wave">Wave</option><option value="aya">AYA</option></select>
-      <select id="txnCurrency"><option value="MMK">MMK</option><option value="USD">USD</option></select>
+      <select id="txnCurrency"><option value="MMK">MMK</option></select>
       <input id="txnAmount" inputmode="decimal" placeholder="Amount">
       <input id="txnRate" inputmode="numeric" placeholder="USD rate">
       <input id="txnDate" type="date">
@@ -1031,7 +1031,7 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
     <div class="mini-form">
       <input id="recSeller" placeholder="Seller / supplier">
       <input id="recItem" placeholder="Item / account">
-      <select id="recCurrency"><option value="MMK">MMK</option><option value="USD">USD</option></select>
+      <select id="recCurrency"><option value="MMK">MMK</option></select>
       <input id="recAmount" inputmode="decimal" placeholder="Amount">
       <input id="recRate" inputmode="numeric" placeholder="USD rate">
       <input id="recDate" type="date">
@@ -1295,6 +1295,7 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
     <div class="fgrid">
       <div class="fg full"><label>Project URL</label><input id="sbUrl" class="mono" placeholder="https://xxxx.supabase.co"></div>
       <div class="fg full"><label>anon public API Key</label><input id="sbKey" class="mono" placeholder="eyJhbGciOi…"></div>
+      <div class="fg full"><label>Web Sync Token</label><input id="sbToken" class="mono" type="password" placeholder="WEB_SYNC_TOKEN (required for Bot Sync)"><div class="help">ဒီ token ကို Supabase Edge Function secret အဖြစ်သာသိမ်းထားပါ။ Public HTML ထဲမရေးပါနှင့်။</div></div>
       <div class="fg full"><label class="check"><input type="checkbox" id="sbAuto"> Auto-sync — ပြင်တိုင်း cloud ကို အလိုအလျောက်တင်မယ်</label></div>
     </div>
     <details class="guide">
@@ -1494,7 +1495,13 @@ function downloadKeyFile(a){
 
 /* ================= supabase sync ================= */
 const KEY_SB='vaultkey.sb', KEY_SBSYNC='vaultkey.sbsync';
-function sbCfg(){ try{ return JSON.parse(store.get(KEY_SB)||'{}'); }catch(e){ return {}; } }
+function sbCfg(){
+  try{
+    const c=JSON.parse(store.get(KEY_SB)||'{}');
+    if(c.url) c.url=String(c.url).trim().replace(/\/$/,'').replace(/\/rest\/v1$/,'').replace(/\/functions\/v1$/,'');
+    return c;
+  }catch(e){ return {}; }
+}
 function sbStore(c){ store.set(KEY_SB,JSON.stringify(c)); }
 function sbHeaders(c){ return {apikey:c.key,Authorization:'Bearer '+c.key,'Content-Type':'application/json'}; }
 function sbUi(connected){
@@ -1513,7 +1520,7 @@ async function sbTest(){
   }catch(e){ return false; }
 }
 async function sbSaveSettings(){
-  const c={url:$('#sbUrl').value.trim().replace(/\/$/,''),key:$('#sbKey').value.trim(),auto:$('#sbAuto').checked};
+  const c={url:$('#sbUrl').value.trim().replace(/\/$/,'').replace(/\/rest\/v1$/,'').replace(/\/functions\/v1$/,''),key:$('#sbKey').value.trim(),token:$('#sbToken').value.trim(),auto:$('#sbAuto').checked};
   if(!c.url||!c.key){ toast('URL နဲ့ anon key နှစ်ခုလုံးထည့်ပါ','err'); return; }
   sbStore(c);
   toast('Testing connection…','ok');
@@ -1590,12 +1597,19 @@ function sbStartAutoSync(){
   },15000);
 }
 
-/* ================= bot stock sync (V6 bridge) =================
-   Same Supabase project/keys as the Cloud Sync above — this just talks to
-   the shop bot's real `categories`/`products`/`inventory` tables instead of
-   the `vault` blob. Run migration 20260810000000_bot_v6_web_stock_sync.sql
-   on the bot's project first (adds inventory.web_account_id + anon policies). */
+/* ================= bot stock sync =================
+   The browser never gets direct access to product credentials. Bot Sync calls
+   the protected web-stock-sync Edge Function with an owner-only admin token. */
 let botCategoriesCache=[], botProductsCache=[];
+function botApiUrl(action){ return sbCfg().url+'/functions/v1/web-stock-sync/'+action; }
+async function botRequest(action,body){
+  const c=sbCfg();
+  if(!c.url||!c.token) throw new Error('Supabase URL နဲ့ Web Sync Token ကို Settings မှာထည့်ပါ');
+  const r=await fetch(botApiUrl(action),{method:body?'POST':'GET',headers:{...(body?{'Content-Type':'application/json'}:{}),'x-web-sync-token':c.token},body:body?JSON.stringify(body):undefined});
+  const data=await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error(data.error||('HTTP '+r.status));
+  return data;
+}
 function botFmtContent(a){
   const lines=[];
   if(a.email) lines.push('Email: '+a.email);
@@ -1605,68 +1619,29 @@ function botFmtContent(a){
   if(a.delivery) lines.push(a.delivery);
   return lines.join('\n')||'(no delivery content set on this account)';
 }
-async function botFetchCategories(){
-  const c=sbCfg();
-  const r=await fetch(c.url+'/rest/v1/categories?select=*&order=sort_order.asc',{headers:sbHeaders(c)});
-  if(!r.ok) throw new Error('HTTP '+r.status);
-  return r.json();
-}
-async function botFetchProducts(){
-  const c=sbCfg();
-  const r=await fetch(c.url+'/rest/v1/products?select=*&order=category_id.asc,sort_order.asc',{headers:sbHeaders(c)});
-  if(!r.ok) throw new Error('HTTP '+r.status);
-  return r.json();
-}
-async function botFetchStockCounts(productIds){
-  if(!productIds.length) return {};
-  const c=sbCfg();
-  const r=await fetch(c.url+`/rest/v1/inventory?product_id=in.(${productIds.join(',')})&status=eq.available&select=product_id`,{headers:sbHeaders(c)});
-  if(!r.ok) throw new Error('HTTP '+r.status);
-  const rows=await r.json();
-  const counts={};
-  for(const row of rows) counts[row.product_id]=(counts[row.product_id]||0)+1;
-  return counts;
-}
+async function botFetchStockCounts(){ return botCatalogCache.stockCounts||{}; }
+let botCatalogCache={stockCounts:{}};
 async function botCreateProduct(input){
-  const c=sbCfg();
-  const r=await fetch(c.url+'/rest/v1/products',{method:'POST',headers:{...sbHeaders(c),Prefer:'return=representation'},
-    body:JSON.stringify([{category_id:input.categoryId,name:input.name,description:input.name,
-      price:input.price,currency:'USD',delivery_type:'stock',warranty_days:input.warrantyDays||30,sort_order:100,is_active:false}])});
-  if(!r.ok) throw new Error('HTTP '+r.status);
-  const rows=await r.json(); return rows[0];
+  return botRequest('create-product',input);
 }
 async function botSetPrice(productId,price){
-  const c=sbCfg();
-  const r=await fetch(c.url+`/rest/v1/products?id=eq.${productId}`,{method:'PATCH',headers:{...sbHeaders(c),Prefer:'return=representation'},
-    body:JSON.stringify({price,updated_at:new Date().toISOString()})});
-  if(!r.ok) throw new Error('HTTP '+r.status);
-  const rows=await r.json(); return rows[0];
+  return botRequest('set-price',{productId,price});
 }
 async function botListAccount(account,productId){
-  const c=sbCfg();
-  const r=await fetch(c.url+'/rest/v1/inventory',{method:'POST',headers:{...sbHeaders(c),Prefer:'return=representation'},
-    body:JSON.stringify([{product_id:productId,content:botFmtContent(account),status:'available',web_account_id:account.id}])});
-  if(!r.ok) throw new Error('HTTP '+r.status);
-  const rows=await r.json();
-  account.botProductId=productId; account.botInventoryId=rows[0].id; save();
-  return rows[0];
+  const row=await botRequest('list-stock',{productId,accountId:account.id,content:botFmtContent(account)});
+  account.botProductId=productId; account.botInventoryId=row.id; save();
+  return row;
 }
 async function botUnlistAccount(account){
   if(!account.botInventoryId) return;
-  const c=sbCfg();
-  const r=await fetch(c.url+`/rest/v1/inventory?id=eq.${account.botInventoryId}`,{method:'PATCH',headers:sbHeaders(c),
-    body:JSON.stringify({status:'disabled',updated_at:new Date().toISOString()})});
-  if(!r.ok) throw new Error('HTTP '+r.status);
+  await botRequest('unlist-stock',{inventoryId:account.botInventoryId});
   account.botInventoryId=null; account.botProductId=null; save();
 }
 async function botSyncSoldStatus(){
   const linked=db.accounts.filter(a=>a.botInventoryId&&a.status==='stock');
   if(!linked.length) return 0;
-  const c=sbCfg();
   const ids=linked.map(a=>a.botInventoryId);
-  const r=await fetch(c.url+`/rest/v1/inventory?id=in.(${ids.join(',')})&select=id,status`,{headers:sbHeaders(c)});
-  if(!r.ok) throw new Error('HTTP '+r.status);
-  const rows=await r.json();
+  const rows=await botRequest('sold-status',{inventoryIds:ids});
   const soldIds=new Set(rows.filter(x=>x.status==='sold').map(x=>x.id));
   let count=0;
   for(const a of linked){
@@ -1681,10 +1656,10 @@ async function botSyncSoldStatus(){
 function botCatName(catId){ const c=botCategoriesCache.find(x=>x.id===catId); return c?c.name:'—'; }
 async function botLoadAll(){
   const c=sbCfg();
-  if(!c.url||!c.key){ botConnUi(false); return; }
+  if(!c.url||!c.token){ botConnUi(false); return; }
   try{
-    const [cats,prods]=await Promise.all([botFetchCategories(),botFetchProducts()]);
-    botCategoriesCache=cats; botProductsCache=prods;
+    const catalog=await botRequest('catalog');
+    botCatalogCache=catalog; botCategoriesCache=catalog.categories; botProductsCache=catalog.products;
     botConnUi(true);
   }catch(e){ botConnUi(false,e.message); }
 }
@@ -3214,7 +3189,7 @@ $('#btnKeyClear').addEventListener('click',()=>{ formKeyFile=null; $('#fKeyFile'
 $('#mSb').addEventListener('click',()=>{
   closeDrawer();
   const c=sbCfg();
-  $('#sbUrl').value=c.url||''; $('#sbKey').value=c.key||''; $('#sbAuto').checked=!!c.auto;
+  $('#sbUrl').value=c.url||''; $('#sbKey').value=c.key||''; $('#sbToken').value=c.token||''; $('#sbAuto').checked=!!c.auto;
   sbUi(); $('#ovSb').classList.add('show');
 });
 $('#btnSbSave').addEventListener('click',sbSaveSettings);
@@ -3224,7 +3199,7 @@ $('#btnSbSqlCopy').addEventListener('click',()=>copyText($('#sbSql').textContent
 /* bot sync */
 $('#btnBotOpenSb').addEventListener('click',()=>{
   const c=sbCfg();
-  $('#sbUrl').value=c.url||''; $('#sbKey').value=c.key||''; $('#sbAuto').checked=!!c.auto;
+  $('#sbUrl').value=c.url||''; $('#sbKey').value=c.key||''; $('#sbToken').value=c.token||''; $('#sbAuto').checked=!!c.auto;
   sbUi(); $('#ovSb').classList.add('show');
 });
 $('#btnBotRefresh').addEventListener('click',openBotSyncTab);
@@ -3514,11 +3489,11 @@ function updateEmailHintV7(auto=true){
 }
 function calcCostsV7(){
   const amount=num($('#fRawCostMmk').value), currency=$('#fBaseCurrency')?.value||'MMK';
-  const usd=num($('#fPlanCostUsd').value), rate=num($('#fUsdRate').value)||num(db.settings?.usdMmkRate);
-  const base=Math.round(currency==='USD'?amount*rate:amount), converted=Math.round(usd*rate), total=Math.round(base+converted), price=num($('#fPrice').value), profit=Math.round(price-total);
+  const usd=num($('#fPlanCostUsd').value), rate=1;
+  const base=Math.round(amount), converted=Math.round(usd), total=Math.round(base+converted), price=num($('#fPrice').value), profit=Math.round(price-total);
   $('#fPlanCostMmk').value=converted||''; $('#fCost').value=total||'';
-  $('#fBaseConvertedText').textContent=`Converted base: ${money(base)} MMK${currency==='USD'?` · $${amount||0} × ${money(rate)}`:''}`;
-  $('#fCostFormula').textContent=`Base ${money(base)} + Plan USD ${usd||0} × Rate ${money(rate)}`; $('#fCostTotalText').textContent=`Total Cost ${money(total)} MMK`;
+  $('#fBaseConvertedText').textContent=`Base cost: ${money(base)} MMK`;
+  $('#fCostFormula').textContent=`Base ${money(base)} + Plan ${money(usd)} MMK`; $('#fCostTotalText').textContent=`Total Cost ${money(total)} MMK`;
   const pe=$('#fProfitText'); if(pe){pe.textContent=`Estimated Profit ${money(profit)} MMK`;pe.classList.toggle('profit-positive',profit>=0);pe.classList.toggle('profit-negative',profit<0);}
   return {amount,currency,base,usd,rate,converted,total,profit};
 }
