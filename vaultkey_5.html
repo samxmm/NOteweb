@@ -861,6 +861,8 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
         <input id="botNewName" placeholder="Product name (ဥပမာ Express VPN 1 Month)">
         <input id="botNewPrice" type="number" min="0" step="1" placeholder="Price (MMK)">
         <input id="botNewWarranty" type="number" min="0" step="1" placeholder="Warranty days (default 30)">
+        <textarea id="botNewDescription" placeholder="Description (customer sees before purchase)"></textarea>
+        <textarea id="botNewGuide" placeholder="Guide (customer sees after purchase)"></textarea>
         <button class="btn primary add-btn" id="btnBotAddProduct">＋ Create Product</button>
       </div>
     </div>
@@ -3225,13 +3227,15 @@ $('#btnBotAddProduct').addEventListener('click',async()=>{
   const name=$('#botNewName').value.trim();
   const price=parseFloat($('#botNewPrice').value);
   const warrantyDays=parseInt($('#botNewWarranty').value,10)||30;
+  const description=$('#botNewDescription').value.trim();
+  const guide=$('#botNewGuide').value.trim();
   const cat=botCategoriesCache.find(c=>c.slug===categorySlug);
   if(!cat){ toast('Category ရွေးပါ','err'); return; }
   if(!name){ toast('Product name ထည့်ပါ','err'); return; }
   if(!(price>0)){ toast('Price မှန်ကန်အောင်ထည့်ပါ','err'); return; }
   try{
-    await botCreateProduct({categoryId:cat.id,name,price,warrantyDays});
-    $('#botNewName').value=''; $('#botNewPrice').value=''; $('#botNewWarranty').value='';
+    await botCreateProduct({categoryId:cat.id,name,price,warrantyDays,description,guide});
+    $('#botNewName').value=''; $('#botNewPrice').value=''; $('#botNewWarranty').value=''; $('#botNewDescription').value=''; $('#botNewGuide').value='';
     toast('Bot product ဖန်တီးပြီးပါပြီ ✓ (Stock list လုပ်တာနဲ့ active ဖြစ်ပါမယ်)','ok');
     await botLoadAll(); renderBotSync();
   }catch(e){ toast('Create failed — '+e.message,'err'); }
