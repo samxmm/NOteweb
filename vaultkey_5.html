@@ -1653,6 +1653,22 @@ async function botSyncSoldStatus(){
   if(count) save();
   return count;
 }
+async function botSyncCustomersAndSales(){
+  const data=await botRequest('dashboard-sync'); let changed=false;
+  for(const profile of (data.profiles||[])){
+    const telegramId=String(profile.telegram_user_id), name=[profile.first_name,profile.last_name].filter(Boolean).join(' ').trim()||telegramId;
+    let customer=db.customers.find(c=>String(c.telegramUserId||c.sourceCustomerId||'')===telegramId);
+    const fields={name,contact:profile.username?('@'+profile.username):'',telegramUserId:telegramId,sourceCustomerId:telegramId,sourceType:'telegram',updated:Date.now()};
+    if(customer) Object.assign(customer,fields); else db.customers.push({id:uid(),requests:[],note:'Telegram bot user',created:Date.now(),...fields});
+    changed=true;
+  }
+  for(const order of (data.orders||[])){
+    if(order.status!=='completed'||!order.completed_at||db.accounts.some(a=>a.botOrderId===order.id)) continue;
+    const customer=db.customers.find(c=>String(c.telegramUserId||'')===String(order.telegram_user_id));
+    db.accounts.push({id:uid(),botOrderId:order.id,itemType:'service',product:order.product_name,plan:'Telegram Bot Sale',cost:0,price:num(order.amount),soldPrice:num(order.amount),soldDate:String(order.completed_at).slice(0,10),status:'sold',customerId:customer?.id||null,soldNote:'Sold via Telegram bot',created:Date.parse(order.completed_at)||Date.now()}); changed=true;
+  }
+  if(changed) save();
+}
 function botCatName(catId){ const c=botCategoriesCache.find(x=>x.id===catId); return c?c.name:'—'; }
 async function botLoadAll(){
   const c=sbCfg();
@@ -1660,6 +1676,7 @@ async function botLoadAll(){
   try{
     const catalog=await botRequest('catalog');
     botCatalogCache=catalog; botCategoriesCache=catalog.categories; botProductsCache=catalog.products;
+    await botSyncCustomersAndSales();
     botConnUi(true);
   }catch(e){ botConnUi(false,e.message); }
 }
