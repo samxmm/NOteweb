@@ -1319,17 +1319,8 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
       <div class="fg full"><label class="check"><input type="checkbox" id="sbAuto"> Auto-sync — ပြင်တိုင်း cloud ကို အလိုအလျောက်တင်မယ်</label></div>
     </div>
     <details class="guide">
-      <summary>Setup SQL (Step 3 မှာသုံးရန်) — copy ပြီး Supabase SQL Editor မှာ Run</summary>
-      <div class="steps"><code id="sbSql">create table if not exists vault (
-  id text primary key,
-  data jsonb,
-  updated_at timestamptz default now()
-);
-alter table vault enable row level security;
-create policy "vault anon access" on vault
-  for all using (true) with check (true);</code><br>
-      <button class="btn sm" id="btnSbSqlCopy" style="margin-top:8px">📋 Copy SQL</button><br>
-      <span style="font-size:11.5px;color:var(--dim)">⚠ Security note: anon key ရှိသူတိုင်း ဒီ table ကိုဖတ်လို့ရလို့ URL/Key ကို ဘယ်သူ့မှမပေးပါနဲ့။</span></div>
+      <summary>Cloud Sync security</summary>
+      <div class="steps">Cloud backup ကို protected <code>web-stock-sync</code> Edge Function မှတစ်ဆင့် private Supabase Storage ထဲသိမ်းပါမယ်။ Cloud Sync အတွက် database table သို့မဟုတ် SQL setup မလိုပါ။ <code>WEB_SYNC_TOKEN</code> ကို public HTML source ထဲ မရေးပါနှင့်။</div>
     </details>
     <div class="drive-btns">
       <button class="btn primary" id="btnSbSave">💾 Save Settings &amp; Test</button>
@@ -1515,15 +1506,15 @@ function downloadKeyFile(a){
 
 /* ================= supabase sync ================= */
 const KEY_SB='vaultkey.sb', KEY_SBSYNC='vaultkey.sbsync';
+function normalizeSbUrl(value){try{return new URL(String(value||'').trim()).origin;}catch(e){return String(value||'').trim().replace(/\/+$/,'');}}
 function sbCfg(){
   try{
     const c=JSON.parse(store.get(KEY_SB)||'{}');
-    if(c.url) c.url=String(c.url).trim().replace(/\/$/,'').replace(/\/rest\/v1$/,'').replace(/\/functions\/v1$/,'');
+    if(c.url) c.url=normalizeSbUrl(c.url);
     return c;
   }catch(e){ return {}; }
 }
 function sbStore(c){ store.set(KEY_SB,JSON.stringify(c)); }
-function sbHeaders(c){ return {apikey:c.key,Authorization:'Bearer '+c.key,'Content-Type':'application/json'}; }
 function sbUi(connected){
   const c=sbCfg(); const on=connected??!!(c.url&&c.key&&c.ok);
   document.querySelectorAll('#sbDot,#sbDot2').forEach(d=>d.classList.toggle('on',on));
@@ -1533,63 +1524,54 @@ function sbUi(connected){
 }
 async function sbTest(){
   const c=sbCfg();
-  if(!c.url||!c.key) return false;
-  try{
-    const r=await fetch(c.url.replace(/\/$/,'')+'/rest/v1/vault?select=id&limit=1',{headers:sbHeaders(c)});
-    return r.ok;
-  }catch(e){ return false; }
+  if(!c.url||!c.key||!c.token) throw new Error('Project URL, anon key နဲ့ Web Sync Token အားလုံးထည့်ပါ');
+  const result=await botRequest('health');
+  if(!result?.ok) throw new Error('web-stock-sync health check returned an invalid response');
+  return true;
 }
 async function sbSaveSettings(){
-  const c={url:$('#sbUrl').value.trim().replace(/\/$/,'').replace(/\/rest\/v1$/,'').replace(/\/functions\/v1$/,''),key:$('#sbKey').value.trim(),token:$('#sbToken').value.trim(),auto:$('#sbAuto').checked};
-  if(!c.url||!c.key){ toast('URL နဲ့ anon key နှစ်ခုလုံးထည့်ပါ','err'); return; }
+  const c={url:normalizeSbUrl($('#sbUrl').value),key:$('#sbKey').value.trim(),token:$('#sbToken').value.trim(),auto:$('#sbAuto').checked};
+  if(!c.url||!c.key||!c.token){ toast('Project URL, anon key နဲ့ Web Sync Token အားလုံးထည့်ပါ','err'); return; }
   sbStore(c);
   toast('Testing connection…','ok');
-  const ok=await sbTest();
-  c.ok=ok; sbStore(c); sbUi(ok);
-  if(ok){ toast('Supabase connected ✓','ok'); sbStartAutoSync(); }
-  else toast('မချိတ်နိုင်ပါ — URL/Key မှန်လား၊ Setup SQL run ပြီးပြီလား စစ်ပါ','err');
+  try{await sbTest();c.ok=true;sbStore(c);sbUi(true);toast('Supabase Edge Function connected ✓','ok');sbStartAutoSync();}
+  catch(e){c.ok=false;sbStore(c);sbUi(false);toast('Connection failed — '+e.message,'err');}
 }
 async function sbPush(silent){
   const c=sbCfg();
-  if(!c.url||!c.key){ if(!silent) toast('Supabase settings အရင် save လုပ်ပါ','err'); return false; }
+  if(!c.url||!c.key||!c.token){ if(!silent) toast('Supabase settings အရင် save လုပ်ပါ','err'); return false; }
   try{
-    const now=new Date().toISOString();
-    const r=await fetch(c.url+'/rest/v1/vault',{
-      method:'POST',
-      headers:{...sbHeaders(c),Prefer:'resolution=merge-duplicates'},
-      body:JSON.stringify([{id:'main',data:db,updated_at:now}])});
-    if(!r.ok) throw new Error(r.status);
+    const result=await botRequest('cloud-save',{data:db});
+    const now=result.updated_at||new Date().toISOString();
     sbDirty=false;
     store.set(KEY_SBSYNC,String(Date.parse(now))); sbUi(true);
     if(!silent) toast('Saved to Supabase cloud ✓','ok');
     return true;
   }catch(e){
     sbDirty=true;
-    if(!silent) toast('Cloud save failed ('+e.message+') — Setup SQL run ပြီးပြီလား?','err');
+    if(!silent) toast('Cloud save failed — '+e.message,'err');
     return false;
   }
 }
 async function sbPull(silent=false){
   const c=sbCfg();
-  if(!c.url||!c.key){ if(!silent) toast('Supabase settings အရင် save လုပ်ပါ','err'); return false; }
+  if(!c.url||!c.key||!c.token){ if(!silent) toast('Supabase settings အရင် save လုပ်ပါ','err'); return false; }
   /* Never overwrite local edits that are still waiting to upload. */
   if(silent&&sbDirty) return false;
   try{
-    const r=await fetch(c.url+'/rest/v1/vault?id=eq.main&select=data,updated_at',{headers:sbHeaders(c)});
-    if(!r.ok) throw new Error(r.status);
-    const rows=await r.json();
-    if(!rows.length||!rows[0].data){
+    const snapshot=await botRequest('cloud-load');
+    if(!snapshot.exists||!snapshot.data){
       if(!silent) toast('Cloud မှာ data မရှိသေးပါ — Save to Cloud အရင်လုပ်ပါ','err');
       return false;
     }
-    db=rows[0].data;
+    db=snapshot.data;
     db.accounts??=[]; db.customers??=[]; db.refunds??=[]; db.products??=[]; db.settings??={goal:200000}; db.codes??={};
     migrateCodes();
     /* Save locally without triggering another cloud upload. */
     store.set(KEY,JSON.stringify(db));
     sbDirty=false;
     lockUi(); render();
-    const syncedAt=rows[0].updated_at?Date.parse(rows[0].updated_at):Date.now();
+    const syncedAt=snapshot.updated_at?Date.parse(snapshot.updated_at):Date.now();
     store.set(KEY_SBSYNC,String(Number.isFinite(syncedAt)?syncedAt:Date.now())); sbUi(true);
     if(!silent) toast(`Cloud data ဆွဲပြီးပြီ ✓ — ${db.accounts.length} accounts`,'ok');
     return true;
@@ -1601,7 +1583,7 @@ async function sbPull(silent=false){
 let sbTimer=null, sbPollTimer=null, sbDirty=false;
 function sbAutoKick(){
   const c=sbCfg();
-  if(c.auto&&c.url&&c.key){
+  if(c.auto&&c.url&&c.key&&c.token){
     clearTimeout(sbTimer);
     sbTimer=setTimeout(async()=>{ sbTimer=null; await sbPush(true); },2500);
   }
@@ -1609,7 +1591,7 @@ function sbAutoKick(){
 function sbStartAutoSync(){
   clearInterval(sbPollTimer); sbPollTimer=null;
   const c=sbCfg();
-  if(!(c.auto&&c.url&&c.key)) return;
+  if(!(c.auto&&c.url&&c.key&&c.token)) return;
   /* Pull once when the app opens, then refresh from cloud while it stays open. */
   setTimeout(()=>sbPull(true),400);
   sbPollTimer=setInterval(()=>{
@@ -1625,9 +1607,12 @@ function botApiUrl(action){ return sbCfg().url+'/functions/v1/web-stock-sync/'+a
 async function botRequest(action,body){
   const c=sbCfg();
   if(!c.url||!c.token) throw new Error('Supabase URL နဲ့ Web Sync Token ကို Settings မှာထည့်ပါ');
-  const r=await fetch(botApiUrl(action),{method:body?'POST':'GET',headers:{...(body?{'Content-Type':'application/json'}:{}),'x-web-sync-token':c.token},body:body?JSON.stringify(body):undefined});
-  const data=await r.json().catch(()=>({}));
-  if(!r.ok) throw new Error(data.error||('HTTP '+r.status));
+  let r;
+  try{r=await fetch(botApiUrl(action),{method:body?'POST':'GET',headers:{...(body?{'Content-Type':'application/json'}:{}),'x-web-sync-token':c.token},body:body?JSON.stringify(body):undefined});}
+  catch(e){throw new Error(`Cannot reach ${botApiUrl(action)} — browser/network/CORS error: ${e.message}`);}
+  const raw=await r.text();let data={};
+  if(raw){try{data=JSON.parse(raw);}catch(e){data={error:raw.slice(0,1000)};}}
+  if(!r.ok) throw new Error(`HTTP ${r.status} ${r.statusText}: ${data.error||raw.slice(0,1000)||'Unknown API error'}`);
   return data;
 }
 function botFmtContent(a){
@@ -3245,7 +3230,6 @@ $('#mSb').addEventListener('click',()=>{
 $('#btnSbSave').addEventListener('click',sbSaveSettings);
 $('#btnSbPush').addEventListener('click',()=>sbPush(false));
 $('#btnSbPull').addEventListener('click',()=>sbPull(false));
-$('#btnSbSqlCopy').addEventListener('click',()=>copyText($('#sbSql').textContent));
 /* bot sync */
 $('#btnBotOpenSb').addEventListener('click',()=>{
   const c=sbCfg();
