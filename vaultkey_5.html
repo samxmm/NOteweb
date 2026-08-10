@@ -605,6 +605,7 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
 
   <!-- ============ DASHBOARD VIEW ============ -->
   <section class="view on" id="view-dash">
+    <div class="fbar"><input id="dashSearch" placeholder="Search dashboard — stock, sale, customer…" style="flex:1;min-width:240px"></div>
     <div class="goal-card">
       <button class="goal-edit" id="btnGoalEdit" title="Set today's goal">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg>
@@ -733,6 +734,10 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
       </div>
       <button class="profile-add-fab" id="btnAddProductProfile" title="Add product or service profile">＋ Add Profile</button>
     </div>
+    <div class="chart-card" style="margin-top:16px">
+      <div class="chart-hd"><div><h3>🤖 Telegram Bot Sale Transactions</h3><div class="sub">Bot မှ completed/processing orders တွေကို Products page မှာပြထားပါတယ်။</div></div></div>
+      <div class="tbl-wrap"><table class="data"><thead><tr><th>Date</th><th>Product</th><th>Buyer</th><th>Amount</th><th>Status</th></tr></thead><tbody id="botSalesProductsBody"></tbody></table></div>
+    </div>
   </section>
 
   <!-- ============ CUSTOMERS VIEW ============ -->
@@ -851,6 +856,7 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
       <button class="btn sm ghost" id="btnBotOpenSb" style="margin-left:auto">⚙ Supabase Settings</button>
       <button class="btn sm" id="btnBotRefresh">🔄 Refresh</button>
     </div>
+    <div class="fbar"><input id="botSyncSearch" placeholder="Search Bot Sync — product, account, buyer, status…" style="flex:1;min-width:260px"></div>
 
     <div class="stats" id="botSalesStats">
       <div class="stat"><div class="n" id="botTodaySales">0</div><div class="l">Today Bot Sales</div></div>
@@ -904,6 +910,27 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
     </div>
 
     <div class="chart-card" style="margin-bottom:16px">
+      <div class="chart-hd"><div><h3>ℹ️ Bot About Text</h3><div class="sub">Bot About tab မှာပြမယ့်စာကို webpage ကနေတိုက်ရိုက်ရေးပါ။</div></div></div>
+      <textarea id="botAboutText" rows="4" placeholder="About your store…" style="width:100%"></textarea>
+      <button class="btn primary" id="btnBotSaveAbout" style="margin-top:10px">💾 Save About Text</button>
+    </div>
+
+    <div class="chart-card" style="margin-bottom:16px">
+      <div class="chart-hd"><div><h3>📣 Broadcast Templates</h3><div class="sub">Template သိမ်းပြီး Buy Now / Products / Deposit buttons နဲ့ အချိန်မရွေးပြန်ပို့နိုင်ပါတယ်။ Feedback က Delivered, Failed နဲ့ Button Clicks ဖြစ်ပါတယ်။</div></div></div>
+      <div class="mini-form">
+        <input id="botBcName" placeholder="Template name">
+        <select id="botBcProduct"><option value="">— Product for Buy Now —</option></select>
+        <input id="botBcPreview" placeholder="Telegram preview photo file_id (optional)">
+        <textarea id="botBcMessage" class="full" rows="4" placeholder="Broadcast message (Telegram HTML supported)"></textarea>
+        <label class="check"><input type="checkbox" id="botBcBuy"> Buy Now</label>
+        <label class="check"><input type="checkbox" id="botBcProducts" checked> Products Tab</label>
+        <label class="check"><input type="checkbox" id="botBcDeposit" checked> Deposit Tab</label>
+        <button class="btn primary add-btn" id="btnBotSaveBroadcast">＋ Save Template</button>
+      </div>
+      <div class="tbl-wrap" style="margin-top:12px"><table class="data"><thead><tr><th>Template</th><th>Buttons</th><th>Last Result</th><th></th></tr></thead><tbody id="botBroadcastBody"></tbody></table></div>
+    </div>
+
+    <div class="chart-card" style="margin-bottom:16px">
       <div class="chart-hd">
         <div><h3>📥 Local Stock — Ready to List</h3><div class="sub">status = In Stock ဖြစ်ပြီး Bot ပေါ်မှာ မတင်ရသေးသော account များ။</div></div>
       </div>
@@ -915,15 +942,34 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
 
     <div class="chart-card">
       <div class="chart-hd">
-        <div><h3>✅ Currently Listed on Bot</h3><div class="sub">Customer Telegram ပေါ်မှာ ဝယ်လို့ရနေတဲ့ stock များ။</div></div>
+        <div><h3>🧾 Bot Account Data Control Center</h3><div class="sub">Product · Plan · Account Data · Listed/Sold · Buyer · Date ကို တစ်နေရာတည်းကြည့်ပြီး မှားရောင်းမှုကို Reverse လုပ်နိုင်ပါတယ်။</div></div>
         <button class="btn sm" id="btnBotSyncSold">🔄 Sync Sold Status</button>
       </div>
       <div class="tbl-wrap"><table class="data">
-        <thead><tr><th>Product / Plan</th><th>Gmail</th><th>Bot Product</th><th></th></tr></thead>
+        <thead><tr><th>Product / Plan</th><th>Account Data</th><th>Status</th><th>Buyer</th><th>Date</th><th></th></tr></thead>
         <tbody id="botListedBody"></tbody>
       </table></div>
     </div>
   </section>
+</div>
+
+<div class="overlay" id="ovBotProductEdit">
+  <div class="modal wide">
+    <h2>✏️ Edit Bot Product Presentation</h2>
+    <div class="sub" id="botEditProductTitle"></div>
+    <div class="fgrid">
+      <div class="fg"><label>Name</label><input id="botEditName"></div>
+      <div class="fg"><label>Price (MMK)</label><input id="botEditPrice" type="number" min="0"></div>
+      <div class="fg"><label>Warranty Days</label><input id="botEditWarrantyDays" type="number" min="0"></div>
+      <div class="fg"><label>Warranty Hours</label><input id="botEditWarrantyHours" type="number" min="0"></div>
+      <div class="fg full"><label>Header Preview Image — Telegram file_id</label><input id="botEditPreview" class="mono" placeholder="AgACAg…"><div class="help">Bot ထံ photo တစ်ပုံပို့ပြီး Telegram update/file_id ကိုသုံးနိုင်ပါတယ်။</div></div>
+      <div class="fg full"><label>Premium Custom Emoji ID</label><input id="botEditEmoji" class="mono" placeholder="5368324170671202286"></div>
+      <div class="fg full"><label>Description</label><textarea id="botEditDescription" rows="4"></textarea></div>
+      <div class="fg full"><label class="check"><input type="checkbox" id="botEditQuote" checked> Description ကို Quote format နဲ့ပြမယ်</label></div>
+      <div class="fg full"><label>Guide</label><textarea id="botEditGuide" rows="5"></textarea></div>
+    </div>
+    <div class="modal-foot"><button class="btn ghost" data-close="ovBotProductEdit">Cancel</button><button class="btn primary" id="btnBotProductUpdate">💾 Save Product</button></div>
+  </div>
 </div>
 
 <!-- account form -->
@@ -1610,7 +1656,7 @@ function sbStartAutoSync(){
 /* ================= bot stock sync =================
    The browser never gets direct access to product credentials. Bot Sync calls
    the protected web-stock-sync Edge Function with an owner-only admin token. */
-let botCategoriesCache=[], botProductsCache=[];
+let botCategoriesCache=[], botProductsCache=[], botInventoryCache=[], botBroadcastCache={templates:[],runs:[]}, botSyncQuery='', botEditingProductId=null;
 function botApiUrl(action){ return sbCfg().url+'/functions/v1/web-stock-sync/'+action; }
 async function botRequest(action,body){
   const c=sbCfg();
@@ -1693,17 +1739,31 @@ async function botSyncCustomersAndSales(){
   }
   if(changed) save();
 }
+function reconcileBotInventory(){
+  for(const item of botInventoryCache){
+    const account=db.accounts.find(a=>a.botInventoryId===item.id||String(a.id)===String(item.web_account_id||''));
+    if(!account)continue;
+    account.botInventoryId=item.id;account.botProductId=item.product_id;
+    if(item.status==='available'&&account.status==='sold'){
+      account.status='stock';account.customerId=null;account.soldDate='';account.soldPrice=0;account.soldNote='Sale reversed from Bot Sync';account.botOrderId=null;
+    }
+  }
+}
 function botCatName(catId){ const c=botCategoriesCache.find(x=>x.id===catId); return c?c.name:'—'; }
 async function botLoadAll(){
   const c=sbCfg();
   if(!c.url||!c.token){ botConnUi(false); return; }
   try{
-    const catalog=await botRequest('catalog');
+    const [catalog,inventory,settings,broadcasts]=await Promise.all([botRequest('catalog'),botRequest('inventory-control'),botRequest('bot-settings'),botRequest('broadcast-templates')]);
     botCatalogCache=catalog; botCategoriesCache=catalog.categories; botProductsCache=catalog.products;
+    botInventoryCache=inventory||[];botBroadcastCache=broadcasts||{templates:[],runs:[]};
+    $('#botAboutText').value=(settings||[]).find(x=>x.setting_key==='about_text')?.setting_value||'';
+    reconcileBotInventory();
     await botSyncCustomersAndSales();
     botConnUi(true);
   }catch(e){ botConnUi(false,e.message); }
 }
+function botSearchMatch(...values){const q=botSyncQuery.trim().toLowerCase();return !q||values.some(v=>String(v??'').toLowerCase().includes(q));}
 function botConnUi(connected,errMsg){
   $('#botConnDot').classList.toggle('on',connected);
   $('#botConnTxt').textContent=connected
@@ -1740,7 +1800,8 @@ async function botRenderProductsTable(){
   const stockIds=botProductsCache.filter(p=>p.delivery_type==='stock').map(p=>p.id);
   let counts={};
   try{ counts=await botFetchStockCounts(stockIds); }catch(e){}
-  $('#botProductsBody').innerHTML=botProductsCache.length?botProductsCache.map(p=>{
+  const visible=botProductsCache.filter(p=>botSearchMatch(botCatName(p.category_id),p.name,p.price,p.is_active?'active':'inactive'));
+  $('#botProductsBody').innerHTML=visible.length?visible.map(p=>{
     const stock=p.delivery_type==='manual'?'—':(counts[p.id]||0);
     return `<tr data-pid="${p.id}">
       <td>${esc(botCatName(p.category_id))}</td>
@@ -1748,12 +1809,12 @@ async function botRenderProductsTable(){
       <td><input class="botPriceInput" data-pid="${p.id}" type="number" min="0" step="0.01" value="${p.price}" style="width:90px;border:1px solid var(--line2);border-radius:8px;padding:5px 7px;font:inherit"></td>
       <td>${stock}</td>
       <td>${p.is_active?'<span class="badge stock">Active</span>':'<span class="badge sold">Inactive</span>'}</td>
-      <td><button class="btn sm" data-botsaveprice="${p.id}">💾 Save</button> <button class="btn sm ${p.is_active?'danger':'primary'}" data-botproducttoggle="${p.id}" data-active="${p.is_active?'1':'0'}">${p.is_active?'Disable':'Enable'}</button></td>
+      <td><button class="btn sm" data-boteditproduct="${p.id}">✏️ Edit</button> <button class="btn sm" data-botsaveprice="${p.id}">💾 Price</button> <button class="btn sm ${p.is_active?'danger':'primary'}" data-botproducttoggle="${p.id}" data-active="${p.is_active?'1':'0'}">${p.is_active?'Disable':'Enable'}</button></td>
     </tr>`;
   }).join(''):`<tr><td colspan="6" style="text-align:center;color:var(--dim)">Bot product မရှိသေးပါ — အပေါ်က form နဲ့ တစ်ခုဖန်တီးပါ</td></tr>`;
 }
 function botRenderReadyTable(){
-  const ready=db.accounts.filter(a=>a.status==='stock'&&!a.botInventoryId);
+  const ready=db.accounts.filter(a=>a.status==='stock'&&!a.botInventoryId&&botSearchMatch(a.product,a.plan,a.email,'ready'));
   const options=botProductsCache.map(p=>`<option value="${p.id}">${esc(botCatName(p.category_id))} — ${esc(p.name)}</option>`).join('');
   $('#botReadyBody').innerHTML=ready.length?ready.map(a=>`<tr data-aid="${esc(a.id)}">
     <td>${esc(a.product||'')} ${esc(a.plan||'')}</td>
@@ -1763,18 +1824,23 @@ function botRenderReadyTable(){
   </tr>`).join(''):`<tr><td colspan="4" style="text-align:center;color:var(--dim)">List လုပ်ဖို့ In Stock account မရှိပါ</td></tr>`;
 }
 function botRenderListedTable(){
-  const listed=db.accounts.filter(a=>a.botInventoryId);
-  $('#botListedBody').innerHTML=listed.length?listed.map(a=>{
-    const p=botProductsCache.find(x=>x.id===a.botProductId);
-    const label=p?(botCatName(p.category_id)+' — '+p.name):'(bot product not found)';
-    const soldTag=a.status!=='stock'?' <span class="badge sold">Sold via Bot</span>':'';
-    return `<tr data-aid="${esc(a.id)}">
-      <td>${esc(a.product||'')} ${esc(a.plan||'')}${soldTag}</td>
-      <td>${esc(a.email||'—')}</td>
-      <td>${esc(label)}</td>
-      <td>${a.status==='stock'?`<button class="btn sm danger" data-botunlist="${esc(a.id)}">✕ Unlist</button>`:'<span style="color:var(--dim);font-size:11px">sold</span>'}</td>
-    </tr>`;
-  }).join(''):`<tr><td colspan="4" style="text-align:center;color:var(--dim)">Bot ပေါ်တင်ထားသော stock မရှိသေးပါ</td></tr>`;
+  const listed=botInventoryCache.filter(item=>{const order=item.orders||{},buyer=order.profiles||{};return botSearchMatch(item.products?.name,item.content,item.status,buyer.first_name,buyer.last_name,buyer.username,item.web_account_id);});
+  $('#botListedBody').innerHTML=listed.length?listed.map(item=>{
+    const local=db.accounts.find(a=>a.botInventoryId===item.id||String(a.id)===String(item.web_account_id||''));
+    const order=item.orders||{},buyer=order.profiles||{},buyerName=[buyer.first_name,buyer.last_name].filter(Boolean).join(' ')||(order.telegram_user_id?String(order.telegram_user_id):'—');
+    const status=item.status==='sold'?'<span class="badge sold">Sold</span>':item.status==='available'?'<span class="badge stock">Listed</span>':'<span class="badge inactive">Disabled</span>';
+    const actions=item.status==='sold'&&item.order_id?`<button class="btn sm danger" data-botreverse="${item.order_id}">↩ Reverse Sale</button>`:`<button class="btn sm" data-botstatus="${item.id}" data-status="${item.status==='available'?'disabled':'available'}">${item.status==='available'?'Disable':'Relist'}</button> <button class="btn sm danger" data-botdeleteinventory="${item.id}">Delete</button>`;
+    return `<tr><td><b>${esc(item.products?.name||'Unknown Product')}</b><span class="subtxt">${esc(local?.plan||'')}${item.web_account_id?' · '+esc(item.web_account_id):''}</span></td><td><details><summary>View Account Data</summary><pre style="white-space:pre-wrap;font-size:11px;max-width:360px">${esc(item.content||'')}</pre></details></td><td>${status}</td><td>${esc(buyerName)}${buyer.username?`<span class="subtxt">@${esc(buyer.username)}</span>`:''}</td><td class="dimsm">${esc(String(item.sold_at||item.created_at||'').slice(0,16).replace('T',' '))}</td><td>${actions}</td></tr>`;
+  }).join(''):`<tr><td colspan="6" style="text-align:center;color:var(--dim)">Bot inventory data မရှိသေးပါ</td></tr>`;
+}
+function botRenderBroadcasts(){
+  $('#botBcProduct').innerHTML='<option value="">— Product for Buy Now —</option>'+botProductsCache.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
+  const runs=botBroadcastCache.runs||[];
+  $('#botBroadcastBody').innerHTML=(botBroadcastCache.templates||[]).map(t=>{const run=runs.find(r=>r.template_id===t.id);return `<tr><td><b>${esc(t.name)}</b><span class="subtxt">${esc(t.message_text).slice(0,100)}</span></td><td>${(t.buttons||[]).map(esc).join(', ')}</td><td>${run?`Delivered ${run.sent_count} · Failed ${run.failed_count} · Clicks ${run.click_count}`:'Not sent yet'}</td><td><button class="btn sm primary" data-broadcastsend="${t.id}">📣 Send</button></td></tr>`;}).join('')||'<tr><td colspan="4">No templates</td></tr>';
+}
+function renderBotSalesProducts(){
+  const orders=botCatalogCache.orders||[];
+  $('#botSalesProductsBody').innerHTML=orders.length?orders.map(o=>{const profile=(botCatalogCache.profiles||[]).find(p=>String(p.telegram_user_id)===String(o.telegram_user_id));return `<tr><td>${esc(String(o.completed_at||o.created_at||'').slice(0,16).replace('T',' '))}</td><td>${esc(o.product_name)}</td><td>${esc([profile?.first_name,profile?.last_name].filter(Boolean).join(' ')||o.telegram_user_id)}</td><td>${money(num(o.amount))} MMK</td><td>${esc(o.status)}</td></tr>`;}).join(''):'<tr><td colspan="5">Bot Sync ကို Refresh လုပ်ပါ</td></tr>';
 }
 function renderBotSync(){
   botRenderCatSelect();
@@ -1784,6 +1850,8 @@ function renderBotSync(){
   botRenderProductsTable();
   botRenderReadyTable();
   botRenderListedTable();
+  botRenderBroadcasts();
+  renderBotSalesProducts();
 }
 async function openBotSyncTab(){
   botConnUi(!!(sbCfg().url&&sbCfg().key));
@@ -3295,6 +3363,8 @@ $('#btnBotAddProduct').addEventListener('click',async()=>{
   }catch(e){ toast('Create failed — '+e.message,'err'); }
 });
 $('#botProductsBody').addEventListener('click',async e=>{
+  const edit=e.target.closest('[data-boteditproduct]');
+  if(edit){const p=botProductsCache.find(x=>x.id===edit.dataset.boteditproduct);if(!p)return;botEditingProductId=p.id;$('#botEditProductTitle').textContent=p.name;$('#botEditName').value=p.name||'';$('#botEditPrice').value=p.price||0;$('#botEditWarrantyDays').value=p.warranty_days||0;$('#botEditWarrantyHours').value=p.warranty_hours||0;$('#botEditPreview').value=p.preview_file_id||'';$('#botEditEmoji').value=p.custom_emoji_id||'';$('#botEditDescription').value=p.description||'';$('#botEditGuide').value=p.guide||'';$('#botEditQuote').checked=p.description_quote!==false;$('#ovBotProductEdit').classList.add('show');return;}
   const toggle=e.target.closest('[data-botproducttoggle]');
   if(toggle){try{await botRequest('set-product-active',{productId:toggle.dataset.botproducttoggle,active:toggle.dataset.active!=='1'});await botLoadAll();renderBotSync();}catch(err){toast('Product update failed — '+err.message,'err');}return;}
   const btn=e.target.closest('[data-botsaveprice]'); if(!btn) return;
@@ -3321,17 +3391,21 @@ $('#botReadyBody').addEventListener('click',async e=>{
   }catch(e){ toast('List failed — '+e.message,'err'); btn.disabled=false; }
 });
 $('#botListedBody').addEventListener('click',async e=>{
-  const btn=e.target.closest('[data-botunlist]'); if(!btn) return;
-  const aid=btn.dataset.botunlist;
-  const account=db.accounts.find(a=>a.id===aid);
-  if(!account) return;
-  btn.disabled=true;
+  const statusBtn=e.target.closest('[data-botstatus]'),deleteBtn=e.target.closest('[data-botdeleteinventory]'),reverseBtn=e.target.closest('[data-botreverse]');
   try{
-    await botUnlistAccount(account);
-    toast('Bot ပေါ်ကနေ ဖြုတ်ပြီးပါပြီ','ok');
-    await botLoadAll(); renderBotSync();
-  }catch(e){ toast('Unlist failed — '+e.message,'err'); btn.disabled=false; }
+    if(statusBtn){await botRequest('set-inventory-status',{inventoryId:statusBtn.dataset.botstatus,status:statusBtn.dataset.status});toast('Stock status updated ✓','ok');}
+    else if(deleteBtn){if(!confirm('ဒီ unsold Bot account data ကို အပြီးဖျက်မလား?'))return;await botRequest('delete-inventory',{inventoryId:deleteBtn.dataset.botdeleteinventory});toast('Bot account data deleted','ok');}
+    else if(reverseBtn){if(!confirm('ဒီ sale ကို reverse လုပ်ပြီး buyer balance ပြန်ဖြည့်၊ stock ပြန်တင်မလား?'))return;await botRequest('reverse-order',{orderId:reverseBtn.dataset.botreverse,reason:'Corrected by admin from VaultKey Bot Sync'});toast('Sale reversed — balance and stock restored ✓','ok');}
+    else return;
+    await botLoadAll();renderBotSync();save();render();
+  }catch(err){toast('Account update failed — '+err.message,'err');}
 });
+$('#btnBotProductUpdate').addEventListener('click',async()=>{if(!botEditingProductId)return;try{await botRequest('update-product',{productId:botEditingProductId,name:$('#botEditName').value,price:num($('#botEditPrice').value),warrantyDays:num($('#botEditWarrantyDays').value),warrantyHours:num($('#botEditWarrantyHours').value),previewFileId:$('#botEditPreview').value,customEmojiId:$('#botEditEmoji').value,description:$('#botEditDescription').value,descriptionQuote:$('#botEditQuote').checked,guide:$('#botEditGuide').value});$('#ovBotProductEdit').classList.remove('show');toast('Bot product presentation updated ✓','ok');await botLoadAll();renderBotSync();}catch(err){toast('Product update failed — '+err.message,'err');}});
+$('#btnBotSaveAbout').addEventListener('click',async()=>{try{await botRequest('set-bot-setting',{key:'about_text',value:$('#botAboutText').value});toast('Bot About text saved ✓','ok');}catch(err){toast('About save failed — '+err.message,'err');}});
+$('#btnBotSaveBroadcast').addEventListener('click',async()=>{const buttons=[];if($('#botBcBuy').checked)buttons.push('buy');if($('#botBcProducts').checked)buttons.push('products');if($('#botBcDeposit').checked)buttons.push('deposit');try{await botRequest('save-broadcast-template',{name:$('#botBcName').value,messageText:$('#botBcMessage').value,previewFileId:$('#botBcPreview').value,productId:$('#botBcProduct').value||null,buttons});toast('Broadcast template saved ✓','ok');$('#botBcName').value='';$('#botBcMessage').value='';await botLoadAll();renderBotSync();}catch(err){toast('Template save failed — '+err.message,'err');}});
+$('#botBroadcastBody').addEventListener('click',async e=>{const btn=e.target.closest('[data-broadcastsend]');if(!btn)return;if(!confirm('ဒီ template ကို bot users အားလုံးဆီ ပို့မလား?'))return;btn.disabled=true;try{const result=await botRequest('send-broadcast-template',{templateId:btn.dataset.broadcastsend});toast(`Broadcast completed — Sent ${result.sent_count}, Failed ${result.failed_count}`,'ok');await botLoadAll();renderBotSync();}catch(err){toast('Broadcast failed — '+err.message,'err');btn.disabled=false;}});
+$('#botSyncSearch').addEventListener('input',e=>{botSyncQuery=e.target.value;renderBotSync();});
+$('#dashSearch').addEventListener('input',e=>{const q=e.target.value.trim().toLowerCase();document.querySelectorAll('#view-dash .stock-row,#view-dash .work-item,#view-dash .restock-item,#view-dash #todayLines>*').forEach(el=>{el.style.display=!q||el.textContent.toLowerCase().includes(q)?'':'none';});});
 $('#btnBotSyncSold').addEventListener('click',async()=>{
   try{
     const count=await botSyncSoldStatus();
@@ -3680,6 +3754,7 @@ const v7RenderAccountsBase=renderAccounts;
 renderAccounts=function(){
   v7RenderAccountsBase();const visible=accSorted(db.accounts.filter(accMatches)),raw=visible.filter(a=>workflowStageOf(a)==='raw').length,ready=visible.filter(a=>workflowStageOf(a)==='ready').length,gmail=visible.filter(a=>!isService(a)&&detectEmailType(a.email,a.emailType)==='gmail').length,email=visible.filter(a=>!isService(a)&&detectEmailType(a.email,a.emailType)==='email').length;
   $('#tblFoot').insertAdjacentHTML('beforeend',`<span>Raw: <b>${raw}</b></span><span>Ready: <b>${ready}</b></span><span>Gmail.com: <b>${gmail}</b></span><span>Other Email: <b>${email}</b></span>`);
+  renderBotSalesProducts();
 };
 function renderWorkflowBoardV7(){
   const raw=db.accounts.filter(a=>a.status==='stock'&&workflowStageOf(a)==='raw').length,ready=db.accounts.filter(a=>a.status==='stock'&&workflowStageOf(a)==='ready').length,sold=todaySales().filter(a=>!isService(a)).length,rate=num(db.settings?.usdMmkRate);
@@ -3688,7 +3763,7 @@ function renderWorkflowBoardV7(){
 const v7RenderDashBase=renderDash;
 renderDash=function(){v7RenderDashBase();renderWorkflowBoardV7();};
 const v7SetTabBase=setTab;
-setTab=function(t){v7SetTabBase(t);if(t==='accounts')$('#btnAddLbl').textContent='Input Account';};
+setTab=function(t){v7SetTabBase(t);if(t==='accounts'){$('#btnAddLbl').textContent='Input Account';const c=sbCfg();if(c.url&&c.token)botLoadAll().then(()=>renderBotSalesProducts()).catch(()=>{});}};
 const v7OpenSellBase=openSell;
 openSell=function(id,custId){const a=accById(id);if(a&&workflowStageOf(a)==='raw'){toast('ဒီ Gmail ကို အရင် ⚡ Activate Plan လုပ်ပါ','err');openActivatePlan(id);return;}v7OpenSellBase(id,custId);const h=$('#ovSell h2');if(h)h.textContent='OUTPUT · Sell Account';};
 
