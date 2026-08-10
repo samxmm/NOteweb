@@ -860,6 +860,14 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
     </div>
 
     <div class="chart-card" style="margin-bottom:16px">
+      <div class="chart-hd"><div><h3>👥 Telegram Customers</h3><div class="sub">Balance အများဆုံးကို ထိပ်ဆုံးပြထားပါတယ်။ Customer ကို Telegram တိုက်ရိုက်ဖွင့်ပြီး ဝယ်ယူမှု history ကိုဒီမှာကြည့်နိုင်ပါတယ်။</div></div></div>
+      <div class="tbl-wrap"><table class="data">
+        <thead><tr><th>Name</th><th>Telegram ID</th><th>Username</th><th>Balance</th><th>Total Purchases</th><th>History</th></tr></thead>
+        <tbody id="botCustomersBody"></tbody>
+      </table></div>
+    </div>
+
+    <div class="chart-card" style="margin-bottom:16px">
       <div class="chart-hd"><div><h3>🗂 Bot Categories</h3><div class="sub">Category အသစ်ထည့်ပြီး customer menu အဖွင့်/အပိတ်ကို ဒီနေရာကနေထိန်းပါ။</div></div></div>
       <div class="mini-form">
         <input id="botCatName" placeholder="Category name (ဥပမာ ChatGPT)">
@@ -1660,18 +1668,28 @@ async function botSyncSoldStatus(){
 }
 async function botSyncCustomersAndSales(){
   const data=await botRequest('dashboard-sync'); let changed=false;
-  botCatalogCache.orders=data.orders||[];
+  botCatalogCache.orders=data.orders||[]; botCatalogCache.profiles=data.profiles||[]; botCatalogCache.soldInventory=data.soldInventory||[];
   for(const profile of (data.profiles||[])){
     const telegramId=String(profile.telegram_user_id), name=[profile.first_name,profile.last_name].filter(Boolean).join(' ').trim()||telegramId;
     let customer=db.customers.find(c=>String(c.telegramUserId||c.sourceCustomerId||'')===telegramId);
-    const fields={name,contact:profile.username?('@'+profile.username):'',telegramUserId:telegramId,sourceCustomerId:telegramId,sourceType:'telegram',updated:Date.now()};
+    const fields={name,contact:profile.username?('@'+profile.username):'',telegramUserId:telegramId,sourceCustomerId:telegramId,sourceType:'telegram',botBalance:num(profile.wallet_balance),botTotalPurchases:num(profile.total_purchases),updated:Date.now()};
     if(customer) Object.assign(customer,fields); else db.customers.push({id:uid(),requests:[],note:'Telegram bot user',created:Date.now(),...fields});
     changed=true;
   }
+  const soldOrderIds=new Set();
+  for(const sold of (data.soldInventory||[])){
+    const account=db.accounts.find(a=>a.botInventoryId===sold.id||String(a.id)===String(sold.web_account_id||''));
+    if(!account) continue;
+    const order=(data.orders||[]).find(o=>o.id===sold.order_id), customer=order?db.customers.find(c=>String(c.telegramUserId||'')===String(order.telegram_user_id)):null;
+    account.status='sold'; account.soldDate=account.soldDate||(sold.sold_at?timestampToYangonDate(sold.sold_at):todayStr());
+    account.soldPrice=order?num(order.amount):(account.soldPrice||account.price||0); account.customerId=customer?.id||account.customerId||null; account.botOrderId=sold.order_id||account.botOrderId;
+    account.soldNote=(account.soldNote?.includes('Sold via Telegram bot')?account.soldNote:(account.soldNote?account.soldNote+' · ':'')+'Sold via Telegram bot');
+    if(sold.order_id)soldOrderIds.add(sold.order_id); changed=true;
+  }
   for(const order of (data.orders||[])){
-    if(order.status!=='completed'||!order.completed_at||db.accounts.some(a=>a.botOrderId===order.id)) continue;
+    if(order.status!=='completed'||!order.completed_at||soldOrderIds.has(order.id)||db.accounts.some(a=>a.botOrderId===order.id)) continue;
     const customer=db.customers.find(c=>String(c.telegramUserId||'')===String(order.telegram_user_id));
-    db.accounts.push({id:uid(),botOrderId:order.id,itemType:'service',product:order.product_name,plan:'Telegram Bot Sale',cost:0,price:num(order.amount),soldPrice:num(order.amount),soldDate:String(order.completed_at).slice(0,10),status:'sold',customerId:customer?.id||null,soldNote:'Sold via Telegram bot',created:Date.parse(order.completed_at)||Date.now()}); changed=true;
+    db.accounts.push({id:uid(),botOrderId:order.id,itemType:'service',product:order.product_name,plan:'Telegram Bot Sale',cost:0,price:num(order.amount),soldPrice:num(order.amount),soldDate:timestampToYangonDate(order.completed_at),status:'sold',customerId:customer?.id||null,soldNote:'Service done via Telegram bot',created:Date.parse(order.completed_at)||Date.now()}); changed=true;
   }
   if(changed) save();
 }
@@ -1702,10 +1720,21 @@ function botRenderCategoriesTable(){
 }
 function botRenderStats(){
   const orders=botCatalogCache.orders||[], today=todayStr();
-  const completed=orders.filter(o=>o.status==='completed'&&String(o.completed_at||o.created_at).slice(0,10)===today);
+  const completed=orders.filter(o=>o.status==='completed'&&timestampToYangonDate(o.completed_at||o.created_at)===today);
   $('#botTodaySales').textContent=completed.length; $('#botTodayIncome').textContent=money(completed.reduce((s,o)=>s+num(o.amount),0))+' MMK';
   $('#botBuyerCount').textContent=new Set(orders.filter(o=>o.status==='completed').map(o=>o.telegram_user_id)).size;
   $('#botAvailableStock').textContent=Object.values(botCatalogCache.stockCounts||{}).reduce((s,n)=>s+num(n),0);
+}
+function botRenderCustomers(){
+  const profiles=[...(botCatalogCache.profiles||[])].sort((a,b)=>num(b.wallet_balance)-num(a.wallet_balance));
+  const orders=botCatalogCache.orders||[];
+  $('#botCustomersBody').innerHTML=profiles.length?profiles.map(profile=>{
+    const id=String(profile.telegram_user_id), username=String(profile.username||'').replace(/^@/,'');
+    const direct=username?`https://t.me/${encodeURIComponent(username)}`:`tg://user?id=${encodeURIComponent(id)}`;
+    const history=orders.filter(o=>String(o.telegram_user_id)===id);
+    const historyHtml=history.length?history.map(o=>`<div style="padding:6px 0;border-bottom:1px solid var(--line)"><b>${esc(o.product_name)}</b> · ${money(num(o.amount))} MMK<br><span class="dimsm">${esc(o.status)} · ${esc(String(o.completed_at||o.created_at||'').slice(0,16).replace('T',' '))}</span>${o.delivery_content?`<details><summary>Product data</summary><pre style="white-space:pre-wrap;font-size:11px">${esc(o.delivery_content)}</pre></details>`:''}</div>`).join(''):'<span class="dimsm">No purchases</span>';
+    return `<tr><td>${esc([profile.first_name,profile.last_name].filter(Boolean).join(' ')||id)}</td><td class="mono">${esc(id)}</td><td><a href="${esc(direct)}" target="_blank" rel="noopener">${username?'@'+esc(username):'Open Telegram'}</a></td><td><b>${money(num(profile.wallet_balance))} MMK</b></td><td>${money(num(profile.total_purchases))} MMK</td><td><details><summary>${history.length} order(s)</summary>${historyHtml}</details></td></tr>`;
+  }).join(''):'<tr><td colspan="6" style="text-align:center;color:var(--dim)">Telegram customer မရှိသေးပါ</td></tr>';
 }
 async function botRenderProductsTable(){
   const stockIds=botProductsCache.filter(p=>p.delivery_type==='stock').map(p=>p.id);
@@ -1751,6 +1780,7 @@ function renderBotSync(){
   botRenderCatSelect();
   botRenderCategoriesTable();
   botRenderStats();
+  botRenderCustomers();
   botRenderProductsTable();
   botRenderReadyTable();
   botRenderListedTable();
