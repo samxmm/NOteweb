@@ -735,8 +735,20 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
       <button class="profile-add-fab" id="btnAddProductProfile" title="Add product or service profile">＋ Add Profile</button>
     </div>
     <div class="chart-card" style="margin-top:16px">
-      <div class="chart-hd"><div><h3>🤖 Telegram Bot Sale Transactions</h3><div class="sub">Bot မှ completed/processing orders တွေကို Products page မှာပြထားပါတယ်။</div></div></div>
-      <div class="tbl-wrap"><table class="data"><thead><tr><th>Date</th><th>Product</th><th>Buyer</th><th>Amount</th><th>Status</th></tr></thead><tbody id="botSalesProductsBody"></tbody></table></div>
+      <div class="chart-hd"><div><h3>🤖 Telegram Bot Sale Transactions</h3><div class="sub">Day / Month အလိုက် product quantity, amount, transaction နဲ့ ပို့ထားသော Account Data ကိုစစ်နိုင်ပါတယ်။</div></div></div>
+      <div class="fbar" style="margin-bottom:12px">
+        <select id="botSalePeriod"><option value="day">Day by Day</option><option value="month">Monthly</option></select>
+        <input id="botSaleDate" type="date">
+        <input id="botSaleMonth" type="month" style="display:none">
+      </div>
+      <div class="stats" style="margin-bottom:14px">
+        <div class="stat"><div class="n" id="botPeriodProductCount">0</div><div class="l">Products</div></div>
+        <div class="stat"><div class="n" id="botPeriodQuantity">0</div><div class="l">Quantity Sold</div></div>
+        <div class="stat"><div class="n" id="botPeriodAmount">0 MMK</div><div class="l">Bot Sale Amount</div></div>
+        <div class="stat"><div class="n" id="botPeriodTransactions">0</div><div class="l">Total Transactions</div></div>
+      </div>
+      <div class="tbl-wrap" style="margin-bottom:14px"><table class="data"><thead><tr><th>Product</th><th>Quantity</th><th>Amount</th><th>Transactions</th></tr></thead><tbody id="botSaleBreakdownBody"></tbody></table></div>
+      <div class="tbl-wrap"><table class="data"><thead><tr><th>Date / Order</th><th>Product</th><th>Buyer</th><th>Amount</th><th>Account Data</th><th>Status</th></tr></thead><tbody id="botSalesProductsBody"></tbody></table></div>
     </div>
   </section>
 
@@ -1679,7 +1691,7 @@ function sbStartAutoSync(){
 /* ================= bot stock sync =================
    The browser never gets direct access to product credentials. Bot Sync calls
    the protected web-stock-sync Edge Function with an owner-only admin token. */
-let botCategoriesCache=[], botProductsCache=[], botInventoryCache=[], botBroadcastCache={templates:[],runs:[]}, botSyncQuery='', botAccountQuery='', botAccountStatus='all', botEditingProductId=null, botEditingInventoryId=null;
+let botCategoriesCache=[], botProductsCache=[], botInventoryCache=[], botBroadcastCache={templates:[],runs:[]}, botSyncQuery='', botAccountQuery='', botAccountStatus='all', botEditingProductId=null, botEditingInventoryId=null, botOpenInventoryCategories=new Set();
 function botApiUrl(action){ return sbCfg().url+'/functions/v1/web-stock-sync/'+action; }
 async function botRequest(action,body){
   const c=sbCfg();
@@ -1747,13 +1759,20 @@ async function botSyncCustomersAndSales(){
   }
   const soldOrderIds=new Set();
   for(const sold of (data.soldInventory||[])){
-    const account=db.accounts.find(a=>a.botInventoryId===sold.id||String(a.id)===String(sold.web_account_id||''));
-    if(!account) continue;
     const order=(data.orders||[]).find(o=>o.id===sold.order_id), customer=order?db.customers.find(c=>String(c.telegramUserId||'')===String(order.telegram_user_id)):null;
+    if(sold.order_id)soldOrderIds.add(sold.order_id);
+    let account=db.accounts.find(a=>a.botInventoryId===sold.id||a.botOrderId===sold.order_id||String(a.id)===String(sold.web_account_id||''));
+    if(!account){
+      const content=String(sold.content||order?.delivery_content||''),read=labels=>{const match=content.match(new RegExp(`(?:^|\\n)\\s*(?:${labels.join('|')})\\s*[:=-]\\s*([^\\n]+)`,'i'));return match?.[1]?.trim()||'';};
+      const warrantyEnd=order?.warranty_expires_at?timestampToYangonDate(order.warranty_expires_at):'';
+      account={id:uid(),code:botOrderCode(order),orderId:botOrderCode(order),botOrderId:sold.order_id,botInventoryId:sold.id,botProductId:sold.product_id,itemType:'account',product:order?.product_name||sold.products?.name||'Telegram Bot Product',plan:'Telegram Bot Sale',planTerm:'custom',warrantyTerm:'custom',cost:0,price:num(order?.amount),soldPrice:num(order?.amount),email:read(['mail','email','gmail']),pass:read(['pass','password']),twofa:read(['2fa','two fa','totp']),delivery:content,keyFileName:'',keyFileType:'',keyFileData:'',supplier:'Telegram Bot',renew:warrantyEnd,expire:warrantyEnd,status:'sold',customerId:customer?.id||null,soldDate:sold.sold_at?timestampToYangonDate(sold.sold_at):timestampToYangonDate(order?.completed_at||Date.now()),soldNote:'Sold via Telegram bot',replacedById:null,replacesId:null,inactiveNote:'',created:Date.parse(sold.sold_at||order?.completed_at)||Date.now()};
+      db.accounts.unshift(account);
+    }
     account.status='sold'; account.soldDate=account.soldDate||(sold.sold_at?timestampToYangonDate(sold.sold_at):todayStr());
     account.soldPrice=order?num(order.amount):(account.soldPrice||account.price||0); account.customerId=customer?.id||account.customerId||null; account.botOrderId=sold.order_id||account.botOrderId;
+    account.botInventoryId=sold.id;account.botProductId=sold.product_id||account.botProductId;account.orderId=account.orderId||botOrderCode(order);account.delivery=account.delivery||sold.content||order?.delivery_content||'';
     account.soldNote=(account.soldNote?.includes('Sold via Telegram bot')?account.soldNote:(account.soldNote?account.soldNote+' · ':'')+'Sold via Telegram bot');
-    if(sold.order_id)soldOrderIds.add(sold.order_id); changed=true;
+    changed=true;
   }
   for(const order of (data.orders||[])){
     if(order.status!=='completed'||!order.completed_at||soldOrderIds.has(order.id)||db.accounts.some(a=>a.botOrderId===order.id)) continue;
@@ -1785,6 +1804,10 @@ async function botLoadAll(){
     await botSyncCustomersAndSales();
     botConnUi(true);
   }catch(e){ botConnUi(false,e.message); }
+}
+async function botRefreshInventoryPanel(){
+  const [inventory,catalog]=await Promise.all([botRequest('inventory-control'),botRequest('catalog')]);
+  botInventoryCache=inventory||[];botCatalogCache={...botCatalogCache,...catalog};botCategoriesCache=catalog.categories||botCategoriesCache;botProductsCache=catalog.products||botProductsCache;reconcileBotInventory();
 }
 function botSearchMatch(...values){const q=botSyncQuery.trim().toLowerCase();return !q||values.some(v=>String(v??'').toLowerCase().includes(q));}
 function botConnUi(connected,errMsg){
@@ -1885,6 +1908,7 @@ function botInventoryRow(item){
 function botRenderListedTable(){
   const q=botAccountQuery.trim().toLowerCase();
   const categoryRows=botCategoriesCache.map(category=>{
+    const categoryItems=botInventoryCache.filter(item=>item.products?.category_id===category.id||item.products?.categories?.name===category.name);
     const products=botProductsCache.filter(product=>product.category_id===category.id).map(product=>{
       const allItems=botInventoryCache.filter(item=>item.product_id===product.id);
       let items=allItems.filter(item=>(botAccountStatus==='all'||item.status===botAccountStatus)&&botInventoryMatches(item,q));
@@ -1902,7 +1926,8 @@ function botRenderListedTable(){
       </section>`;
     }).filter(Boolean).join('');
     if(!products)return '';
-    return `<details ${q?'open':''} style="border:1px solid var(--line2);border-radius:16px;padding:14px;margin-top:12px"><summary style="cursor:pointer;font-size:16px"><b>${esc(category.emoji||'📦')} ${esc(category.name)}</b></summary>${products}</details>`;
+    const open=q||botOpenInventoryCategories.has(category.id);
+    return `<details data-botinventorycategory="${category.id}" ${open?'open':''} style="border:1px solid var(--line2);border-radius:16px;padding:14px;margin-top:12px"><summary style="cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><b>${esc(category.emoji||'📦')} ${esc(category.name)}</b><span><span class="badge stock">List ${categoryItems.filter(item=>item.status==='available').length}</span> <span class="badge sold">Sold ${categoryItems.filter(item=>item.status==='sold').length}</span></span></summary>${products}</details>`;
   }).filter(Boolean).join('');
   $('#botListedBody').innerHTML=categoryRows||'<div style="text-align:center;color:var(--dim);padding:24px">Matching account or purchase history မတွေ့ပါ</div>';
 }
@@ -1918,8 +1943,18 @@ function botBroadcastLine(emojiId,value,bold=false){
   return icon+(bold?`<b>${text}</b>`:text);
 }
 function renderBotSalesProducts(){
-  const orders=botCatalogCache.orders||[];
-  $('#botSalesProductsBody').innerHTML=orders.length?orders.map(o=>{const profile=(botCatalogCache.profiles||[]).find(p=>String(p.telegram_user_id)===String(o.telegram_user_id));return `<tr><td>${esc(String(o.completed_at||o.created_at||'').slice(0,16).replace('T',' '))}</td><td>${esc(o.product_name)}</td><td>${esc([profile?.first_name,profile?.last_name].filter(Boolean).join(' ')||o.telegram_user_id)}</td><td>${money(num(o.amount))} MMK</td><td>${esc(o.status)}</td></tr>`;}).join(''):'<tr><td colspan="5">Bot Sync ကို Refresh လုပ်ပါ</td></tr>';
+  const today=todayStr(),period=$('#botSalePeriod').value||'day';
+  if(!$('#botSaleDate').value)$('#botSaleDate').value=today;
+  if(!$('#botSaleMonth').value)$('#botSaleMonth').value=today.slice(0,7);
+  $('#botSaleDate').style.display=period==='day'?'':'none';$('#botSaleMonth').style.display=period==='month'?'':'none';
+  const key=period==='day'?$('#botSaleDate').value:$('#botSaleMonth').value;
+  const orders=(botCatalogCache.orders||[]).filter(order=>{const ds=timestampToYangonDate(order.completed_at||order.created_at);return period==='day'?ds===key:ds.startsWith(key);});
+  const groups={};
+  for(const order of orders){const name=order.product_name||'Unknown Product',group=groups[name]??={name,quantity:0,amount:0,transactions:0};group.quantity++;group.amount+=num(order.amount);group.transactions++;}
+  const breakdown=Object.values(groups).sort((a,b)=>b.amount-a.amount);
+  $('#botPeriodProductCount').textContent=breakdown.length;$('#botPeriodQuantity').textContent=orders.length;$('#botPeriodAmount').textContent=money(orders.reduce((sum,order)=>sum+num(order.amount),0))+' MMK';$('#botPeriodTransactions').textContent=orders.length;
+  $('#botSaleBreakdownBody').innerHTML=breakdown.length?breakdown.map(row=>`<tr><td><b>${esc(row.name)}</b></td><td>${row.quantity}</td><td><b>${money(row.amount)} MMK</b></td><td>${row.transactions}</td></tr>`).join(''):'<tr><td colspan="4" style="text-align:center;color:var(--dim)">Selected period မှာ Bot sale မရှိသေးပါ</td></tr>';
+  $('#botSalesProductsBody').innerHTML=orders.length?orders.map(order=>{const profile=(botCatalogCache.profiles||[]).find(p=>String(p.telegram_user_id)===String(order.telegram_user_id)),buyer=[profile?.first_name,profile?.last_name].filter(Boolean).join(' ')||order.telegram_user_id;return `<tr><td>${esc(String(order.completed_at||order.created_at||'').slice(0,16).replace('T',' '))}<span class="subtxt mono">${esc(botOrderCode(order))}</span></td><td><b>${esc(order.product_name)}</b></td><td>${esc(buyer)}${profile?.username?`<span class="subtxt">@${esc(profile.username)}</span>`:''}</td><td><b>${money(num(order.amount))} MMK</b></td><td>${order.delivery_content?`<details><summary>View / Copy Data</summary><pre style="white-space:pre-wrap;font-size:11px;max-width:360px">${esc(order.delivery_content)}</pre></details>`:'<span class="dimsm">Manual delivery pending</span>'}</td><td>${esc(order.status)}</td></tr>`;}).join(''):'<tr><td colspan="6" style="text-align:center;color:var(--dim)">Selected period မှာ transaction မရှိပါ</td></tr>';
 }
 function renderBotSync(){
   botRenderCatSelect();
@@ -3321,7 +3356,13 @@ renderAnalytics=function(){vk6RenderAnalytics();renderWorksheetCalendar();render
 const vk6Render=render;
 render=function(){ensureSchema();vk6Render();};
 const vk6SetTab=setTab;
-setTab=function(t){vk6SetTab(t);if(t==='accounts'){ $('#btnAddLbl').textContent='Add Product'; renderProductProfiles(); }};
+setTab=function(t){
+  vk6SetTab(t);
+  if(t==='accounts'){
+    $('#btnAddLbl').textContent='Add Product';renderProductProfiles();
+    const cfg=sbCfg();if(cfg.url&&cfg.token)botLoadAll().then(()=>{renderAccounts();renderBotSalesProducts();renderDash();renderAnalytics();});
+  }
+};
 
 function slipDataFromForm(a){
   const name=$('#sCustomer').value.trim();if(!name){toast('Customer name is required for the payment slip','err');$('#sCustomer').focus();return null;}const date=$('#sDate').value||todayStr();ensureOrderId(a,date);
@@ -3476,8 +3517,9 @@ $('#botListedBody').addEventListener('click',async e=>{
       const input=addBtn.closest('section')?.querySelector(`[data-botdirectcontent="${addBtn.dataset.botdirectadd}"]`),raw=input?.value||'';
       const contents=raw.split(/\n\s*---+\s*\n/g).map(value=>value.trim()).filter(Boolean);
       if(!contents.length){toast('Account data အရင်ထည့်ပါ','err');return;}
-      addBtn.disabled=true;const result=await botRequest('add-stock-direct',{productId:addBtn.dataset.botdirectadd,contents});
+      const scrollTop=window.scrollY;addBtn.disabled=true;addBtn.textContent='Adding…';const result=await botRequest('add-stock-direct',{productId:addBtn.dataset.botdirectadd,contents});
       if(input)input.value='';toast(`${result.added||contents.length} stock တိုက်ရိုက် List လုပ်ပြီးပါပြီ ✓${result.notified?` · ${result.notified} restock notification sent`:''}`,'ok');
+      await botRefreshInventoryPanel();botRenderListedTable();botRenderProductsTable();botRenderStats();requestAnimationFrame(()=>window.scrollTo({top:scrollTop,behavior:'auto'}));return;
     }
     else if(editBtn){
       const item=botInventoryCache.find(row=>row.id===editBtn.dataset.boteditinventory);if(!item)return;
@@ -3490,6 +3532,7 @@ $('#botListedBody').addEventListener('click',async e=>{
     await botLoadAll();renderBotSync();save();render();
   }catch(err){if(addBtn)addBtn.disabled=false;toast('Account update failed — '+err.message,'err');}
 });
+$('#botListedBody').addEventListener('toggle',e=>{const group=e.target.closest?.('[data-botinventorycategory]');if(!group)return;if(group.open)botOpenInventoryCategories.add(group.dataset.botinventorycategory);else botOpenInventoryCategories.delete(group.dataset.botinventorycategory);},true);
 $('#btnBotInventoryUpdate').addEventListener('click',async()=>{
   const content=$('#botInventoryEditContent').value.trim();if(!botEditingInventoryId||!content){toast('Account data အလွတ်မဖြစ်ရပါ','err');return;}
   try{await botRequest('update-inventory-content',{inventoryId:botEditingInventoryId,content});$('#ovBotInventoryEdit').classList.remove('show');botEditingInventoryId=null;toast('Account data updated ✓','ok');await botLoadAll();renderBotSync();}catch(err){toast('Account update failed — '+err.message,'err');}
@@ -3510,6 +3553,9 @@ $('#botBroadcastBody').addEventListener('click',async e=>{const btn=e.target.clo
 $('#botSyncSearch').addEventListener('input',e=>{botSyncQuery=e.target.value;renderBotSync();});
 $('#botAccountSearch').addEventListener('input',e=>{botAccountQuery=e.target.value;botRenderListedTable();});
 $('#botAccountStatus').addEventListener('change',e=>{botAccountStatus=e.target.value;botRenderListedTable();});
+$('#botSalePeriod').addEventListener('change',renderBotSalesProducts);
+$('#botSaleDate').addEventListener('change',renderBotSalesProducts);
+$('#botSaleMonth').addEventListener('change',renderBotSalesProducts);
 $('#dashSearch').addEventListener('input',e=>{const q=e.target.value.trim().toLowerCase();document.querySelectorAll('#view-dash .stock-row,#view-dash .work-item,#view-dash .restock-item,#view-dash #todayLines>*').forEach(el=>{el.style.display=!q||el.textContent.toLowerCase().includes(q)?'':'none';});});
 $('#btnBotSyncSold').addEventListener('click',async()=>{
   try{
