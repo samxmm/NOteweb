@@ -949,6 +949,7 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
         <input id="botBcName" placeholder="Template name — admin only">
         <select id="botBcProduct"><option value="">— Product for Buy Now —</option></select>
         <input id="botBcPreview" class="full" placeholder="Optional Header Photo — Telegram file_id">
+        <label class="fg full" style="margin:0"><span>Scheduled time (Asia/Yangon)</span><input id="botBcSchedule" type="datetime-local"><span class="help">အလွတ်ထားရင် template ပဲသိမ်းမယ်။ အချိန်ရွေးထားရင် Save ပြီးနောက် server timer နဲ့ လွှင့်မယ်။</span></label>
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:14px">
         <div class="card" style="padding:14px"><b>① Title</b><input id="botBcTitleEmoji" class="mono" placeholder="Premium emoji ID (optional)" style="width:100%;margin:9px 0"><textarea id="botBcTitle" rows="4" placeholder="Title sentence" style="width:100%"></textarea></div>
@@ -964,9 +965,10 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
         <label class="check"><input type="checkbox" id="botBcOrders"> 📦 My Orders</label>
         <label class="check"><input type="checkbox" id="botBcSupport"> 💬 Support</label>
         <label class="check"><input type="checkbox" id="botBcAbout"> ℹ️ About</label>
-        <button class="btn primary add-btn" id="btnBotSaveBroadcast" style="margin-left:auto">＋ Save Template</button>
+        <button class="btn ghost" id="btnBotCancelBroadcastEdit" style="display:none;margin-left:auto">Cancel Edit</button>
+        <button class="btn primary add-btn" id="btnBotSaveBroadcast">＋ Save Template</button>
       </div>
-      <div class="tbl-wrap" style="margin-top:12px"><table class="data"><thead><tr><th>Template</th><th>Buttons</th><th>Last Result</th><th></th></tr></thead><tbody id="botBroadcastBody"></tbody></table></div>
+      <div class="tbl-wrap" style="margin-top:12px"><table class="data"><thead><tr><th>Template</th><th>Buttons</th><th>Timer</th><th>Last Result</th><th></th></tr></thead><tbody id="botBroadcastBody"></tbody></table></div>
     </div>
 
     <div class="chart-card" style="margin-bottom:16px">
@@ -1019,6 +1021,15 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
     <div class="sub" id="botInventoryEditMeta">Available stock data</div>
     <div class="fg full" style="margin-top:14px"><label>Account Data</label><textarea id="botInventoryEditContent" rows="9" class="mono" placeholder="Mail:&#10;Pass:&#10;2FA:"></textarea><div class="help">Sold record ဖြစ်လျှင် customer Order delivery data ကိုပါ အတူ update လုပ်ပါမယ်။</div></div>
     <div class="modal-foot"><button class="btn ghost" data-close="ovBotInventoryEdit">Cancel</button><button class="btn primary" id="btnBotInventoryUpdate">💾 Save Account Data</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="ovBotBroadcastPreview">
+  <div class="modal wide">
+    <h2>📣 Broadcast Template Preview</h2>
+    <div class="sub" id="botBroadcastPreviewMeta"></div>
+    <div id="botBroadcastPreviewBody" class="card" style="margin-top:14px;padding:16px"></div>
+    <div class="modal-foot"><button class="btn ghost" data-close="ovBotBroadcastPreview">Close</button></div>
   </div>
 </div>
 
@@ -1706,7 +1717,7 @@ function sbStartAutoSync(){
 /* ================= bot stock sync =================
    The browser never gets direct access to product credentials. Bot Sync calls
    the protected web-stock-sync Edge Function with an owner-only admin token. */
-let botCategoriesCache=[], botProductsCache=[], botInventoryCache=[], botBroadcastCache={templates:[],runs:[]}, botSyncQuery='', botAccountQuery='', botAccountStatus='all', botEditingProductId=null, botEditingInventoryId=null, botOpenInventoryCategories=new Set(), botStockDrafts=new Map();
+let botCategoriesCache=[], botProductsCache=[], botInventoryCache=[], botBroadcastCache={templates:[],runs:[]}, botSyncQuery='', botAccountQuery='', botAccountStatus='all', botEditingProductId=null, botEditingInventoryId=null, botEditingBroadcastId=null, botOpenInventoryCategories=new Set(), botStockDrafts=new Map();
 function botApiUrl(action){ return sbCfg().url+'/functions/v1/web-stock-sync/'+action; }
 async function botRequest(action,body){
   const c=sbCfg();
@@ -1874,7 +1885,7 @@ async function botRenderProductsTable(){
   const stockIds=botProductsCache.filter(p=>p.delivery_type==='stock').map(p=>p.id);
   let counts={};
   try{ counts=await botFetchStockCounts(stockIds); }catch(e){}
-  const visible=botProductsCache.filter(p=>botSearchMatch(botCatName(p.category_id),p.name,p.price,p.is_active?'active':'inactive'));
+  const visible=botProductsCache.filter(p=>!p.archived_at&&botSearchMatch(botCatName(p.category_id),p.name,p.price,p.is_active?'active':'inactive'));
   $('#botProductsBody').innerHTML=visible.length?visible.map(p=>{
     const stock=p.delivery_type==='manual'?'—':(counts[p.id]||0);
     return `<tr data-pid="${p.id}">
@@ -1883,13 +1894,13 @@ async function botRenderProductsTable(){
       <td><input class="botPriceInput" data-pid="${p.id}" type="number" min="0" step="0.01" value="${p.price}" style="width:90px;border:1px solid var(--line2);border-radius:8px;padding:5px 7px;font:inherit"></td>
       <td>${stock}</td>
       <td>${p.is_active?'<span class="badge stock">Active</span>':'<span class="badge sold">Inactive</span>'}</td>
-      <td><button class="btn sm" data-boteditproduct="${p.id}">✏️ Edit</button> <button class="btn sm" data-botsaveprice="${p.id}">💾 Price</button> <button class="btn sm ${p.is_active?'danger':'primary'}" data-botproducttoggle="${p.id}" data-active="${p.is_active?'1':'0'}">${p.is_active?'Disable':'Enable'}</button></td>
+      <td><button class="btn sm" data-boteditproduct="${p.id}">✏️ Edit</button> <button class="btn sm" data-botsaveprice="${p.id}">💾 Price</button> <button class="btn sm ${p.is_active?'danger':'primary'}" data-botproducttoggle="${p.id}" data-active="${p.is_active?'1':'0'}">${p.is_active?'Disable':'Enable'}</button> <button class="btn sm danger" data-botdeleteproduct="${p.id}">🗑 Delete</button></td>
     </tr>`;
   }).join(''):`<tr><td colspan="6" style="text-align:center;color:var(--dim)">Bot product မရှိသေးပါ — အပေါ်က form နဲ့ တစ်ခုဖန်တီးပါ</td></tr>`;
 }
 function botRenderReadyTable(){
   const ready=db.accounts.filter(a=>a.status==='stock'&&!a.botInventoryId&&botSearchMatch(a.product,a.plan,a.email,'ready'));
-  const options=botProductsCache.map(p=>`<option value="${p.id}">${esc(botCatName(p.category_id))} — ${esc(p.name)}</option>`).join('');
+  const options=botProductsCache.filter(p=>!p.archived_at).map(p=>`<option value="${p.id}">${esc(botCatName(p.category_id))} — ${esc(p.name)}</option>`).join('');
   $('#botReadyBody').innerHTML=ready.length?ready.map(a=>`<tr data-aid="${esc(a.id)}">
     <td>${esc(a.product||'')} ${esc(a.plan||'')}</td>
     <td>${esc(a.email||'—')}</td>
@@ -1953,8 +1964,8 @@ function botRenderListedTable(){
       if(q&&!productMatch&&!items.length)return '';
       const available=items.filter(item=>item.status!=='sold'),sold=items.filter(item=>item.status==='sold');
       return `<section style="border:1px solid var(--line);border-radius:14px;padding:13px;margin-top:10px">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap"><b>${esc(product.name)}</b><span><span class="badge stock">${allItems.filter(i=>i.status==='available').length} available</span> <span class="badge sold">${allItems.filter(i=>i.status==='sold').length} sold</span></span></div>
-        <div style="display:grid;grid-template-columns:minmax(220px,1fr) auto;gap:8px;margin-top:10px;align-items:start"><textarea data-botdirectcontent="${product.id}" rows="3" placeholder="mail || pass || 2fa · Multiple accounts = --- နဲ့ခွဲပါ">${esc(botStockDrafts.get(product.id)||'')}</textarea><button class="btn primary" data-botdirectadd="${product.id}">＋ Add Stock &amp; List</button></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap"><b>${esc(product.name)} ${product.archived_at?'<span class="badge inactive">Archived</span>':''}</b><span><span class="badge stock">${allItems.filter(i=>i.status==='available').length} available</span> <span class="badge sold">${allItems.filter(i=>i.status==='sold').length} sold</span></span></div>
+        ${product.archived_at?'<div class="help" style="margin-top:9px">History/stock ကိုမဖျက်ဘဲ product ကို safe archive လုပ်ထားသည်။ New stock ထည့်၍မရပါ။</div>':`<div style="display:grid;grid-template-columns:minmax(220px,1fr) auto;gap:8px;margin-top:10px;align-items:start"><textarea data-botdirectcontent="${product.id}" rows="3" placeholder="mail || pass || 2fa · Multiple accounts = --- နဲ့ခွဲပါ">${esc(botStockDrafts.get(product.id)||'')}</textarea><button class="btn primary" data-botdirectadd="${product.id}">＋ Add Stock &amp; List</button></div>`}
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:10px">
           <div><b>📦 Available / Disabled</b>${available.length?available.map(botInventoryRow).join(''):'<div class="dimsm" style="padding:10px">No matching available data</div>'}</div>
           <div><b>🧾 Sold History</b>${sold.length?sold.map(botInventoryRow).join(''):'<div class="dimsm" style="padding:10px">No matching sold history</div>'}</div>
@@ -1969,10 +1980,32 @@ function botRenderListedTable(){
   if(focusState)requestAnimationFrame(()=>{const input=$(`[data-botdirectcontent="${focusState.id}"]`);if(input){input.focus({preventScroll:true});input.setSelectionRange(focusState.start,focusState.end);input.scrollTop=focusState.scrollTop;}});
 }
 function botRenderBroadcasts(){
-  $('#botBcProduct').innerHTML='<option value="">— Product for Buy Now —</option>'+botProductsCache.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
+  $('#botBcProduct').innerHTML='<option value="">— Product for Buy Now —</option>'+botProductsCache.filter(p=>!p.archived_at).map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
   const runs=botBroadcastCache.runs||[];
   const labels={buy:'🛒 Buy Now',products:'🛍 Products',deposit:'💰 Deposit',referrals:'🎁 Referrals',orders:'📦 My Orders',support:'💬 Support',about:'ℹ️ About'};
-  $('#botBroadcastBody').innerHTML=(botBroadcastCache.templates||[]).map(t=>{const run=runs.find(r=>r.template_id===t.id);return `<tr><td><b>${esc(t.name)}</b><span class="subtxt">${esc(t.title_text||t.message_text).slice(0,100)}</span></td><td>${(t.buttons||[]).map(button=>esc(labels[button]||button)).join('<br>')}</td><td>${run?`Delivered ${run.sent_count} · Failed ${run.failed_count} · Clicks ${run.click_count}`:'Not sent yet'}</td><td><button class="btn sm primary" data-broadcastsend="${t.id}">📣 Send</button></td></tr>`;}).join('')||'<tr><td colspan="4">No templates</td></tr>';
+  $('#botBroadcastBody').innerHTML=(botBroadcastCache.templates||[]).map(t=>{const run=runs.find(r=>r.template_id===t.id),scheduled=t.scheduled_at?new Date(t.scheduled_at).toLocaleString('en-GB',{timeZone:YANGON_TZ}):'';return `<tr><td><b>${esc(t.name)}</b><span class="subtxt">${esc(t.title_text||t.message_text).slice(0,100)}</span></td><td>${(t.buttons||[]).map(button=>esc(labels[button]||button)).join('<br>')}</td><td>${t.schedule_status==='scheduled'?`<span class="badge stock">Scheduled</span><span class="subtxt">${esc(scheduled)} Yangon</span><button class="btn sm danger" data-broadcastcancel="${t.id}">Cancel Timer</button>`:t.schedule_status==='failed'?`<span class="badge sold">Timer failed</span><span class="subtxt">${esc(t.last_scheduled_error||'Unknown error')}</span>`:`<span class="badge inactive">${esc(t.schedule_status||'draft')}</span>${scheduled?`<span class="subtxt">${esc(scheduled)}</span>`:''}`}</td><td>${run?`Delivered ${run.sent_count} · Failed ${run.failed_count} · Clicks ${run.click_count}`:'Not sent yet'}</td><td><div style="display:flex;gap:5px;flex-wrap:wrap"><button class="btn sm" data-broadcastpreview="${t.id}">👁 Preview</button><button class="btn sm" data-broadcastedit="${t.id}">✏️ Edit / Timer</button><button class="btn sm primary" data-broadcastsend="${t.id}">📣 Send Now</button><button class="btn sm danger" data-broadcastdelete="${t.id}">🗑 Delete</button></div></td></tr>`;}).join('')||'<tr><td colspan="5">No templates</td></tr>';
+}
+function botResetBroadcastForm(){
+  botEditingBroadcastId=null;
+  ['#botBcName','#botBcPreview','#botBcTitleEmoji','#botBcTitle','#botBcMidEmoji','#botBcMid','#botBcLastEmoji','#botBcLast','#botBcSchedule'].forEach(id=>$(id).value='');
+  $('#botBcProduct').value='';
+  [['#botBcBuy',true],['#botBcProducts',false],['#botBcDeposit',false],['#botBcReferrals',false],['#botBcOrders',false],['#botBcSupport',false],['#botBcAbout',false]].forEach(([id,checked])=>$(id).checked=checked);
+  $('#btnBotSaveBroadcast').textContent='＋ Save Template';$('#btnBotCancelBroadcastEdit').style.display='none';
+}
+function botYangonScheduleInput(iso){const parts=new Intl.DateTimeFormat('en-CA',{timeZone:YANGON_TZ,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date(iso)),map=Object.fromEntries(parts.map(part=>[part.type,part.value]));return `${map.year}-${map.month}-${map.day}T${map.hour}:${map.minute}`;}
+function botYangonScheduleIso(value){return new Date(`${value}:00+06:30`).toISOString();}
+function botEditBroadcast(template){
+  botEditingBroadcastId=template.id;$('#botBcName').value=template.name||'';$('#botBcProduct').value=template.product_id||'';$('#botBcPreview').value=template.preview_file_id||'';
+  $('#botBcTitle').value=template.title_text||'';$('#botBcTitleEmoji').value=template.title_emoji_id||'';$('#botBcMid').value=template.mid_text||'';$('#botBcMidEmoji').value=template.mid_emoji_id||'';$('#botBcLast').value=template.last_text||'';$('#botBcLastEmoji').value=template.last_emoji_id||'';
+  const selected=new Set(template.buttons||[]);[['#botBcBuy','buy'],['#botBcProducts','products'],['#botBcDeposit','deposit'],['#botBcReferrals','referrals'],['#botBcOrders','orders'],['#botBcSupport','support'],['#botBcAbout','about']].forEach(([id,value])=>$(id).checked=selected.has(value));
+  if(template.schedule_status==='scheduled'&&template.scheduled_at)$('#botBcSchedule').value=botYangonScheduleInput(template.scheduled_at);else $('#botBcSchedule').value='';
+  $('#btnBotSaveBroadcast').textContent='💾 Update Template';$('#btnBotCancelBroadcastEdit').style.display='inline-flex';$('#botBcName').scrollIntoView({behavior:'smooth',block:'center'});$('#botBcName').focus();
+}
+function botPreviewBroadcast(template){
+  const labels={buy:'🛒 Buy Now',products:'🛍 Products',deposit:'💰 Deposit',referrals:'🎁 Referrals',orders:'📦 My Orders',support:'💬 Support',about:'ℹ️ About'};
+  $('#botBroadcastPreviewMeta').textContent=`${template.name} · ${(template.buttons||[]).map(button=>labels[button]||button).join(' · ')}`;
+  $('#botBroadcastPreviewBody').innerHTML=`${template.preview_file_id?`<div class="help"><b>Header Photo file_id</b><br><code>${esc(template.preview_file_id)}</code></div>`:''}<pre style="white-space:pre-wrap;font:inherit;line-height:1.65;margin:12px 0">${esc(template.message_text||'')}</pre><div style="display:grid;gap:7px">${(template.buttons||[]).map(button=>`<button class="btn primary" disabled>${esc(labels[button]||button)}</button>`).join('')}</div>`;
+  $('#ovBotBroadcastPreview').classList.add('show');
 }
 function tgHtmlEsc(value){return String(value||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function botBroadcastLine(emojiId,value,bold=false){
@@ -3524,6 +3557,8 @@ $('#btnBotAddProduct').addEventListener('click',async()=>{
 $('#botProductsBody').addEventListener('click',async e=>{
   const edit=e.target.closest('[data-boteditproduct]');
   if(edit){const p=botProductsCache.find(x=>x.id===edit.dataset.boteditproduct);if(!p)return;botEditingProductId=p.id;$('#botEditProductTitle').textContent=p.name;$('#botEditName').value=p.name||'';$('#botEditPrice').value=p.price||0;$('#botEditWarrantyDays').value=p.warranty_days||0;$('#botEditWarrantyHours').value=p.warranty_hours||0;$('#botEditPreview').value=p.preview_file_id||'';$('#botEditEmoji').value=p.custom_emoji_id||'';$('#botEditDescription').value=p.description||'';$('#botEditGuide').value=p.guide||'';$('#botEditQuote').checked=p.description_quote!==false;$('#ovBotProductEdit').classList.add('show');return;}
+  const remove=e.target.closest('[data-botdeleteproduct]');
+  if(remove){const product=botProductsCache.find(x=>x.id===remove.dataset.botdeleteproduct);if(!product)return;if(!confirm(`“${product.name}” product ကိုဖျက်မလား?\n\nStock/sale history ရှိရင် data မပျက်စေရန် Archive လုပ်ပေးမယ်။`))return;try{const result=await botRequest('delete-product',{productId:product.id});toast(result.mode==='archived'?'Product ကို history မပျက်အောင် Archive လုပ်ပြီးပါပြီ':'Product အပြီးဖျက်ပြီးပါပြီ','ok');await botLoadAll();renderBotSync();}catch(err){toast('Product delete failed — '+err.message,'err');}return;}
   const toggle=e.target.closest('[data-botproducttoggle]');
   if(toggle){try{await botRequest('set-product-active',{productId:toggle.dataset.botproducttoggle,active:toggle.dataset.active!=='1'});await botLoadAll();renderBotSync();}catch(err){toast('Product update failed — '+err.message,'err');}return;}
   const btn=e.target.closest('[data-botsaveprice]'); if(!btn) return;
@@ -3584,13 +3619,27 @@ $('#btnBotSaveBroadcast').addEventListener('click',async()=>{
   const messageText=[botBroadcastLine($('#botBcTitleEmoji').value,title,true),botBroadcastLine($('#botBcMidEmoji').value,mid),botBroadcastLine($('#botBcLastEmoji').value,last)].filter(Boolean).join('\n\n');
   const buttons=[['#botBcBuy','buy'],['#botBcProducts','products'],['#botBcDeposit','deposit'],['#botBcReferrals','referrals'],['#botBcOrders','orders'],['#botBcSupport','support'],['#botBcAbout','about']].filter(([id])=>$(id).checked).map(([,value])=>value);
   try{
-    await botRequest('save-broadcast-template',{name:$('#botBcName').value,messageText,previewFileId:$('#botBcPreview').value,productId:$('#botBcProduct').value||null,buttons,titleText:title,titleEmojiId:$('#botBcTitleEmoji').value,midText:mid,midEmojiId:$('#botBcMidEmoji').value,lastText:last,lastEmojiId:$('#botBcLastEmoji').value});
-    toast('Broadcast template saved ✓ — Template Name ကို message ထဲမထည့်ထားပါ','ok');
-    ['#botBcName','#botBcPreview','#botBcTitleEmoji','#botBcTitle','#botBcMidEmoji','#botBcMid','#botBcLastEmoji','#botBcLast'].forEach(id=>$(id).value='');$('#botBcProduct').value='';
+    const template=await botRequest('save-broadcast-template',{templateId:botEditingBroadcastId,name:$('#botBcName').value,messageText,previewFileId:$('#botBcPreview').value,productId:$('#botBcProduct').value||null,buttons,titleText:title,titleEmojiId:$('#botBcTitleEmoji').value,midText:mid,midEmojiId:$('#botBcMidEmoji').value,lastText:last,lastEmojiId:$('#botBcLastEmoji').value});
+    const scheduleValue=$('#botBcSchedule').value;
+    if(scheduleValue)await botRequest('schedule-broadcast-template',{templateId:template.id,scheduledAt:botYangonScheduleIso(scheduleValue)});
+    toast(scheduleValue?'Template saved and timer scheduled ✓':'Broadcast template saved ✓ — Template Name ကို message ထဲမထည့်ထားပါ','ok');
+    botResetBroadcastForm();
     await botLoadAll();renderBotSync();
   }catch(err){toast('Template save failed — '+err.message,'err');}
 });
-$('#botBroadcastBody').addEventListener('click',async e=>{const btn=e.target.closest('[data-broadcastsend]');if(!btn)return;if(!confirm('ဒီ template ကို bot users အားလုံးဆီ ပို့မလား?'))return;btn.disabled=true;try{const result=await botRequest('send-broadcast-template',{templateId:btn.dataset.broadcastsend});toast(`Broadcast completed — Sent ${result.sent_count}, Failed ${result.failed_count}`,'ok');await botLoadAll();renderBotSync();}catch(err){toast('Broadcast failed — '+err.message,'err');btn.disabled=false;}});
+$('#btnBotCancelBroadcastEdit').addEventListener('click',botResetBroadcastForm);
+$('#botBroadcastBody').addEventListener('click',async e=>{
+  const preview=e.target.closest('[data-broadcastpreview]'),edit=e.target.closest('[data-broadcastedit]'),send=e.target.closest('[data-broadcastsend]'),remove=e.target.closest('[data-broadcastdelete]'),cancel=e.target.closest('[data-broadcastcancel]');
+  const id=preview?.dataset.broadcastpreview||edit?.dataset.broadcastedit||send?.dataset.broadcastsend||remove?.dataset.broadcastdelete||cancel?.dataset.broadcastcancel;if(!id)return;
+  const template=(botBroadcastCache.templates||[]).find(row=>row.id===id);if(!template)return;
+  if(preview){botPreviewBroadcast(template);return;}if(edit){botEditBroadcast(template);return;}
+  try{
+    if(send){if(!confirm('ဒီ template ကို bot users အားလုံးဆီ အခုချက်ချင်းပို့မလား?'))return;send.disabled=true;const result=await botRequest('send-broadcast-template',{templateId:id});toast(`Broadcast completed — Sent ${result.sent_count}, Failed ${result.failed_count}`,'ok');}
+    else if(remove){if(!confirm(`“${template.name}” template ကိုဖျက်မလား? Scheduled timer ရှိရင်ပါ cancel ဖြစ်မယ်။`))return;await botRequest('delete-broadcast-template',{templateId:id});if(botEditingBroadcastId===id)botResetBroadcastForm();toast('Broadcast template deleted ✓','ok');}
+    else if(cancel){if(!confirm('ဒီ scheduled broadcast timer ကို cancel လုပ်မလား?'))return;await botRequest('cancel-broadcast-schedule',{templateId:id});toast('Broadcast timer cancelled','ok');}
+    await botLoadAll();renderBotSync();
+  }catch(err){toast('Broadcast action failed — '+err.message,'err');if(send)send.disabled=false;}
+});
 $('#botSyncSearch').addEventListener('input',e=>{botSyncQuery=e.target.value;renderBotSync();});
 $('#botAccountSearch').addEventListener('input',e=>{botAccountQuery=e.target.value;botRenderListedTable();});
 $('#botAccountStatus').addEventListener('change',e=>{botAccountStatus=e.target.value;botRenderListedTable();});
