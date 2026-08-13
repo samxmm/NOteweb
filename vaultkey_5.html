@@ -933,6 +933,7 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
         <select id="botNewCat"></select>
         <input id="botNewName" placeholder="Product name (ဥပမာ Express VPN 1 Month)">
         <input id="botNewPrice" type="number" min="0" step="1" placeholder="Price (MMK)">
+        <input id="botNewVipPrice" type="number" min="0" step="1" placeholder="VIP Price (MMK, optional — ဥပမာ 9000)">
         <select id="botNewDelivery"><option value="stock">⚡ Instant Stock — account data ချက်ချင်းပို့မည်</option><option value="invite">📧 Email Invite — email တစ်ကြောင်းတစ်ခုတောင်းမည်</option><option value="manual">🛠 Manual Service — Admin က delivery text ပို့မည်</option></select>
         <label class="check"><input type="checkbox" id="botNewVipOnly"> 💎 VIP-only product</label>
         <label class="fg"><span>VIP Early Access Until (optional)</span><input id="botNewVipEarly" type="datetime-local"></label>
@@ -948,7 +949,7 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
       <summary style="cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:12px"><span><b>🤖 Bot Products &amp; Prices</b><span class="subtxt">ဈေး/active/product presentation ပြင်ရန်ဖွင့်ပါ</span></span><span class="badge inactive">Open / Close ▾</span></summary>
       <div style="margin-top:16px;border-top:1px solid var(--line);padding-top:16px"><div class="sub" style="margin-bottom:10px">ဈေးနှုန်းကို ဒီနေရာကနေ တိုက်ရိုက်ပြင်နိုင်ပါတယ် — Telegram ဘက်ကလည်း ချက်ချင်းပြောင်းပေးပါမယ်။</div>
       <div class="tbl-wrap"><table class="data">
-        <thead><tr><th>Category</th><th>Product</th><th>Price (MMK)</th><th>Stock</th><th>Status</th><th></th></tr></thead>
+        <thead><tr><th>Category</th><th>Product</th><th>Regular Price (MMK)</th><th>VIP Price (MMK)</th><th>Stock</th><th>Status</th><th></th></tr></thead>
         <tbody id="botProductsBody"></tbody>
       </table></div>
       </div>
@@ -1022,6 +1023,7 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
     <div class="fgrid">
       <div class="fg"><label>Name</label><input id="botEditName"></div>
       <div class="fg"><label>Price (MMK)</label><input id="botEditPrice" type="number" min="0"></div>
+      <div class="fg"><label>VIP Price (MMK, optional)</label><input id="botEditVipPrice" type="number" min="0"><div class="help">Active VIP customer ကိုတကယ်နုတ်မည့် final price ဖြစ်ပါသည်။ အလွတ်ထားလျှင် regular price သုံးမည်။</div></div>
       <div class="fg"><label>Delivery Type</label><select id="botEditDelivery"><option value="stock">Instant Stock</option><option value="invite">Email Invite</option><option value="manual">Manual Service</option></select></div>
       <div class="fg"><label class="check"><input type="checkbox" id="botEditVipOnly"> 💎 VIP-only product</label></div>
       <div class="fg"><label>VIP Early Access Until</label><input id="botEditVipEarly" type="datetime-local"><div class="help">ဒီအချိန်မတိုင်ခင် VIP ပဲမြင်မယ်။ အချိန်ကျော်ရင် Normal Member ပါမြင်မယ်။</div></div>
@@ -1766,8 +1768,8 @@ let botCatalogCache={stockCounts:{}};
 async function botCreateProduct(input){
   return botRequest('create-product',input);
 }
-async function botSetPrice(productId,price){
-  return botRequest('set-price',{productId,price});
+async function botSetPrice(productId,price,vipPrice){
+  return botRequest('set-price',{productId,price,vipPrice});
 }
 async function botListAccount(account,productId){
   const row=await botRequest('list-stock',{productId,accountId:account.id,content:botFmtContent(account)});
@@ -1919,11 +1921,12 @@ async function botRenderProductsTable(){
       <td>${esc(botCatName(p.category_id))}</td>
       <td>${esc(p.name)}${p.vip_only?' <span class="badge stock">VIP Only</span>':''}${p.vip_early_access_until?` <span class="badge inactive">VIP Early Access</span>`:''}</td>
       <td><input class="botPriceInput" data-pid="${p.id}" type="number" min="0" step="0.01" value="${p.price}" style="width:90px;border:1px solid var(--line2);border-radius:8px;padding:5px 7px;font:inherit"></td>
+      <td><input class="botVipPriceInput" data-pid="${p.id}" type="number" min="0" step="0.01" value="${p.vip_price??''}" placeholder="No discount" style="width:105px;border:1px solid var(--line2);border-radius:8px;padding:5px 7px;font:inherit">${p.vip_price?`<span class="subtxt">Save ${money(num(p.price)-num(p.vip_price))} MMK</span>`:'<span class="subtxt">Regular price</span>'}</td>
       <td>${stock}</td>
       <td>${p.is_active?'<span class="badge stock">Active</span>':'<span class="badge sold">Inactive</span>'}</td>
       <td><button class="btn sm" data-boteditproduct="${p.id}">✏️ Edit</button> <button class="btn sm" data-botsaveprice="${p.id}">💾 Price</button> <button class="btn sm ${p.is_active?'danger':'primary'}" data-botproducttoggle="${p.id}" data-active="${p.is_active?'1':'0'}">${p.is_active?'Disable':'Enable'}</button> <button class="btn sm danger" data-botdeleteproduct="${p.id}">🗑 Delete</button></td>
     </tr>`;
-  }).join(''):`<tr><td colspan="6" style="text-align:center;color:var(--dim)">Bot product မရှိသေးပါ — အပေါ်က form နဲ့ တစ်ခုဖန်တီးပါ</td></tr>`;
+  }).join(''):`<tr><td colspan="7" style="text-align:center;color:var(--dim)">Bot product မရှိသေးပါ — အပေါ်က form နဲ့ တစ်ခုဖန်တီးပါ</td></tr>`;
 }
 function botRenderReadyTable(){
   const ready=db.accounts.filter(a=>a.status==='stock'&&!a.botInventoryId&&botSearchMatch(a.product,a.plan,a.email,'ready'));
@@ -3568,6 +3571,8 @@ $('#btnBotAddProduct').addEventListener('click',async()=>{
   const categorySlug=$('#botNewCat').value;
   const name=$('#botNewName').value.trim();
   const price=parseFloat($('#botNewPrice').value);
+  const vipPriceRaw=$('#botNewVipPrice').value.trim();
+  const vipPrice=vipPriceRaw===''?null:parseFloat(vipPriceRaw);
   const deliveryType=$('#botNewDelivery').value;
   const vipOnly=$('#botNewVipOnly').checked;
   const vipEarlyAccessUntil=$('#botNewVipEarly').value?botYangonScheduleIso($('#botNewVipEarly').value):null;
@@ -3578,16 +3583,17 @@ $('#btnBotAddProduct').addEventListener('click',async()=>{
   if(!cat){ toast('Category ရွေးပါ','err'); return; }
   if(!name){ toast('Product name ထည့်ပါ','err'); return; }
   if(!(price>0)){ toast('Price မှန်ကန်အောင်ထည့်ပါ','err'); return; }
+  if(vipPrice!==null&&(!(vipPrice>0)||vipPrice>price)){ toast('VIP Price က 0 ထက်ကြီးပြီး Regular Price ထက်မကျော်ရပါ','err'); return; }
   try{
-    await botCreateProduct({categoryId:cat.id,name,price,warrantyDays,description,guide,deliveryType,vipOnly,vipEarlyAccessUntil});
-    $('#botNewName').value=''; $('#botNewPrice').value=''; $('#botNewWarranty').value=''; $('#botNewDescription').value=''; $('#botNewGuide').value='';$('#botNewVipOnly').checked=false;$('#botNewVipEarly').value='';
+    await botCreateProduct({categoryId:cat.id,name,price,vipPrice,warrantyDays,description,guide,deliveryType,vipOnly,vipEarlyAccessUntil});
+    $('#botNewName').value=''; $('#botNewPrice').value=''; $('#botNewVipPrice').value=''; $('#botNewWarranty').value=''; $('#botNewDescription').value=''; $('#botNewGuide').value='';$('#botNewVipOnly').checked=false;$('#botNewVipEarly').value='';
     toast(deliveryType==='stock'?'Bot product ဖန်တီးပြီးပါပြီ ✓ (Stock list လုပ်တာနဲ့ active ဖြစ်ပါမယ်)':'Bot service ဖန်တီးပြီး active လုပ်ထားပါပြီ ✓','ok');
     await botLoadAll(); renderBotSync();
   }catch(e){ toast('Create failed — '+e.message,'err'); }
 });
 $('#botProductsBody').addEventListener('click',async e=>{
   const edit=e.target.closest('[data-boteditproduct]');
-  if(edit){const p=botProductsCache.find(x=>x.id===edit.dataset.boteditproduct);if(!p)return;botEditingProductId=p.id;$('#botEditProductTitle').textContent=p.name;$('#botEditName').value=p.name||'';$('#botEditPrice').value=p.price||0;$('#botEditDelivery').value=p.delivery_type||'stock';$('#botEditVipOnly').checked=!!p.vip_only;$('#botEditVipEarly').value=p.vip_early_access_until?botYangonScheduleInput(p.vip_early_access_until):'';$('#botEditWarrantyDays').value=p.warranty_days||0;$('#botEditWarrantyHours').value=p.warranty_hours||0;$('#botEditPreview').value=p.preview_file_id||'';$('#botEditEmoji').value=p.custom_emoji_id||'';$('#botEditDescription').value=p.description||'';$('#botEditGuide').value=p.guide||'';$('#botEditQuote').checked=p.description_quote!==false;$('#ovBotProductEdit').classList.add('show');return;}
+  if(edit){const p=botProductsCache.find(x=>x.id===edit.dataset.boteditproduct);if(!p)return;botEditingProductId=p.id;$('#botEditProductTitle').textContent=p.name;$('#botEditName').value=p.name||'';$('#botEditPrice').value=p.price||0;$('#botEditVipPrice').value=p.vip_price??'';$('#botEditDelivery').value=p.delivery_type||'stock';$('#botEditVipOnly').checked=!!p.vip_only;$('#botEditVipEarly').value=p.vip_early_access_until?botYangonScheduleInput(p.vip_early_access_until):'';$('#botEditWarrantyDays').value=p.warranty_days||0;$('#botEditWarrantyHours').value=p.warranty_hours||0;$('#botEditPreview').value=p.preview_file_id||'';$('#botEditEmoji').value=p.custom_emoji_id||'';$('#botEditDescription').value=p.description||'';$('#botEditGuide').value=p.guide||'';$('#botEditQuote').checked=p.description_quote!==false;$('#ovBotProductEdit').classList.add('show');return;}
   const remove=e.target.closest('[data-botdeleteproduct]');
   if(remove){const product=botProductsCache.find(x=>x.id===remove.dataset.botdeleteproduct);if(!product)return;if(!confirm(`“${product.name}” product ကိုဖျက်မလား?\n\nStock/sale history ရှိရင် data မပျက်စေရန် Archive လုပ်ပေးမယ်။`))return;try{const result=await botRequest('delete-product',{productId:product.id});toast(result.mode==='archived'?'Product ကို history မပျက်အောင် Archive လုပ်ပြီးပါပြီ':'Product အပြီးဖျက်ပြီးပါပြီ','ok');await botLoadAll();renderBotSync();}catch(err){toast('Product delete failed — '+err.message,'err');}return;}
   const toggle=e.target.closest('[data-botproducttoggle]');
@@ -3595,9 +3601,12 @@ $('#botProductsBody').addEventListener('click',async e=>{
   const btn=e.target.closest('[data-botsaveprice]'); if(!btn) return;
   const pid=btn.dataset.botsaveprice;
   const input=$(`.botPriceInput[data-pid="${pid}"]`);
+  const vipInput=$(`.botVipPriceInput[data-pid="${pid}"]`);
   const price=parseFloat(input.value);
+  const vipPrice=vipInput.value.trim()===''?null:parseFloat(vipInput.value);
   if(!(price>0)){ toast('Price မှန်ကန်အောင်ထည့်ပါ','err'); return; }
-  try{ await botSetPrice(pid,price); toast('ဈေးနှုန်းပြောင်းပြီးပါပြီ ✓','ok'); await botLoadAll(); renderBotSync(); }
+  if(vipPrice!==null&&(!(vipPrice>0)||vipPrice>price)){toast('VIP Price က Regular Price ထက်မကျော်ရပါ','err');return;}
+  try{ await botSetPrice(pid,price,vipPrice); toast('Regular / VIP ဈေးနှုန်းပြောင်းပြီးပါပြီ ✓','ok'); await botLoadAll(); renderBotSync(); }
   catch(e){ toast('Save failed — '+e.message,'err'); }
 });
 $('#botReadyBody').addEventListener('click',async e=>{
@@ -3643,7 +3652,7 @@ $('#btnBotInventoryUpdate').addEventListener('click',async()=>{
   const content=$('#botInventoryEditContent').value.trim();if(!botEditingInventoryId||!content){toast('Account data အလွတ်မဖြစ်ရပါ','err');return;}
   try{await botRequest('update-inventory-content',{inventoryId:botEditingInventoryId,content});$('#ovBotInventoryEdit').classList.remove('show');botEditingInventoryId=null;toast('Account data updated ✓','ok');await botLoadAll();renderBotSync();}catch(err){toast('Account update failed — '+err.message,'err');}
 });
-$('#btnBotProductUpdate').addEventListener('click',async()=>{if(!botEditingProductId)return;try{await botRequest('update-product',{productId:botEditingProductId,name:$('#botEditName').value,price:num($('#botEditPrice').value),deliveryType:$('#botEditDelivery').value,vipOnly:$('#botEditVipOnly').checked,vipEarlyAccessUntil:$('#botEditVipEarly').value?botYangonScheduleIso($('#botEditVipEarly').value):null,warrantyDays:num($('#botEditWarrantyDays').value),warrantyHours:num($('#botEditWarrantyHours').value),previewFileId:$('#botEditPreview').value,customEmojiId:$('#botEditEmoji').value,description:$('#botEditDescription').value,descriptionQuote:$('#botEditQuote').checked,guide:$('#botEditGuide').value});$('#ovBotProductEdit').classList.remove('show');toast('Bot product presentation updated ✓','ok');await botLoadAll();renderBotSync();}catch(err){toast('Product update failed — '+err.message,'err');}});
+$('#btnBotProductUpdate').addEventListener('click',async()=>{if(!botEditingProductId)return;const price=num($('#botEditPrice').value),vipRaw=$('#botEditVipPrice').value.trim(),vipPrice=vipRaw===''?null:Number(vipRaw);if(vipPrice!==null&&(!(vipPrice>0)||vipPrice>price)){toast('VIP Price က Regular Price ထက်မကျော်ရပါ','err');return;}try{await botRequest('update-product',{productId:botEditingProductId,name:$('#botEditName').value,price,vipPrice,deliveryType:$('#botEditDelivery').value,vipOnly:$('#botEditVipOnly').checked,vipEarlyAccessUntil:$('#botEditVipEarly').value?botYangonScheduleIso($('#botEditVipEarly').value):null,warrantyDays:num($('#botEditWarrantyDays').value),warrantyHours:num($('#botEditWarrantyHours').value),previewFileId:$('#botEditPreview').value,customEmojiId:$('#botEditEmoji').value,description:$('#botEditDescription').value,descriptionQuote:$('#botEditQuote').checked,guide:$('#botEditGuide').value});$('#ovBotProductEdit').classList.remove('show');toast('Bot product presentation and VIP price updated ✓','ok');await botLoadAll();renderBotSync();}catch(err){toast('Product update failed — '+err.message,'err');}});
 $('#btnBotSaveStoreSettings').addEventListener('click',async()=>{const vipQualificationAmount=num($('#botVipQualification').value),vipMaintenanceAmount=num($('#botVipMaintenance').value),vipDurationMonths=Number($('#botVipDuration').value),hideCategories=$('#botHideCategories').value==='true';if(vipQualificationAmount<0||vipMaintenanceAmount<0||!Number.isInteger(vipDurationMonths)||vipDurationMonths<1||vipDurationMonths>24){toast('VIP settings ကိုမှန်ကန်အောင်ထည့်ပါ','err');return;}try{await botRequest('set-store-settings',{vipQualificationAmount,vipMaintenanceAmount,vipDurationMonths,hideCategories});toast('VIP & Store Display settings saved ✓','ok');await botLoadAll();}catch(err){toast('Settings save failed — '+err.message,'err');}});
 $('#btnBotSaveAbout').addEventListener('click',async()=>{try{await botRequest('set-bot-setting',{key:'about_text',value:$('#botAboutText').value});toast('Bot About text saved ✓','ok');}catch(err){toast('About save failed — '+err.message,'err');}});
 $('#btnBotSaveBroadcast').addEventListener('click',async()=>{
