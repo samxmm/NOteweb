@@ -996,6 +996,11 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
       <div class="chart-hd"><div><h3>📣 Broadcast Template Builder</h3><div class="sub">Template Name ကို admin စာရင်းအတွက်သာသုံးပြီး broadcast စာထဲမထည့်ပါ။ Header Photo မသုံးလည်းရပါတယ်။</div></div></div>
       <div class="mini-form">
         <input id="botBcName" placeholder="Template name — admin only">
+        <select id="botBcAudience">
+          <option value="all">👥 All Members</option>
+          <option value="vip">💎 VIP Only</option>
+          <option value="admin">🛡 Admin Only</option>
+        </select>
         <select id="botBcProduct"><option value="">— Product for Buy Now —</option></select>
         <input id="botBcPreview" class="full" placeholder="Optional Header Photo — Telegram file_id">
         <label class="fg full" style="margin:0"><span>Scheduled time (Asia/Yangon)</span><input id="botBcSchedule" type="datetime-local"><span class="help">အလွတ်ထားရင် template ပဲသိမ်းမယ်။ အချိန်ရွေးထားရင် Save ပြီးနောက် server timer နဲ့ လွှင့်မယ်။</span></label>
@@ -1017,7 +1022,7 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
         <button class="btn ghost" id="btnBotCancelBroadcastEdit" style="display:none;margin-left:auto">Cancel Edit</button>
         <button class="btn primary add-btn" id="btnBotSaveBroadcast">＋ Save Template</button>
       </div>
-      <div class="tbl-wrap" style="margin-top:12px"><table class="data"><thead><tr><th>Template</th><th>Buttons</th><th>Timer</th><th>Last Result</th><th></th></tr></thead><tbody id="botBroadcastBody"></tbody></table></div>
+      <div class="tbl-wrap" style="margin-top:12px"><table class="data"><thead><tr><th>Template</th><th>Audience</th><th>Buttons</th><th>Timer</th><th>Last Result</th><th></th></tr></thead><tbody id="botBroadcastBody"></tbody></table></div>
     </div>
 
     <div class="chart-card" style="margin-bottom:16px">
@@ -2058,19 +2063,21 @@ function botRenderBroadcasts(){
   $('#botBcProduct').innerHTML='<option value="">— Product for Buy Now —</option>'+botProductsCache.filter(p=>!p.archived_at).map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
   const runs=botBroadcastCache.runs||[];
   const labels={buy:'🛒 Buy Now',products:'🛍 Products',deposit:'💰 Deposit',referrals:'🎁 Referrals',orders:'📦 My Orders',support:'💬 Support',about:'ℹ️ About'};
-  $('#botBroadcastBody').innerHTML=(botBroadcastCache.templates||[]).map(t=>{const run=runs.find(r=>r.template_id===t.id),scheduled=t.scheduled_at?new Date(t.scheduled_at).toLocaleString('en-GB',{timeZone:YANGON_TZ}):'';return `<tr><td><b>${esc(t.name)}</b><span class="subtxt">${esc(t.title_text||t.message_text).slice(0,100)}</span></td><td>${(t.buttons||[]).map(button=>esc(labels[button]||button)).join('<br>')}</td><td>${t.schedule_status==='scheduled'?`<span class="badge stock">Scheduled</span><span class="subtxt">${esc(scheduled)} Yangon</span><button class="btn sm danger" data-broadcastcancel="${t.id}">Cancel Timer</button>`:t.schedule_status==='failed'?`<span class="badge sold">Timer failed</span><span class="subtxt">${esc(t.last_scheduled_error||'Unknown error')}</span>`:`<span class="badge inactive">${esc(t.schedule_status||'draft')}</span>${scheduled?`<span class="subtxt">${esc(scheduled)}</span>`:''}`}</td><td>${run?`Delivered ${run.sent_count} · Failed ${run.failed_count} · Clicks ${run.click_count}`:'Not sent yet'}</td><td><div style="display:flex;gap:5px;flex-wrap:wrap"><button class="btn sm" data-broadcastpreview="${t.id}">👁 Preview</button><button class="btn sm" data-broadcastedit="${t.id}">✏️ Edit / Timer</button><button class="btn sm primary" data-broadcastsend="${t.id}">📣 Send Now</button><button class="btn sm danger" data-broadcastdelete="${t.id}">🗑 Delete</button></div></td></tr>`;}).join('')||'<tr><td colspan="5">No templates</td></tr>';
+  const audiences={all:'👥 All Members',vip:'💎 VIP Only',admin:'🛡 Admin Only'};
+  $('#botBroadcastBody').innerHTML=(botBroadcastCache.templates||[]).map(t=>{const run=runs.find(r=>r.template_id===t.id),scheduled=t.scheduled_at?new Date(t.scheduled_at).toLocaleString('en-GB',{timeZone:YANGON_TZ}):'';return `<tr><td><b>${esc(t.name)}</b><span class="subtxt">${esc(t.title_text||t.message_text).slice(0,100)}</span></td><td><span class="badge ${t.audience==='vip'?'stock':t.audience==='admin'?'inactive':''}">${esc(audiences[t.audience]||audiences.all)}</span></td><td>${(t.buttons||[]).map(button=>esc(labels[button]||button)).join('<br>')}</td><td>${t.schedule_status==='scheduled'?`<span class="badge stock">Scheduled</span><span class="subtxt">${esc(scheduled)} Yangon</span><button class="btn sm danger" data-broadcastcancel="${t.id}">Cancel Timer</button>`:t.schedule_status==='failed'?`<span class="badge sold">Timer failed</span><span class="subtxt">${esc(t.last_scheduled_error||'Unknown error')}</span>`:`<span class="badge inactive">${esc(t.schedule_status||'draft')}</span>${scheduled?`<span class="subtxt">${esc(scheduled)}</span>`:''}`}</td><td>${run?`Delivered ${run.sent_count} · Failed ${run.failed_count} · Clicks ${run.click_count}`:'Not sent yet'}</td><td><div style="display:flex;gap:5px;flex-wrap:wrap"><button class="btn sm" data-broadcastpreview="${t.id}">👁 Preview</button><button class="btn sm" data-broadcastedit="${t.id}">✏️ Edit / Timer</button><button class="btn sm primary" data-broadcastsend="${t.id}">📣 Send Now</button><button class="btn sm danger" data-broadcastdelete="${t.id}">🗑 Delete</button></div></td></tr>`;}).join('')||'<tr><td colspan="6">No templates</td></tr>';
 }
 function botResetBroadcastForm(){
   botEditingBroadcastId=null;
   ['#botBcName','#botBcPreview','#botBcTitleEmoji','#botBcTitle','#botBcMidEmoji','#botBcMid','#botBcLastEmoji','#botBcLast','#botBcSchedule'].forEach(id=>$(id).value='');
   $('#botBcProduct').value='';
+  $('#botBcAudience').value='all';
   [['#botBcBuy',true],['#botBcProducts',false],['#botBcDeposit',false],['#botBcReferrals',false],['#botBcOrders',false],['#botBcSupport',false],['#botBcAbout',false]].forEach(([id,checked])=>$(id).checked=checked);
   $('#btnBotSaveBroadcast').textContent='＋ Save Template';$('#btnBotCancelBroadcastEdit').style.display='none';
 }
 function botYangonScheduleInput(iso){const parts=new Intl.DateTimeFormat('en-CA',{timeZone:YANGON_TZ,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date(iso)),map=Object.fromEntries(parts.map(part=>[part.type,part.value]));return `${map.year}-${map.month}-${map.day}T${map.hour}:${map.minute}`;}
 function botYangonScheduleIso(value){return new Date(`${value}:00+06:30`).toISOString();}
 function botEditBroadcast(template){
-  botEditingBroadcastId=template.id;$('#botBcName').value=template.name||'';$('#botBcProduct').value=template.product_id||'';$('#botBcPreview').value=template.preview_file_id||'';
+  botEditingBroadcastId=template.id;$('#botBcName').value=template.name||'';$('#botBcAudience').value=template.audience||'all';$('#botBcProduct').value=template.product_id||'';$('#botBcPreview').value=template.preview_file_id||'';
   $('#botBcTitle').value=template.title_text||'';$('#botBcTitleEmoji').value=template.title_emoji_id||'';$('#botBcMid').value=template.mid_text||'';$('#botBcMidEmoji').value=template.mid_emoji_id||'';$('#botBcLast').value=template.last_text||'';$('#botBcLastEmoji').value=template.last_emoji_id||'';
   const selected=new Set(template.buttons||[]);[['#botBcBuy','buy'],['#botBcProducts','products'],['#botBcDeposit','deposit'],['#botBcReferrals','referrals'],['#botBcOrders','orders'],['#botBcSupport','support'],['#botBcAbout','about']].forEach(([id,value])=>$(id).checked=selected.has(value));
   if(template.schedule_status==='scheduled'&&template.scheduled_at)$('#botBcSchedule').value=botYangonScheduleInput(template.scheduled_at);else $('#botBcSchedule').value='';
@@ -2078,7 +2085,8 @@ function botEditBroadcast(template){
 }
 function botPreviewBroadcast(template){
   const labels={buy:'🛒 Buy Now',products:'🛍 Products',deposit:'💰 Deposit',referrals:'🎁 Referrals',orders:'📦 My Orders',support:'💬 Support',about:'ℹ️ About'};
-  $('#botBroadcastPreviewMeta').textContent=`${template.name} · ${(template.buttons||[]).map(button=>labels[button]||button).join(' · ')}`;
+  const audiences={all:'👥 All Members',vip:'💎 VIP Only',admin:'🛡 Admin Only'};
+  $('#botBroadcastPreviewMeta').textContent=`${template.name} · ${audiences[template.audience]||audiences.all} · ${(template.buttons||[]).map(button=>labels[button]||button).join(' · ')}`;
   $('#botBroadcastPreviewBody').innerHTML=`${template.preview_file_id?`<div class="help"><b>Header Photo file_id</b><br><code>${esc(template.preview_file_id)}</code></div>`:''}<pre style="white-space:pre-wrap;font:inherit;line-height:1.65;margin:12px 0">${esc(template.message_text||'')}</pre><div style="display:grid;gap:7px">${(template.buttons||[]).map(button=>`<button class="btn primary" disabled>${esc(labels[button]||button)}</button>`).join('')}</div>`;
   $('#ovBotBroadcastPreview').classList.add('show');
 }
@@ -3709,7 +3717,7 @@ $('#btnBotSaveBroadcast').addEventListener('click',async()=>{
   const messageText=[botBroadcastLine($('#botBcTitleEmoji').value,title,true),botBroadcastLine($('#botBcMidEmoji').value,mid),botBroadcastLine($('#botBcLastEmoji').value,last)].filter(Boolean).join('\n\n');
   const buttons=[['#botBcBuy','buy'],['#botBcProducts','products'],['#botBcDeposit','deposit'],['#botBcReferrals','referrals'],['#botBcOrders','orders'],['#botBcSupport','support'],['#botBcAbout','about']].filter(([id])=>$(id).checked).map(([,value])=>value);
   try{
-    const template=await botRequest('save-broadcast-template',{templateId:botEditingBroadcastId,name:$('#botBcName').value,messageText,previewFileId:$('#botBcPreview').value,productId:$('#botBcProduct').value||null,buttons,titleText:title,titleEmojiId:$('#botBcTitleEmoji').value,midText:mid,midEmojiId:$('#botBcMidEmoji').value,lastText:last,lastEmojiId:$('#botBcLastEmoji').value});
+    const template=await botRequest('save-broadcast-template',{templateId:botEditingBroadcastId,name:$('#botBcName').value,audience:$('#botBcAudience').value,messageText,previewFileId:$('#botBcPreview').value,productId:$('#botBcProduct').value||null,buttons,titleText:title,titleEmojiId:$('#botBcTitleEmoji').value,midText:mid,midEmojiId:$('#botBcMidEmoji').value,lastText:last,lastEmojiId:$('#botBcLastEmoji').value});
     const scheduleValue=$('#botBcSchedule').value;
     if(scheduleValue)await botRequest('schedule-broadcast-template',{templateId:template.id,scheduledAt:botYangonScheduleIso(scheduleValue)});
     toast(scheduleValue?'Template saved and timer scheduled ✓':'Broadcast template saved ✓ — Template Name ကို message ထဲမထည့်ထားပါ','ok');
@@ -3724,7 +3732,7 @@ $('#botBroadcastBody').addEventListener('click',async e=>{
   const template=(botBroadcastCache.templates||[]).find(row=>row.id===id);if(!template)return;
   if(preview){botPreviewBroadcast(template);return;}if(edit){botEditBroadcast(template);return;}
   try{
-    if(send){if(!confirm('ဒီ template ကို bot users အားလုံးဆီ အခုချက်ချင်းပို့မလား?'))return;send.disabled=true;const result=await botRequest('send-broadcast-template',{templateId:id});toast(`Broadcast completed — Sent ${result.sent_count}, Failed ${result.failed_count}`,'ok');}
+    if(send){const audiences={all:'All Members',vip:'VIP Only',admin:'Admin Only'},check=await botRequest('broadcast-recipient-count',{templateId:id});if(!confirm(`${audiences[check.audience]||'All Members'} — ${check.recipient_count} ယောက်ဆီ အခုချက်ချင်းပို့မလား?`))return;send.disabled=true;const result=await botRequest('send-broadcast-template',{templateId:id}),sample=result.sample_errors?.[0]?.error||'';toast(result.sent_count?`Broadcast completed — Sent ${result.sent_count}, Failed ${result.failed_count}${sample?` · ${sample}`:''}`:`Broadcast failed — ${sample||`${result.failed_count} recipients failed`}`,result.sent_count?'ok':'err');}
     else if(remove){if(!confirm(`“${template.name}” template ကိုဖျက်မလား? Scheduled timer ရှိရင်ပါ cancel ဖြစ်မယ်။`))return;await botRequest('delete-broadcast-template',{templateId:id});if(botEditingBroadcastId===id)botResetBroadcastForm();toast('Broadcast template deleted ✓','ok');}
     else if(cancel){if(!confirm('ဒီ scheduled broadcast timer ကို cancel လုပ်မလား?'))return;await botRequest('cancel-broadcast-schedule',{templateId:id});toast('Broadcast timer cancelled','ok');}
     await botLoadAll();renderBotSync();
