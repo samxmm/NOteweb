@@ -752,7 +752,7 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
         <div class="stat"><div class="n" id="botPeriodTransactions">0</div><div class="l">Total Transactions</div></div>
       </div>
       <div class="tbl-wrap" style="margin-bottom:14px"><table class="data"><thead><tr><th>Product</th><th>Quantity</th><th>Amount</th><th>Transactions</th></tr></thead><tbody id="botSaleBreakdownBody"></tbody></table></div>
-      <div class="tbl-wrap"><table class="data"><thead><tr><th>Date / Order</th><th>Product</th><th>Buyer</th><th>Amount</th><th>Account Data</th><th>Status</th></tr></thead><tbody id="botSalesProductsBody"></tbody></table></div>
+      <div class="tbl-wrap"><table class="data"><thead><tr><th>Date / Order</th><th>Product</th><th>Buyer</th><th>Amount</th><th>Account Data</th><th>Status</th><th>Payment Slip</th></tr></thead><tbody id="botSalesProductsBody"></tbody></table></div>
     </div>
   </section>
 
@@ -1793,9 +1793,12 @@ function botFmtContent(a){
   if(a.email) lines.push('Email: '+a.email);
   if(a.pass) lines.push('Password: '+a.pass);
   if(a.twofa) lines.push('2FA: '+a.twofa);
-  if(a.code) lines.push('Key: '+a.code);
   if(a.delivery) lines.push(a.delivery);
   return lines.join('\n')||'(no delivery content set on this account)';
+}
+function botCustomerAccountData(value){
+  const cleaned=String(value||'').split(/\r?\n/).filter(line=>!/^\s*(?:key|code|account\s*code)\s*[:=-]\s*[A-Z]\d{3,6}\s*$/i.test(line)).join('\n').trim();
+  return cleaned||'Manual delivery pending';
 }
 async function botFetchStockCounts(){ return botCatalogCache.stockCounts||{}; }
 let botCatalogCache={stockCounts:{}};
@@ -1989,6 +1992,15 @@ function botRenderReadyTable(){
   </tr>`).join(''):`<tr><td colspan="4" style="text-align:center;color:var(--dim)">List လုပ်ဖို့ In Stock account မရှိပါ</td></tr>`;
 }
 function botOrderCode(order){return order?.order_number?`PX-${String(order.order_number).padStart(6,'0')}`:'—';}
+function botOrderBuyer(order){
+  const profile=(botCatalogCache.profiles||[]).find(p=>String(p.telegram_user_id)===String(order.telegram_user_id));
+  const display=[profile?.first_name,profile?.last_name].filter(Boolean).join(' ').trim();
+  return {profile,label:display||(profile?.username?`@${String(profile.username).replace(/^@/,'')}`:`ID - ${order.telegram_user_id}`)};
+}
+function openBotOrderPaymentSlip(order){
+  const {label}=botOrderBuyer(order),date=timestampToYangonDate(order.completed_at||order.created_at||Date.now()),amount=num(order.amount);
+  renderSlipPreview({store:'PxAiStore',orderId:botOrderCode(order),customer:label,product:order.product_name||'Telegram Bot Product',itemType:'account',plan:'Telegram Bot Order',planTerm:'',amount,originalPrice:amount,discountPct:0,discountAmount:0,saleType:'sale',date,warranty:order.warranty_expires_at?timestampToYangonDate(order.warranty_expires_at):'',warrantyTerm:'',status:'PAID',thanks:'Thanks For Choosing Our Service',logoData:''});
+}
 function botWarrantyText(item){
   if(item.status!=='sold'){
     const h=num(item.products?.warranty_hours),d=num(item.products?.warranty_days);
@@ -2108,7 +2120,7 @@ function renderBotSalesProducts(){
   const breakdown=Object.values(groups).sort((a,b)=>b.amount-a.amount);
   $('#botPeriodProductCount').textContent=breakdown.length;$('#botPeriodQuantity').textContent=orders.length;$('#botPeriodAmount').textContent=money(orders.reduce((sum,order)=>sum+num(order.amount),0))+' MMK';$('#botPeriodTransactions').textContent=orders.length;
   $('#botSaleBreakdownBody').innerHTML=breakdown.length?breakdown.map(row=>`<tr><td><b>${esc(row.name)}</b></td><td>${row.quantity}</td><td><b>${money(row.amount)} MMK</b></td><td>${row.transactions}</td></tr>`).join(''):'<tr><td colspan="4" style="text-align:center;color:var(--dim)">Selected period မှာ Bot sale မရှိသေးပါ</td></tr>';
-  $('#botSalesProductsBody').innerHTML=orders.length?orders.map(order=>{const profile=(botCatalogCache.profiles||[]).find(p=>String(p.telegram_user_id)===String(order.telegram_user_id)),buyer=[profile?.first_name,profile?.last_name].filter(Boolean).join(' ')||order.telegram_user_id;return `<tr><td>${esc(String(order.completed_at||order.created_at||'').slice(0,16).replace('T',' '))}<span class="subtxt mono">${esc(botOrderCode(order))}</span></td><td><b>${esc(order.product_name)}</b></td><td>${esc(buyer)}${profile?.username?`<span class="subtxt">@${esc(profile.username)}</span>`:''}</td><td><b>${money(num(order.amount))} MMK</b></td><td>${order.delivery_content?`<details><summary>View / Copy Data</summary><pre style="white-space:pre-wrap;font-size:11px;max-width:360px">${esc(order.delivery_content)}</pre></details>`:'<span class="dimsm">Manual delivery pending</span>'}</td><td>${esc(order.status)}</td></tr>`;}).join(''):'<tr><td colspan="6" style="text-align:center;color:var(--dim)">Selected period မှာ transaction မရှိပါ</td></tr>';
+  $('#botSalesProductsBody').innerHTML=orders.length?orders.map(order=>{const {profile,label}=botOrderBuyer(order);return `<tr><td>${esc(String(order.completed_at||order.created_at||'').slice(0,16).replace('T',' '))}<span class="subtxt mono">${esc(botOrderCode(order))}</span></td><td><b>${esc(order.product_name)}</b></td><td>${esc(label)}${profile?.username&&![profile?.first_name,profile?.last_name].filter(Boolean).join(' ').trim()?'' : profile?.username?`<span class="subtxt">@${esc(String(profile.username).replace(/^@/,''))}</span>`:''}</td><td><b>${money(num(order.amount))} MMK</b></td><td>${order.delivery_content?`<details><summary>View / Copy Data</summary><pre style="white-space:pre-wrap;font-size:11px;max-width:360px">${esc(botCustomerAccountData(order.delivery_content))}</pre></details>`:'<span class="dimsm">Manual delivery pending</span>'}</td><td><span class="badge stock">PAID</span></td><td><button class="btn sm primary" data-botpaymentslip="${order.id}">🧾 Get Payment Slip</button></td></tr>`;}).join(''):'<tr><td colspan="7" style="text-align:center;color:var(--dim)">Selected period မှာ transaction မရှိပါ</td></tr>';
 }
 function renderBotSync(){
   botRenderCatSelect();
@@ -3737,6 +3749,12 @@ $('#botBroadcastBody').addEventListener('click',async e=>{
     else if(cancel){if(!confirm('ဒီ scheduled broadcast timer ကို cancel လုပ်မလား?'))return;await botRequest('cancel-broadcast-schedule',{templateId:id});toast('Broadcast timer cancelled','ok');}
     await botLoadAll();renderBotSync();
   }catch(err){toast('Broadcast action failed — '+err.message,'err');if(send)send.disabled=false;}
+});
+$('#botSalesProductsBody').addEventListener('click',e=>{
+  const button=e.target.closest('[data-botpaymentslip]');if(!button)return;
+  const order=(botCatalogCache.orders||[]).find(row=>String(row.id)===String(button.dataset.botpaymentslip));
+  if(!order){toast('Bot order မတွေ့ပါ','err');return;}
+  openBotOrderPaymentSlip(order);
 });
 $('#botSyncSearch').addEventListener('input',e=>{botSyncQuery=e.target.value;renderBotSync();});
 $('#botAccountSearch').addEventListener('input',e=>{botAccountQuery=e.target.value;botRenderListedTable();});
