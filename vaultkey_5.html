@@ -927,6 +927,35 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
     </div>
 
     <details class="chart-card" style="margin-bottom:16px">
+      <summary style="cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:12px"><span><b>👑 VIP Coupons</b><span class="subtxt">One-time activation coupon generate / status / disable</span></span><span class="badge inactive">Open / Close ▾</span></summary>
+      <div style="margin-top:16px;border-top:1px solid var(--line);padding-top:16px">
+        <div class="stats" style="margin-bottom:14px">
+          <div class="stat"><div class="n" id="vipCouponTotal">0</div><div class="l">Total Coupons</div></div>
+          <div class="stat"><div class="n" id="vipCouponUnused">0</div><div class="l">Unused</div></div>
+          <div class="stat"><div class="n" id="vipCouponUsed">0</div><div class="l">Used</div></div>
+          <div class="stat"><div class="n" id="vipCouponExpired">0</div><div class="l">Expired</div></div>
+          <div class="stat"><div class="n" id="vipCouponDisabled">0</div><div class="l">Disabled</div></div>
+        </div>
+        <div class="mini-form">
+          <label class="fg"><span>VIP Plan</span><select id="vipCouponPlan"></select></label>
+          <label class="fg"><span>Quantity (1–200)</span><input id="vipCouponQuantity" type="number" min="1" max="200" value="10"></label>
+          <label class="fg"><span>Coupon Expiration (optional)</span><input id="vipCouponExpires" type="datetime-local"></label>
+          <button class="btn primary add-btn" id="btnGenerateVipCoupons">＋ Generate Coupons</button>
+        </div>
+        <div id="vipCouponGenerated" style="display:none;margin-top:14px;padding:14px;border:1px solid var(--green);border-radius:14px;background:var(--panel)">
+          <h3>✓ Generated Successfully</h3><div class="sub" id="vipCouponGeneratedMeta"></div>
+          <pre id="vipCouponGeneratedCodes" style="white-space:pre-wrap;user-select:all;max-height:260px;overflow:auto;margin:12px 0"></pre>
+          <div class="fbar"><button class="btn sm primary" id="btnCopyVipCoupons">📋 Copy All</button><button class="btn sm" id="btnExportVipCoupons">⬇ Export TXT</button></div>
+          <div class="help">Full codes ကို ယခုတစ်ကြိမ်သာပြနိုင်ပါတယ်။ Refresh မလုပ်ခင် Copy သို့ Export လုပ်ထားပါ။ Database မှာ hash နဲ့ safe preview သာသိမ်းပါတယ်။</div>
+        </div>
+        <h3 style="margin-top:18px">Coupon List</h3>
+        <div class="tbl-wrap"><table class="data"><thead><tr><th>Code</th><th>Plan</th><th>Status</th><th>Created</th><th>Expires</th><th>Used By</th><th>Used At</th><th>Action</th></tr></thead><tbody id="vipCouponBody"></tbody></table></div>
+        <h3 style="margin-top:18px">Batches</h3>
+        <div class="tbl-wrap"><table class="data"><thead><tr><th>Batch</th><th>Plan</th><th>Quantity</th><th>Unused</th><th>Used</th><th>Created</th></tr></thead><tbody id="vipCouponBatchBody"></tbody></table></div>
+      </div>
+    </details>
+
+    <details class="chart-card" style="margin-bottom:16px">
       <summary style="cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:12px"><span><b>➕ New Bot Product</b><span class="subtxt">လိုမှဖွင့်ပြီး product အသစ်ထည့်ပါ</span></span><span class="badge inactive">Open / Close ▾</span></summary>
       <div style="margin-top:16px;border-top:1px solid var(--line);padding-top:16px"><div class="sub" style="margin-bottom:10px">Category ရွေး၊ Name/Price ထည့်ပြီး bot ထဲ product အသစ်ဖန်တီးပါ။</div>
       <div class="mini-form" id="botNewProductForm">
@@ -1741,7 +1770,7 @@ function sbStartAutoSync(){
 /* ================= bot stock sync =================
    The browser never gets direct access to product credentials. Bot Sync calls
    the protected web-stock-sync Edge Function with an owner-only admin token. */
-let botCategoriesCache=[], botProductsCache=[], botInventoryCache=[], botBroadcastCache={templates:[],runs:[]}, botSyncQuery='', botAccountQuery='', botAccountStatus='all', botEditingProductId=null, botEditingInventoryId=null, botEditingBroadcastId=null, botOpenInventoryCategories=new Set(), botStockDrafts=new Map();
+let botCategoriesCache=[], botProductsCache=[], botInventoryCache=[], botBroadcastCache={templates:[],runs:[]}, botCouponCache={plans:[],coupons:[],batches:[]}, botGeneratedCouponCodes=[], botSyncQuery='', botAccountQuery='', botAccountStatus='all', botEditingProductId=null, botEditingInventoryId=null, botEditingBroadcastId=null, botOpenInventoryCategories=new Set(), botStockDrafts=new Map();
 function botApiUrl(action){ return sbCfg().url+'/functions/v1/web-stock-sync/'+action; }
 async function botRequest(action,body){
   const c=sbCfg();
@@ -1846,9 +1875,9 @@ async function botLoadAll(){
   const c=sbCfg();
   if(!c.url||!c.token){ botConnUi(false); return; }
   try{
-    const [catalog,inventory,settings,broadcasts]=await Promise.all([botRequest('catalog'),botRequest('inventory-control'),botRequest('bot-settings'),botRequest('broadcast-templates')]);
+    const [catalog,inventory,settings,broadcasts,coupons]=await Promise.all([botRequest('catalog'),botRequest('inventory-control'),botRequest('bot-settings'),botRequest('broadcast-templates'),botRequest('vip-coupon-manager')]);
     botCatalogCache=catalog; botCategoriesCache=catalog.categories; botProductsCache=catalog.products;
-    botInventoryCache=inventory||[];botBroadcastCache=broadcasts||{templates:[],runs:[]};
+    botInventoryCache=inventory||[];botBroadcastCache=broadcasts||{templates:[],runs:[]};botCouponCache=coupons||{plans:[],coupons:[],batches:[]};
     const settingValue=(key,fallback='')=>(settings||[]).find(x=>x.setting_key===key)?.setting_value??fallback;
     $('#botAboutText').value=settingValue('about_text','');
     $('#botVipQualification').value=settingValue('VIP_QUALIFICATION_AMOUNT','100000');
@@ -1878,6 +1907,21 @@ function botRenderCatSelect(){
 }
 function botRenderCategoriesTable(){
   $('#botCategoriesBody').innerHTML=botCategoriesCache.length?botCategoriesCache.map(c=>`<tr><td>${esc(c.emoji||'📦')}</td><td>${esc(c.name)}</td><td>${c.sort_order??0}</td><td>${c.is_active?'<span class="badge stock">Active</span>':'<span class="badge sold">Inactive</span>'}</td><td><button class="btn sm ${c.is_active?'danger':'primary'}" data-botcattoggle="${c.id}" data-active="${c.is_active?'1':'0'}">${c.is_active?'Disable':'Enable'}</button></td></tr>`).join(''):'<tr><td colspan="5">No categories</td></tr>';
+}
+function botCouponDate(value){if(!value)return '—';const date=new Date(value);return Number.isFinite(date.getTime())?new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Yangon',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}).format(date):'—';}
+function botRenderVipCoupons(){
+  const coupons=botCouponCache.coupons||[],plans=botCouponCache.plans||[],batches=botCouponCache.batches||[];
+  const count=status=>coupons.filter(c=>c.status===status).length;
+  $('#vipCouponTotal').textContent=coupons.length;$('#vipCouponUnused').textContent=count('unused');$('#vipCouponUsed').textContent=count('used');$('#vipCouponExpired').textContent=count('expired');$('#vipCouponDisabled').textContent=count('disabled');
+  const previous=$('#vipCouponPlan').value;
+  $('#vipCouponPlan').innerHTML=plans.map(plan=>`<option value="${esc(plan.plan_key)}">${esc(plan.plan_name)}</option>`).join('')||'<option value="">No active VIP plans</option>';
+  if(plans.some(plan=>plan.plan_key===previous))$('#vipCouponPlan').value=previous;
+  $('#vipCouponBody').innerHTML=coupons.length?coupons.map(c=>{
+    const profile=c.profiles||{},usedBy=c.used_by?([profile.first_name,profile.last_name].filter(Boolean).join(' ')||profile.username||c.used_by):'—';
+    const badge=c.status==='used'?'stock':c.status==='unused'?'inactive':'sold';
+    return `<tr><td class="mono"><b>${esc(c.code_preview)}</b><span class="subtxt">${esc(c.vip_coupon_batches?.batch_code||'')}</span></td><td>${esc(c.plan_name)}</td><td><span class="badge ${badge}">${esc(c.status)}</span></td><td>${esc(botCouponDate(c.created_at))}</td><td>${c.expires_at?esc(botCouponDate(c.expires_at)):'No coupon expiry'}</td><td>${esc(String(usedBy))}${profile.username?`<span class="subtxt">@${esc(profile.username)}</span>`:''}</td><td>${esc(botCouponDate(c.used_at))}</td><td><button class="btn sm" data-viewvipcoupon="${c.id}">View</button> ${c.status==='unused'?`<button class="btn sm danger" data-disablevipcoupon="${c.id}">Disable</button>`:''}</td></tr>`;
+  }).join(''):'<tr><td colspan="8" style="text-align:center;color:var(--dim)">VIP coupon မရှိသေးပါ</td></tr>';
+  $('#vipCouponBatchBody').innerHTML=batches.length?batches.map(batch=>{const rows=batch.vip_coupons||[],unused=rows.filter(c=>c.status==='unused').length,used=rows.filter(c=>c.status==='used').length;return `<tr><td class="mono"><b>${esc(batch.batch_code)}</b></td><td>${esc(batch.plan_name)}</td><td>${batch.quantity}</td><td>${unused}</td><td>${used}</td><td>${esc(botCouponDate(batch.created_at))}</td></tr>`;}).join(''):'<tr><td colspan="6" style="text-align:center;color:var(--dim)">Coupon batch မရှိသေးပါ</td></tr>';
 }
 function botRenderStats(){
   const orders=botCatalogCache.orders||[], today=todayStr();
@@ -2062,6 +2106,7 @@ function renderBotSync(){
   botRenderCatSelect();
   botRenderCategoriesTable();
   botRenderStats();
+  botRenderVipCoupons();
   botRenderIncomeGrowth();
   botRenderCustomers();
   botRenderProductsTable();
@@ -3654,6 +3699,10 @@ $('#btnBotInventoryUpdate').addEventListener('click',async()=>{
 });
 $('#btnBotProductUpdate').addEventListener('click',async()=>{if(!botEditingProductId)return;const price=num($('#botEditPrice').value),vipRaw=$('#botEditVipPrice').value.trim(),vipPrice=vipRaw===''?null:Number(vipRaw);if(vipPrice!==null&&(!(vipPrice>0)||vipPrice>price)){toast('VIP Price က Regular Price ထက်မကျော်ရပါ','err');return;}try{await botRequest('update-product',{productId:botEditingProductId,name:$('#botEditName').value,price,vipPrice,deliveryType:$('#botEditDelivery').value,vipOnly:$('#botEditVipOnly').checked,vipEarlyAccessUntil:$('#botEditVipEarly').value?botYangonScheduleIso($('#botEditVipEarly').value):null,warrantyDays:num($('#botEditWarrantyDays').value),warrantyHours:num($('#botEditWarrantyHours').value),previewFileId:$('#botEditPreview').value,customEmojiId:$('#botEditEmoji').value,description:$('#botEditDescription').value,descriptionQuote:$('#botEditQuote').checked,guide:$('#botEditGuide').value});$('#ovBotProductEdit').classList.remove('show');toast('Bot product presentation and VIP price updated ✓','ok');await botLoadAll();renderBotSync();}catch(err){toast('Product update failed — '+err.message,'err');}});
 $('#btnBotSaveStoreSettings').addEventListener('click',async()=>{const vipQualificationAmount=num($('#botVipQualification').value),vipMaintenanceAmount=num($('#botVipMaintenance').value),vipDurationMonths=Number($('#botVipDuration').value),hideCategories=$('#botHideCategories').value==='true';if(vipQualificationAmount<0||vipMaintenanceAmount<0||!Number.isInteger(vipDurationMonths)||vipDurationMonths<1||vipDurationMonths>24){toast('VIP settings ကိုမှန်ကန်အောင်ထည့်ပါ','err');return;}try{await botRequest('set-store-settings',{vipQualificationAmount,vipMaintenanceAmount,vipDurationMonths,hideCategories});toast('VIP & Store Display settings saved ✓','ok');await botLoadAll();}catch(err){toast('Settings save failed — '+err.message,'err');}});
+$('#btnGenerateVipCoupons').addEventListener('click',async()=>{const button=$('#btnGenerateVipCoupons'),planKey=$('#vipCouponPlan').value,quantity=Number($('#vipCouponQuantity').value),expiresValue=$('#vipCouponExpires').value;if(!planKey||!Number.isInteger(quantity)||quantity<1||quantity>200){toast('Plan နဲ့ quantity 1–200 ကိုမှန်ကန်အောင်ရွေးပါ','err');return;}button.disabled=true;button.textContent='Generating…';try{const result=await botRequest('generate-vip-coupons',{planKey,quantity,expiresAt:expiresValue?botYangonScheduleIso(expiresValue):null});botGeneratedCouponCodes=result.codes||[];$('#vipCouponGeneratedMeta').textContent=`${result.batch_code} · ${result.plan} · ${result.quantity} coupons`;$('#vipCouponGeneratedCodes').textContent=botGeneratedCouponCodes.join('\n');$('#vipCouponGenerated').style.display='block';toast('VIP coupons generated ✓ — Copy/Export before refresh','ok');const fresh=await botRequest('vip-coupon-manager');botCouponCache=fresh;botRenderVipCoupons();}catch(err){toast('Coupon generation failed — '+err.message,'err');}finally{button.disabled=false;button.textContent='＋ Generate Coupons';}});
+$('#vipCouponBody').addEventListener('click',async e=>{const view=e.target.closest('[data-viewvipcoupon]');if(view){const c=(botCouponCache.coupons||[]).find(row=>row.id===view.dataset.viewvipcoupon);if(!c)return;const p=c.profiles||{};alert([`Code: ${c.code_preview}`,`Plan: ${c.plan_name}`,`Status: ${c.status}`,`Batch: ${c.vip_coupon_batches?.batch_code||'—'}`,`Created: ${botCouponDate(c.created_at)}`,`Coupon Expires: ${botCouponDate(c.expires_at)}`,`Used By: ${[p.first_name,p.last_name].filter(Boolean).join(' ')||p.username||c.used_by||'—'}`,`Used At: ${botCouponDate(c.used_at)}`].join('\n'));return;}const button=e.target.closest('[data-disablevipcoupon]');if(!button)return;if(!confirm('ဒီ unused coupon ကိုပိတ်မလား? ပိတ်ပြီးရင် customer activate လုပ်မရတော့ပါ။'))return;button.disabled=true;try{await botRequest('disable-vip-coupon',{couponId:button.dataset.disablevipcoupon});botCouponCache=await botRequest('vip-coupon-manager');botRenderVipCoupons();toast('Coupon disabled ✓','ok');}catch(err){toast('Disable failed — '+err.message,'err');button.disabled=false;}});
+$('#btnCopyVipCoupons').addEventListener('click',async()=>{if(!botGeneratedCouponCodes.length)return;try{await navigator.clipboard.writeText(botGeneratedCouponCodes.join('\n'));toast('Full coupon codes copied ✓','ok');}catch(err){toast('Copy failed — codes ကို select/copy လုပ်ပါ','err');}});
+$('#btnExportVipCoupons').addEventListener('click',()=>{if(!botGeneratedCouponCodes.length)return;const blob=new Blob([botGeneratedCouponCodes.join('\n')+'\n'],{type:'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download=`vip-coupons-${new Date().toISOString().slice(0,10)}.txt`;document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);});
 $('#btnBotSaveAbout').addEventListener('click',async()=>{try{await botRequest('set-bot-setting',{key:'about_text',value:$('#botAboutText').value});toast('Bot About text saved ✓','ok');}catch(err){toast('About save failed — '+err.message,'err');}});
 $('#btnBotSaveBroadcast').addEventListener('click',async()=>{
   const title=$('#botBcTitle').value,mid=$('#botBcMid').value,last=$('#botBcLast').value;
