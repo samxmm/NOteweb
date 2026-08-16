@@ -969,6 +969,7 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
         <input id="botNewWarranty" type="number" min="0" step="1" placeholder="Warranty days (default 30)">
         <textarea id="botNewDescription" placeholder="Description (customer sees before purchase)"></textarea>
         <textarea id="botNewGuide" placeholder="Guide (customer sees after purchase)"></textarea>
+        <input id="botNewGuideVideo" class="full mono" placeholder="Guide Video — Telegram video file_id (optional)">
         <button class="btn primary add-btn" id="btnBotAddProduct">＋ Create Product</button>
       </div>
       </div>
@@ -1068,6 +1069,7 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
       <div class="fg full"><label>Description</label><textarea id="botEditDescription" rows="4"></textarea></div>
       <div class="fg full"><label class="check"><input type="checkbox" id="botEditQuote" checked> Description ကို Quote format နဲ့ပြမယ်</label></div>
       <div class="fg full"><label>Guide</label><textarea id="botEditGuide" rows="5"></textarea></div>
+      <div class="fg full"><label>Guide Video — Telegram file_id</label><input id="botEditGuideVideo" class="mono" placeholder="BAACAg…"><div class="help">Telegram မှာ video ကို bot ဆီပို့ပြီး <code>/fileid</code> နဲ့ရလာသော file_id ကိုထည့်ပါ။ Customer က Telegram ထဲမှာ တန်းကြည့်နိုင်မယ်။</div></div>
     </div>
     <div class="modal-foot"><button class="btn ghost" data-close="ovBotProductEdit">Cancel</button><button class="btn primary" id="btnBotProductUpdate">💾 Save Product</button></div>
   </div>
@@ -1869,14 +1871,25 @@ async function botSyncCustomersAndSales(){
   if(changed) save();
 }
 function reconcileBotInventory(){
+  let changed=false;
   for(const item of botInventoryCache){
-    const account=db.accounts.find(a=>a.botInventoryId===item.id||String(a.id)===String(item.web_account_id||''));
+    let account=db.accounts.find(a=>a.botInventoryId===item.id||String(a.id)===String(item.web_account_id||''));
+    if(!account&&item.status!=='sold'){
+      const content=String(item.content||''),read=labels=>{const match=content.match(new RegExp(`(?:^|\\n)\\s*(?:${labels.join('|')})\\s*[:=-]\\s*([^\\n]+)`,'i'));return match?.[1]?.trim()||'';};
+      const botProduct=botProductsCache.find(product=>product.id===item.product_id),botPrice=num(botProduct?.price);
+      account={id:uid(),code:'',orderId:'',botInventoryId:item.id,botProductId:item.product_id,botManaged:true,itemType:'account',workflowStage:'ready',product:item.products?.name||botProduct?.name||'Telegram Bot Product',plan:'On Bot Selling',planTerm:'',warrantyTerm:'',cost:0,price:botPrice,email:read(['mail','email','gmail']),pass:read(['pass','password']),twofa:read(['2fa','two fa','totp']),delivery:content,keyFileName:'',keyFileType:'',keyFileData:'',supplier:'Telegram Bot',renew:'',expire:'',status:item.status==='available'?'stock':'inactive',customerId:null,soldDate:'',soldPrice:0,soldNote:'',replacedById:null,replacesId:null,inactiveNote:item.status==='disabled'?'Disabled from Bot Sync':'',created:Date.parse(item.created_at)||Date.now()};
+      db.accounts.unshift(account);changed=true;
+    }
     if(!account)continue;
     account.botInventoryId=item.id;account.botProductId=item.product_id;
     if(item.status==='available'&&account.status==='sold'){
       account.status='stock';account.customerId=null;account.soldDate='';account.soldPrice=0;account.soldNote='Sale reversed from Bot Sync';account.botOrderId=null;
+      changed=true;
     }
+    if(item.status==='available'&&account.status==='inactive'){account.status='stock';account.inactiveNote='';changed=true;}
+    if(item.status==='disabled'&&account.status==='stock'){account.status='inactive';account.inactiveNote='Disabled from Bot Sync';changed=true;}
   }
+  if(changed)save();
 }
 function botCatName(catId){ const c=botCategoriesCache.find(x=>x.id===catId); return c?c.name:'—'; }
 async function botLoadAll(){
@@ -3644,21 +3657,22 @@ $('#btnBotAddProduct').addEventListener('click',async()=>{
   const warrantyDays=parseInt($('#botNewWarranty').value,10)||30;
   const description=$('#botNewDescription').value.trim();
   const guide=$('#botNewGuide').value.trim();
+  const guideVideoFileId=$('#botNewGuideVideo').value.trim();
   const cat=botCategoriesCache.find(c=>c.slug===categorySlug);
   if(!cat){ toast('Category ရွေးပါ','err'); return; }
   if(!name){ toast('Product name ထည့်ပါ','err'); return; }
   if(!(price>0)){ toast('Price မှန်ကန်အောင်ထည့်ပါ','err'); return; }
   if(vipPrice!==null&&(!(vipPrice>0)||vipPrice>price)){ toast('VIP Price က 0 ထက်ကြီးပြီး Regular Price ထက်မကျော်ရပါ','err'); return; }
   try{
-    await botCreateProduct({categoryId:cat.id,name,price,vipPrice,warrantyDays,description,guide,deliveryType,vipOnly,vipEarlyAccessUntil});
-    $('#botNewName').value=''; $('#botNewPrice').value=''; $('#botNewVipPrice').value=''; $('#botNewWarranty').value=''; $('#botNewDescription').value=''; $('#botNewGuide').value='';$('#botNewVipOnly').checked=false;$('#botNewVipEarly').value='';
+    await botCreateProduct({categoryId:cat.id,name,price,vipPrice,warrantyDays,description,guide,guideVideoFileId,deliveryType,vipOnly,vipEarlyAccessUntil});
+    $('#botNewName').value=''; $('#botNewPrice').value=''; $('#botNewVipPrice').value=''; $('#botNewWarranty').value=''; $('#botNewDescription').value=''; $('#botNewGuide').value='';$('#botNewGuideVideo').value='';$('#botNewVipOnly').checked=false;$('#botNewVipEarly').value='';
     toast(deliveryType==='stock'?'Bot product ဖန်တီးပြီးပါပြီ ✓ (Stock list လုပ်တာနဲ့ active ဖြစ်ပါမယ်)':'Bot service ဖန်တီးပြီး active လုပ်ထားပါပြီ ✓','ok');
     await botLoadAll(); renderBotSync();
   }catch(e){ toast('Create failed — '+e.message,'err'); }
 });
 $('#botProductsBody').addEventListener('click',async e=>{
   const edit=e.target.closest('[data-boteditproduct]');
-  if(edit){const p=botProductsCache.find(x=>x.id===edit.dataset.boteditproduct);if(!p)return;botEditingProductId=p.id;$('#botEditProductTitle').textContent=p.name;$('#botEditName').value=p.name||'';$('#botEditPrice').value=p.price||0;$('#botEditVipPrice').value=p.vip_price??'';$('#botEditDelivery').value=p.delivery_type||'stock';$('#botEditVipOnly').checked=!!p.vip_only;$('#botEditVipEarly').value=p.vip_early_access_until?botYangonScheduleInput(p.vip_early_access_until):'';$('#botEditWarrantyDays').value=p.warranty_days||0;$('#botEditWarrantyHours').value=p.warranty_hours||0;$('#botEditPreview').value=p.preview_file_id||'';$('#botEditEmoji').value=p.custom_emoji_id||'';$('#botEditDescription').value=p.description||'';$('#botEditGuide').value=p.guide||'';$('#botEditQuote').checked=p.description_quote!==false;$('#ovBotProductEdit').classList.add('show');return;}
+  if(edit){const p=botProductsCache.find(x=>x.id===edit.dataset.boteditproduct);if(!p)return;botEditingProductId=p.id;$('#botEditProductTitle').textContent=p.name;$('#botEditName').value=p.name||'';$('#botEditPrice').value=p.price||0;$('#botEditVipPrice').value=p.vip_price??'';$('#botEditDelivery').value=p.delivery_type||'stock';$('#botEditVipOnly').checked=!!p.vip_only;$('#botEditVipEarly').value=p.vip_early_access_until?botYangonScheduleInput(p.vip_early_access_until):'';$('#botEditWarrantyDays').value=p.warranty_days||0;$('#botEditWarrantyHours').value=p.warranty_hours||0;$('#botEditPreview').value=p.preview_file_id||'';$('#botEditEmoji').value=p.custom_emoji_id||'';$('#botEditDescription').value=p.description||'';$('#botEditGuide').value=p.guide||'';$('#botEditGuideVideo').value=p.guide_video_file_id||'';$('#botEditQuote').checked=p.description_quote!==false;$('#ovBotProductEdit').classList.add('show');return;}
   const remove=e.target.closest('[data-botdeleteproduct]');
   if(remove){const product=botProductsCache.find(x=>x.id===remove.dataset.botdeleteproduct);if(!product)return;if(!confirm(`“${product.name}” product ကိုဖျက်မလား?\n\nStock/sale history ရှိရင် data မပျက်စေရန် Archive လုပ်ပေးမယ်။`))return;try{const result=await botRequest('delete-product',{productId:product.id});toast(result.mode==='archived'?'Product ကို history မပျက်အောင် Archive လုပ်ပြီးပါပြီ':'Product အပြီးဖျက်ပြီးပါပြီ','ok');await botLoadAll();renderBotSync();}catch(err){toast('Product delete failed — '+err.message,'err');}return;}
   const toggle=e.target.closest('[data-botproducttoggle]');
@@ -3717,7 +3731,7 @@ $('#btnBotInventoryUpdate').addEventListener('click',async()=>{
   const content=$('#botInventoryEditContent').value.trim();if(!botEditingInventoryId||!content){toast('Account data အလွတ်မဖြစ်ရပါ','err');return;}
   try{await botRequest('update-inventory-content',{inventoryId:botEditingInventoryId,content});$('#ovBotInventoryEdit').classList.remove('show');botEditingInventoryId=null;toast('Account data updated ✓','ok');await botLoadAll();renderBotSync();}catch(err){toast('Account update failed — '+err.message,'err');}
 });
-$('#btnBotProductUpdate').addEventListener('click',async()=>{if(!botEditingProductId)return;const price=num($('#botEditPrice').value),vipRaw=$('#botEditVipPrice').value.trim(),vipPrice=vipRaw===''?null:Number(vipRaw);if(vipPrice!==null&&(!(vipPrice>0)||vipPrice>price)){toast('VIP Price က Regular Price ထက်မကျော်ရပါ','err');return;}try{await botRequest('update-product',{productId:botEditingProductId,name:$('#botEditName').value,price,vipPrice,deliveryType:$('#botEditDelivery').value,vipOnly:$('#botEditVipOnly').checked,vipEarlyAccessUntil:$('#botEditVipEarly').value?botYangonScheduleIso($('#botEditVipEarly').value):null,warrantyDays:num($('#botEditWarrantyDays').value),warrantyHours:num($('#botEditWarrantyHours').value),previewFileId:$('#botEditPreview').value,customEmojiId:$('#botEditEmoji').value,description:$('#botEditDescription').value,descriptionQuote:$('#botEditQuote').checked,guide:$('#botEditGuide').value});$('#ovBotProductEdit').classList.remove('show');toast('Bot product presentation and VIP price updated ✓','ok');await botLoadAll();renderBotSync();}catch(err){toast('Product update failed — '+err.message,'err');}});
+$('#btnBotProductUpdate').addEventListener('click',async()=>{if(!botEditingProductId)return;const price=num($('#botEditPrice').value),vipRaw=$('#botEditVipPrice').value.trim(),vipPrice=vipRaw===''?null:Number(vipRaw);if(vipPrice!==null&&(!(vipPrice>0)||vipPrice>price)){toast('VIP Price က Regular Price ထက်မကျော်ရပါ','err');return;}try{await botRequest('update-product',{productId:botEditingProductId,name:$('#botEditName').value,price,vipPrice,deliveryType:$('#botEditDelivery').value,vipOnly:$('#botEditVipOnly').checked,vipEarlyAccessUntil:$('#botEditVipEarly').value?botYangonScheduleIso($('#botEditVipEarly').value):null,warrantyDays:num($('#botEditWarrantyDays').value),warrantyHours:num($('#botEditWarrantyHours').value),previewFileId:$('#botEditPreview').value,customEmojiId:$('#botEditEmoji').value,description:$('#botEditDescription').value,descriptionQuote:$('#botEditQuote').checked,guide:$('#botEditGuide').value,guideVideoFileId:$('#botEditGuideVideo').value});$('#ovBotProductEdit').classList.remove('show');toast('Bot product presentation and VIP price updated ✓','ok');await botLoadAll();renderBotSync();}catch(err){toast('Product update failed — '+err.message,'err');}});
 $('#btnBotSaveStoreSettings').addEventListener('click',async()=>{const vipQualificationAmount=num($('#botVipQualification').value),vipMaintenanceAmount=num($('#botVipMaintenance').value),vipDurationMonths=Number($('#botVipDuration').value),hideCategories=$('#botHideCategories').value==='true';if(vipQualificationAmount<0||vipMaintenanceAmount<0||!Number.isInteger(vipDurationMonths)||vipDurationMonths<1||vipDurationMonths>24){toast('VIP settings ကိုမှန်ကန်အောင်ထည့်ပါ','err');return;}try{await botRequest('set-store-settings',{vipQualificationAmount,vipMaintenanceAmount,vipDurationMonths,hideCategories});toast('VIP & Store Display settings saved ✓','ok');await botLoadAll();}catch(err){toast('Settings save failed — '+err.message,'err');}});
 $('#btnGenerateVipCoupons').addEventListener('click',async()=>{const button=$('#btnGenerateVipCoupons'),planKey=$('#vipCouponPlan').value,quantity=Number($('#vipCouponQuantity').value),expiresValue=$('#vipCouponExpires').value;if(!planKey||!Number.isInteger(quantity)||quantity<1||quantity>200){toast('Plan နဲ့ quantity 1–200 ကိုမှန်ကန်အောင်ရွေးပါ','err');return;}button.disabled=true;button.textContent='Generating…';try{const result=await botRequest('generate-vip-coupons',{planKey,quantity,expiresAt:expiresValue?botYangonScheduleIso(expiresValue):null});botGeneratedCouponCodes=result.codes||[];$('#vipCouponGeneratedMeta').textContent=`${result.batch_code} · ${result.plan} · ${result.quantity} coupons`;$('#vipCouponGeneratedCodes').textContent=botGeneratedCouponCodes.join('\n');$('#vipCouponGenerated').style.display='block';toast('VIP coupons generated ✓ — Copy/Export before refresh','ok');const fresh=await botRequest('vip-coupon-manager');botCouponCache=fresh;botRenderVipCoupons();}catch(err){toast('Coupon generation failed — '+err.message,'err');}finally{button.disabled=false;button.textContent='＋ Generate Coupons';}});
 $('#vipCouponBody').addEventListener('click',async e=>{const view=e.target.closest('[data-viewvipcoupon]');if(view){const c=(botCouponCache.coupons||[]).find(row=>row.id===view.dataset.viewvipcoupon);if(!c)return;const p=c.profiles||{};alert([`Code: ${c.code_preview}`,`Plan: ${c.plan_name}`,`Status: ${c.status}`,`Batch: ${c.vip_coupon_batches?.batch_code||'—'}`,`Created: ${botCouponDate(c.created_at)}`,`Coupon Expires: ${botCouponDate(c.expires_at)}`,`Used By: ${[p.first_name,p.last_name].filter(Boolean).join(' ')||p.username||c.used_by||'—'}`,`Used At: ${botCouponDate(c.used_at)}`].join('\n'));return;}const button=e.target.closest('[data-disablevipcoupon]');if(!button)return;if(!confirm('ဒီ unused coupon ကိုပိတ်မလား? ပိတ်ပြီးရင် customer activate လုပ်မရတော့ပါ။'))return;button.disabled=true;try{await botRequest('disable-vip-coupon',{couponId:button.dataset.disablevipcoupon});botCouponCache=await botRequest('vip-coupon-manager');botRenderVipCoupons();toast('Coupon disabled ✓','ok');}catch(err){toast('Disable failed — '+err.message,'err');button.disabled=false;}});
@@ -3961,8 +3975,17 @@ function warrantyEndV7(a,saleDate){
   return addTerm(saleDate,a.warrantyTerm)||a.renew||'';
 }
 const v7EnsureSchemaBase=ensureSchema;
+const NOTEWEB_REQUIRED_PRODUCTS=[
+  {name:'Gemini 1Year Acc',itemType:'account'},
+  {name:'Gemini 18M Acc',itemType:'account'},
+  {name:'Gemini 1Year Service',itemType:'service'},
+  {name:'Gemini 18M Link',itemType:'account'},
+];
 ensureSchema=function(){
   v7EnsureSchemaBase(); db.settings??={goal:200000}; db.settings.usdMmkRate=num(db.settings.usdMmkRate)||0;
+  for(const preset of NOTEWEB_REQUIRED_PRODUCTS){
+    if(!db.products.some(p=>productKey(p.name,p.itemType)===productKey(preset.name,preset.itemType)))db.products.push({id:uid(),name:preset.name,itemType:preset.itemType,logoData:'',description:'',abilities:'',guide:'',created:Date.now()});
+  }
   for(const a of db.accounts){
     a.workflowStage=workflowStageOf(a); a.emailType=detectEmailType(a.email,a.emailType);
     a.rawCostMmk=num(a.rawCostMmk)||(a.planCostUsd?0:num(a.cost)); a.planCostUsd=num(a.planCostUsd); a.fxRate=num(a.fxRate)||db.settings.usdMmkRate||0;
@@ -4034,8 +4057,8 @@ updateDurationUi=updateWarrantyUiV7;
 updateCodeField=function(){updateCodePreviewV7(true);};
 
 renderPresets=function(){
-  const names=[...new Set(['Raw Gmail','Gemini Service',...productCatalog().map(p=>p.name),...categories().map(c=>c.name),...DEFAULT_PRESETS])].filter(Boolean).slice(0,16);
-  $('#presetRow').innerHTML=names.map(n=>`<button type="button" class="preset" data-preset="${esc(n)}">${esc(n)}</button>`).join('');
+  const names=[...new Set(['Raw Gmail',...NOTEWEB_REQUIRED_PRODUCTS.map(p=>p.name),'Gemini Service',...productCatalog().map(p=>p.name),...categories().map(c=>c.name),...DEFAULT_PRESETS])].filter(Boolean);
+  $('#presetRow').innerHTML=names.slice(0,24).map(n=>`<button type="button" class="preset" data-preset="${esc(n)}">${esc(n)}</button>`).join('');
   $('#prodList').innerHTML=names.filter(n=>n!=='Raw Gmail').map(n=>`<option value="${esc(n)}">`).join('');
   $('#supList').innerHTML=[...new Set(db.accounts.map(a=>a.supplier).filter(Boolean))].map(s=>`<option value="${esc(s)}">`).join('');
 };
@@ -4068,6 +4091,7 @@ function saveFormV7(){
   ensureSchema();const mode=$('#fWorkMode').value||'raw', itemType=mode==='service'?'service':'account', costs=calcCostsV7();
   const email=mode==='service'?$('#fServiceMail').value.trim():$('#fEmail').value.trim();
   let product=mode==='raw'?'Raw Gmail':$('#fProduct').value.trim(); if(!product){toast('Product / Service name is required','err');$('#fProduct').focus();return;}
+  if(mode!=='raw'&&!db.products.some(p=>productKey(p.name,p.itemType)===productKey(product,itemType)))db.products.push({id:uid(),name:product,itemType,logoData:'',description:'',abilities:'',guide:'',created:Date.now()});
   if(mode!=='service'&&!email){toast('Gmail / Email is required','err');$('#fEmail').focus();return;}
   if(mode==='ready'&&!$('#fPlan').value.trim()){toast('Plan name is required before selling','err');$('#fPlan').focus();return;}
   const codeTyped=$('#fCode').value.trim().toUpperCase(); const emailType=mode==='service'?'email':detectEmailType(email,$('#fEmailType').value);
@@ -4122,7 +4146,7 @@ function renderWorkflowBoardV7(){
 const v7RenderDashBase=renderDash;
 renderDash=function(){v7RenderDashBase();renderWorkflowBoardV7();};
 const v7SetTabBase=setTab;
-setTab=function(t){v7SetTabBase(t);if(t==='accounts'){$('#btnAddLbl').textContent='Input Account';const c=sbCfg();if(c.url&&c.token)botLoadAll().then(()=>renderBotSalesProducts()).catch(()=>{});}};
+setTab=function(t){v7SetTabBase(t);if(t==='accounts'){$('#btnAddLbl').textContent='Input Account';const c=sbCfg();if(c.url&&c.token)botLoadAll().then(()=>renderAccounts()).catch(()=>{});}};
 const v7OpenSellBase=openSell;
 openSell=function(id,custId){const a=accById(id);if(a&&workflowStageOf(a)==='raw'){toast('ဒီ Gmail ကို အရင် ⚡ Activate Plan လုပ်ပါ','err');openActivatePlan(id);return;}v7OpenSellBase(id,custId);const h=$('#ovSell h2');if(h)h.textContent='OUTPUT · Sell Account';};
 
@@ -4283,7 +4307,7 @@ async function saveSlipJpgV9(){
 }
 $('#btnSlipJpg').addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();saveSlipJpgV9();},true);
 
-const v9TblRowBase=tblRow;tblRow=function(a){let h=v9TblRowBase(a);if(a.saleType==='foc'&&a.soldDate)h=h.replace(`<b>${hl(a.product)}</b>`,`<b>${hl(a.product)}</b><span class="foc-tag">FOC ${Math.round(num(a.discountPct)||0)}%</span>`);return h;};
+const v9TblRowBase=tblRow;tblRow=function(a){let h=v9TblRowBase(a);if(a.saleType==='foc'&&a.soldDate)h=h.replace(`<b>${hl(a.product)}</b>`,`<b>${hl(a.product)}</b><span class="foc-tag">FOC ${Math.round(num(a.discountPct)||0)}%</span>`);if(a.botInventoryId&&a.status==='stock')h=h.replace('>In Stock</span>','>In Stock (On Bot Selling)</span>');return h;};
 function v9MonthSales(){const mk=todayStr().slice(0,7);return db.accounts.filter(a=>(a.soldDate||'').slice(0,7)===mk).reduce((s,a)=>s+num(a.soldPrice),0);}
 function v9MonthCost(){const mk=todayStr().slice(0,7),ids=new Set(db.accounts.filter(a=>(a.soldDate||'').slice(0,7)===mk).map(a=>a.id));const costs=db.accounts.filter(a=>ids.has(a.id)).reduce((s,a)=>s+num(a.cost),0);const refunds=db.refunds.filter(r=>(r.date||'').slice(0,7)===mk).reduce((s,r)=>s+num(r.amount),0);const manual=db.finance?.transactions?.filter(t=>t.type==='expense'&&(t.date||'').slice(0,7)===mk).reduce((s,t)=>s+num(t.mmkAmount),0)||0;return costs+refunds+manual;}
 function v9RenderDashboardWork(){
