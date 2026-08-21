@@ -1637,6 +1637,23 @@ td .subtxt{display:block;font-size:10.5px;color:var(--dim)}
 <div class="toasts" id="toasts"></div>
 <div class="ch-tip" id="chTip"></div>
 
+<!-- Keep basic view switching independent from the large data/application bundle.
+     In normal operation the main handler below takes over before DOMContentLoaded. -->
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+  const tabs=document.getElementById('tabs');
+  if(!tabs)return;
+  tabs.addEventListener('click',event=>{
+    if(document.documentElement.dataset.pxaiMainNavigationReady==='true')return;
+    const button=event.target.closest('.tab-btn');
+    if(!button)return;
+    const target=button.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(item=>item.classList.toggle('on',item===button));
+    document.querySelectorAll('.view').forEach(view=>view.classList.toggle('on',view.id===`view-${target}`));
+  });
+});
+</script>
+
 <script>
 'use strict';
 /* ================= storage ================= */
@@ -3711,6 +3728,7 @@ async function saveSlipJpg(){
 
 /* ================= events ================= */
 $('#tabs').addEventListener('click',e=>{ const b=e.target.closest('.tab-btn'); if(b) setTab(b.dataset.tab); });
+document.documentElement.dataset.pxaiMainNavigationReady='true';
 $('#q').addEventListener('input',e=>{ query=e.target.value.trim(); $('#qClr').style.display=query?'block':'none'; render(); });
 $('#qClr').addEventListener('click',()=>{ $('#q').value=''; query=''; $('#qClr').style.display='none'; render(); $('#q').focus(); });
 $('#sort').addEventListener('change',e=>{ sortBy=e.target.value; render(); });
@@ -4484,3 +4502,32 @@ async function saveSlipJpgV9(){
   const fields=[['Customer Name',d.customer],['Product / Service',d.product],['Account Plan',(d.plan||'—')+(d.planTerm?' · '+termLabel(d.planTerm):'')],['Original Price',money(d.originalPrice)+' MMK']];
   if(d.saleType==='foc'){fields.push(['FOC Gift',Math.round(d.discountPct*100)/100+'%  (−'+money(d.discountAmount)+' MMK)']);}else fields.push(['Paid Status',d.status]);
   fields.push(['Customer Paid',money(d.amount)+' MMK'],...(d.planExpiry?[['Plan Expires',fmtDate(d.planExpiry)]]:[]),['Warranty '+(d.warranty?'Expires':'Status'),d.warranty?fmtDate(d.warranty):'No Warranty'],['Purchase Date',fmtDate(d.date)]);
+  fields.forEach((f,i)=>{const col=i%2,row=Math.floor(i/2),fx=110+col*455,fy=310+row*140;x.fillStyle='#64748b';x.font='20px Arial';x.fillText(f[0],fx,fy);x.fillStyle=(f[0]==='FOC Gift')?'#be185d':'#172033';x.font='800 28px Arial';wrapCanvasText(x,f[1],fx,fy+40,390,34,2);});
+  const boxY=940;x.fillStyle=d.saleType==='foc'?'#fdf2f8':'#eff6ff';x.beginPath();x.roundRect(100,boxY,880,125,20);x.fill();x.fillStyle=d.saleType==='foc'?'#be185d':'#1d4ed8';x.font='900 29px Arial';x.textAlign='center';x.fillText(d.saleType==='foc'?`FOC Gift ${Math.round(d.discountPct*100)/100}% · Paid ${money(d.amount)} MMK`:d.thanks,540,boxY+55);if(d.saleType==='foc'){x.font='800 22px Arial';x.fillText(d.thanks,540,boxY+91);}x.fillStyle='#475569';x.font='22px Arial';x.fillText('Telegram @pxaistore',540,1165);x.fillText('Telegram @sambusiness25',540,1205);x.fillText('Viber 09751503246',540,1245);x.fillStyle='#94a3b8';x.font='18px Arial';x.fillText('PxAiStore · Digital Products & Services',540,1375);x.textAlign='left';downloadCanvasJpg(c,`PxAiStore-${d.orderId}.jpg`);
+}
+$('#btnSlipJpg').addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();saveSlipJpgV9();},true);
+
+const v9TblRowBase=tblRow;tblRow=function(a){let h=v9TblRowBase(a);if(a.saleType==='foc'&&a.soldDate)h=h.replace(`<b>${hl(a.product)}</b>`,`<b>${hl(a.product)}</b><span class="foc-tag">FOC ${Math.round(num(a.discountPct)||0)}%</span>`);if(a.botInventoryId&&a.status==='stock')h=h.replace('>In Stock</span>','>In Stock (On Bot Selling)</span>');return h;};
+function v9MonthSales(){const mk=todayStr().slice(0,7);return db.accounts.filter(a=>(a.soldDate||'').slice(0,7)===mk).reduce((s,a)=>s+num(a.soldPrice),0);}
+function v9MonthCost(){const mk=todayStr().slice(0,7),ids=new Set(db.accounts.filter(a=>(a.soldDate||'').slice(0,7)===mk).map(a=>a.id));const costs=db.accounts.filter(a=>ids.has(a.id)).reduce((s,a)=>s+num(a.cost),0);const refunds=db.refunds.filter(r=>(r.date||'').slice(0,7)===mk).reduce((s,r)=>s+num(r.amount),0);const manual=db.finance?.transactions?.filter(t=>t.type==='expense'&&(t.date||'').slice(0,7)===mk).reduce((s,t)=>s+num(t.mmkAmount),0)||0;return costs+refunds+manual;}
+function v9RenderDashboardWork(){
+  ensureSchema();const today=todayStr();const orders=db.orders.filter(o=>o.status!=='done').sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999')).slice(0,5);$('#dashOrderCount').textContent=db.orders.filter(o=>o.status!=='done').length;$('#dashOrderList').innerHTML=orders.length?orders.map(o=>`<div class="work-item order"><span class="work-dot"></span><div class="work-main"><div class="work-title">${esc(o.product)} · ${esc(o.customer)}</div><div class="work-sub">${o.date?fmtDate(o.date):'No date'}${o.note?' · '+esc(o.note):''}</div></div><button class="row-action" data-order-toggle="${o.id}" title="Done">✓</button></div>`).join(''):'<div class="priority-empty">No pending customer orders.</div>';
+  const todos=db.todos.filter(t=>t.status!=='done').sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999'));$('#dashTodoCount').textContent=todos.length;const urgent=todos.filter(t=>!t.date||t.date<=today),upcoming=todos.filter(t=>t.date&&t.date>today);const rows=[...urgent.slice(0,3).map(t=>({t,kind:'urgent'})),...upcoming.slice(0,3).map(t=>({t,kind:'upcoming'}))];$('#dashTodoList').innerHTML=rows.length?rows.map(({t,kind})=>`<div class="work-item task ${kind}"><span class="work-dot"></span><div class="work-main"><div class="work-title">${esc(t.title)}</div><div class="work-sub">${kind==='urgent'?'Urgent / Today':'Upcoming'}${t.date?' · '+fmtDate(t.date):''}${t.note?' · '+esc(t.note):''}</div></div><button class="row-action" data-todo-toggle="${t.id}" title="Done">✓</button></div>`).join(''):'<div class="priority-empty">No pending tasks.</div>';
+  const monthIncome=v9MonthSales(),dailyGoal=num(db.settings?.goal),monthGoal=num(db.settings?.monthlyGoal)||(dailyGoal*30),pct=monthGoal?Math.min(100,Math.round(monthIncome/monthGoal*100)):0;$('#monthIncomePct').textContent=pct+'%';$('#monthIncomeFill').style.width=pct+'%';$('#monthIncomeText').textContent=`${money(monthIncome)} MMK this month · Net after costs/expenses ${money(monthIncome-v9MonthCost())} MMK`;
+}
+const v9RenderDashBase=renderDash;renderDash=function(){v9RenderDashBase();v9RenderDashboardWork();};
+const v9RenderFinanceBase=renderFinance;renderFinance=function(){v9RenderFinanceBase();$('#financeTxnActionCount').textContent=db.finance.transactions.length;$('#financeRecActionCount').textContent=db.finance.receivables.filter(r=>r.status!=='received').length;};
+$('#btnOpenTxn').addEventListener('click',()=>{$('#ovTxn').classList.add('show');setTimeout(()=>$('#txnAmount').focus(),50);});$('#btnOpenRec').addEventListener('click',()=>{$('#ovReceivable').classList.add('show');setTimeout(()=>$('#recSeller').focus(),50);});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-open-finance]');if(!b)return;setTab('finance');setTimeout(()=>{const target=b.dataset.openFinance==='orders'?$('#orderCustomer'):$('#todoTitle');target?.scrollIntoView({behavior:'smooth',block:'center'});target?.focus();},80);});
+
+
+/* ================= init ================= */
+load(); ensureSchema(); store.set(KEY,JSON.stringify(db)); lockUi();
+if(db.settings?.pin) showLock();
+setTab('dash');
+sbUi();
+sbStartAutoSync();
+
+</script>
+</body>
+</html>
